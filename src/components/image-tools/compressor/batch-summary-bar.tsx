@@ -68,9 +68,15 @@ export function BatchSummaryBar({
           <span className="text-sm font-bold text-white">
             {items.length} {items.length === 1 ? "Image" : "Images"} Ready
           </span>
-          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            {totalSavingsPercentage}% Reduced ({formatBytes(totalSaved)} Saved)
-          </span>
+          {totalSavingsPercentage > 0 ? (
+            <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              {totalSavingsPercentage}% Reduced ({formatBytes(totalSaved)} Saved)
+            </span>
+          ) : (
+            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/20">
+              Optimal / High-Fidelity
+            </span>
+          )}
         </div>
         <p className="text-xs text-white/70">
           Original: {formatBytes(totalOriginalSize)} → Compressed:{" "}

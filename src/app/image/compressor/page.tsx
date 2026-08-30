@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { DropZone } from "@/components/image-tools/dropzone";
@@ -25,6 +25,7 @@ const DEFAULT_SETTINGS: CompressionSettings = {
 
 export default function ImageCompressorPage() {
   const addMoreInputRef = useRef<HTMLInputElement>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const [settings, setSettings] = useState<CompressionSettings>(DEFAULT_SETTINGS);
   const [items, setItems] = useState<CompressedFileResult[]>([]);
@@ -68,7 +69,6 @@ export default function ImageCompressorPage() {
         const updated = await Promise.all(
           items.map(async (item) => {
             try {
-              // Revoke old compressed URL
               if (item.compressedUrl) URL.revokeObjectURL(item.compressedUrl);
               return await compressImage(item.originalFile, newSettings);
             } catch {
@@ -87,10 +87,24 @@ export default function ImageCompressorPage() {
   const handleSettingsChange = (partial: Partial<CompressionSettings>) => {
     const updated = { ...settings, ...partial };
     setSettings(updated);
+
     if (items.length > 0) {
-      recompressAll(updated);
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      debounceTimerRef.current = setTimeout(() => {
+        recompressAll(updated);
+      }, 150);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleRemoveItem = (id: string) => {
     setItems((prev) => {
@@ -173,6 +187,7 @@ export default function ImageCompressorPage() {
             <PrivacyBadges
               badges={[
                 "100% In-browser",
+                "100% Ad-Free",
                 "Zero cloud uploads",
                 "Ultra-fast WebP/JPEG compression",
                 "Batch ZIP download",
@@ -229,6 +244,7 @@ export default function ImageCompressorPage() {
             <PrivacyBadges
               badges={[
                 "100% In-browser",
+                "100% Ad-Free",
                 "No files uploaded to servers",
                 "High quality bicubic scaling",
                 "Unlimited free use",
