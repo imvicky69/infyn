@@ -16,13 +16,13 @@ export const metadata: Metadata = {
     "free photo size reducer no limits",
   ],
   alternates: {
-    canonical: "https://infyn.app/image/compressor",
+    canonical: "https://infyn.indivio.in/image/compressor",
   },
   openGraph: {
     title: "Free Batch Image Compressor — Shrink Images up to 90%",
     description:
       "Compress dozens of images simultaneously in your browser. 100% private, no cloud uploads, target size mode, and batch ZIP export.",
-    url: "https://infyn.app/image/compressor",
+    url: "https://infyn.indivio.in/image/compressor",
     images: [{ url: "/logo-clear.png", width: 800, height: 800, alt: "Free Batch Image Compressor" }],
   },
 };
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Infyn Free Image Compressor",
-  url: "https://infyn.app/image/compressor",
+  name: "Infyn by Indivio — Free Image Compressor",
+  url: "https://infyn.indivio.in/image/compressor",
   applicationCategory: "MultimediaApplication",
   operatingSystem: "All (Web Browser)",
   offers: {

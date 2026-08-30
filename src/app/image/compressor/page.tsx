@@ -14,6 +14,8 @@ import { CompressionToggles } from "@/components/image-tools/compressor/compress
 import { CompressorItemCard } from "@/components/image-tools/compressor/compressor-item-card";
 import { BatchSummaryBar } from "@/components/image-tools/compressor/batch-summary-bar";
 import { CompareModal } from "@/components/image-tools/compressor/compare-modal";
+import { getPipelineImage } from "@/components/image-tools/pipeline-storage";
+import SplitText from "@/components/SplitText";
 
 const DEFAULT_SETTINGS: CompressionSettings = {
   mode: "quality",
@@ -99,12 +101,21 @@ export default function ImageCompressorPage() {
   };
 
   useEffect(() => {
+    let active = true;
+    (async () => {
+      const pipelineFile = await getPipelineImage();
+      if (pipelineFile && active) {
+        processFiles([pipelineFile], DEFAULT_SETTINGS);
+      }
+    })();
+
     return () => {
+      active = false;
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, []);
+  }, [processFiles]);
 
   const handleRemoveItem = (id: string) => {
     setItems((prev) => {
@@ -134,7 +145,7 @@ export default function ImageCompressorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBFBFA] text-[#111111] flex flex-col font-sans">
+    <div className="min-h-screen text-[#111111] flex flex-col font-sans">
       <Navbar />
 
       {/* Hidden input for Add More */}
@@ -142,7 +153,7 @@ export default function ImageCompressorPage() {
         ref={addMoreInputRef}
         type="file"
         multiple
-        accept="image/*"
+        accept="image/*,.heic,.heif,.HEIC,.HEIF"
         className="hidden"
         onChange={handleAddMoreFiles}
       />
@@ -160,9 +171,15 @@ export default function ImageCompressorPage() {
           >
             {/* Header */}
             <div className="text-center space-y-3">
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
-                Compress Images
-              </h1>
+              <SplitText
+                text="Compress Images"
+                className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight"
+                delay={35}
+                duration={0.85}
+                splitType="words, chars"
+                tag="h1"
+                textAlign="center"
+              />
               <p className="text-sm text-[#6E6D68] flex items-center justify-center gap-2 flex-wrap">
                 <span>Reduce file size up to 90%</span>
                 <span className="text-[#DDDDD8]">•</span>

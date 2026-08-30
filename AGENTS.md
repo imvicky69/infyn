@@ -117,14 +117,14 @@ export const metadata: Metadata = {
   title: "Free [Tool Name] — [Primary Benefit] (No Uploads)",
   description: "100% Free & Ad-Free [Tool Name] running locally in your browser. [Key features]. Zero server uploads.",
   keywords: ["free [tool]", "ad free [tool]", "[tool] online no upload", "client side [tool]"],
-  alternates: { canonical: "https://infyn.app/<category>/<tool-name>" },
+  alternates: { canonical: "https://infyn.indivio.in/<category>/<tool-name>" },
 };
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Infyn [Tool Name]",
-  url: "https://infyn.app/<category>/<tool-name>",
+  name: "Infyn by Indivio — [Tool Name]",
+  url: "https://infyn.indivio.in/<category>/<tool-name>",
   applicationCategory: "MultimediaApplication",
   operatingSystem: "All (Web Browser)",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

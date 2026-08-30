@@ -19,6 +19,9 @@ import {
   GRADIENT_PRESETS,
 } from "@/components/image-tools/bg-remover/background-customizer";
 import { TransformToolbar } from "@/components/image-tools/bg-remover/transform-toolbar";
+import { getPipelineImage } from "@/components/image-tools/pipeline-storage";
+import { ContinuePipelineBar } from "@/components/image-tools/continue-pipeline-bar";
+import SplitText from "@/components/SplitText";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Stage = "idle" | "busy" | "done" | "error";
@@ -100,10 +103,20 @@ export default function BgRemoverPage() {
   const [isDraggingSubject, setIsDraggingSubject] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0, posX: 0, posY: 0 });
 
-  // ── Boot worker on mount ────────────────────────────────────────────────────
+  // ── Boot worker on mount & check pipeline image ─────────────────────────────
   useEffect(() => {
     workerRef.current = new Worker(new URL("./worker.ts", import.meta.url));
+
+    let active = true;
+    (async () => {
+      const pipelineFile = await getPipelineImage();
+      if (pipelineFile && active) {
+        processFile(pipelineFile);
+      }
+    })();
+
     return () => {
+      active = false;
       workerRef.current?.terminate();
     };
   }, []);
@@ -278,83 +291,88 @@ export default function BgRemoverPage() {
   };
 
   // ── High-Res Canvas Compositing & Export with Aspect Ratio ───────────────────
-  const handleDownload = async () => {
+  const getExportBlob = async (): Promise<Blob | null> => {
     const rawCanvas = canvasRef.current;
-    if (!rawCanvas || imageDims.width === 0) return;
+    if (!rawCanvas || imageDims.width === 0) return null;
 
+    let targetWidth = imageDims.width;
+    let targetHeight = imageDims.height;
+
+    if (selectedRatio.ratio !== "original") {
+      const targetR = selectedRatio.ratio;
+      if (targetR >= 1) {
+        targetWidth = Math.max(imageDims.width, Math.round(imageDims.height * targetR));
+        targetHeight = Math.round(targetWidth / targetR);
+      } else {
+        targetHeight = Math.max(imageDims.height, Math.round(imageDims.width / targetR));
+        targetWidth = Math.round(targetHeight * targetR);
+      }
+    }
+
+    const exportCanvas = document.createElement("canvas");
+    exportCanvas.width = targetWidth;
+    exportCanvas.height = targetHeight;
+    const exportCtx = exportCanvas.getContext("2d")!;
+
+    // 1. Paint chosen background onto the full canvas
+    renderBackgroundToCanvas(
+      exportCtx,
+      targetWidth,
+      targetHeight,
+      bgMode,
+      selectedColor,
+      selectedGradient
+    );
+
+    // 2. Calculate WYSIWYG proportional scale and position from preview frame
+    const previewEl = previewBoxRef.current;
+    const previewRect = previewEl ? previewEl.getBoundingClientRect() : null;
+
+    const fitPreviewScale = previewRect
+      ? Math.min(previewRect.width / imageDims.width, previewRect.height / imageDims.height)
+      : 1;
+
+    const fittedPreviewW = Math.max(1, imageDims.width * fitPreviewScale);
+    const fittedPreviewH = Math.max(1, imageDims.height * fitPreviewScale);
+
+    const fitExportScale = Math.min(targetWidth / imageDims.width, targetHeight / imageDims.height);
+    const fittedExportW = imageDims.width * fitExportScale;
+    const fittedExportH = imageDims.height * fitExportScale;
+
+    const exportOffsetX = (posX / fittedPreviewW) * fittedExportW;
+    const exportOffsetY = (posY / fittedPreviewH) * fittedExportH;
+
+    // 3. Draw transformed subject cutout onto canvas
+    exportCtx.save();
+    exportCtx.translate(
+      targetWidth / 2 + exportOffsetX,
+      targetHeight / 2 + exportOffsetY
+    );
+    exportCtx.scale(scale * (flipH ? -1 : 1), scale);
+    exportCtx.drawImage(
+      rawCanvas,
+      -fittedExportW / 2,
+      -fittedExportH / 2,
+      fittedExportW,
+      fittedExportH
+    );
+    exportCtx.restore();
+
+    // 4. Export as PNG
+    return await new Promise<Blob>((resolve, reject) => {
+      exportCanvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new Error("Failed to export image"))),
+        "image/png"
+      );
+    });
+  };
+
+  const handleDownload = async () => {
     setIsDownloading(true);
 
     try {
-      let targetWidth = imageDims.width;
-      let targetHeight = imageDims.height;
-
-      if (selectedRatio.ratio !== "original") {
-        const targetR = selectedRatio.ratio;
-        if (targetR >= 1) {
-          targetWidth = Math.max(imageDims.width, Math.round(imageDims.height * targetR));
-          targetHeight = Math.round(targetWidth / targetR);
-        } else {
-          targetHeight = Math.max(imageDims.height, Math.round(imageDims.width / targetR));
-          targetWidth = Math.round(targetHeight * targetR);
-        }
-      }
-
-      const exportCanvas = document.createElement("canvas");
-      exportCanvas.width = targetWidth;
-      exportCanvas.height = targetHeight;
-      const exportCtx = exportCanvas.getContext("2d")!;
-
-      // 1. Paint chosen background onto the full canvas
-      renderBackgroundToCanvas(
-        exportCtx,
-        targetWidth,
-        targetHeight,
-        bgMode,
-        selectedColor,
-        selectedGradient
-      );
-
-      // 2. Calculate WYSIWYG proportional scale and position from preview frame
-      const previewEl = previewBoxRef.current;
-      const previewRect = previewEl ? previewEl.getBoundingClientRect() : null;
-
-      const fitPreviewScale = previewRect
-        ? Math.min(previewRect.width / imageDims.width, previewRect.height / imageDims.height)
-        : 1;
-
-      const fittedPreviewW = Math.max(1, imageDims.width * fitPreviewScale);
-      const fittedPreviewH = Math.max(1, imageDims.height * fitPreviewScale);
-
-      const fitExportScale = Math.min(targetWidth / imageDims.width, targetHeight / imageDims.height);
-      const fittedExportW = imageDims.width * fitExportScale;
-      const fittedExportH = imageDims.height * fitExportScale;
-
-      const exportOffsetX = (posX / fittedPreviewW) * fittedExportW;
-      const exportOffsetY = (posY / fittedPreviewH) * fittedExportH;
-
-      // 3. Draw transformed subject cutout onto canvas
-      exportCtx.save();
-      exportCtx.translate(
-        targetWidth / 2 + exportOffsetX,
-        targetHeight / 2 + exportOffsetY
-      );
-      exportCtx.scale(scale * (flipH ? -1 : 1), scale);
-      exportCtx.drawImage(
-        rawCanvas,
-        -fittedExportW / 2,
-        -fittedExportH / 2,
-        fittedExportW,
-        fittedExportH
-      );
-      exportCtx.restore();
-
-      // 4. Export as PNG
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        exportCanvas.toBlob(
-          (b) => (b ? resolve(b) : reject(new Error("Failed to export image"))),
-          "image/png"
-        );
-      });
+      const blob = await getExportBlob();
+      if (!blob) return;
 
       const base = fileName.replace(/\.[^.]+$/, "");
       const ratioTag = selectedRatio.id.replace(":", "-");
@@ -384,7 +402,7 @@ export default function BgRemoverPage() {
 
   // ─────────────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#FBFBFA] text-[#111111] flex flex-col font-sans">
+    <div className="min-h-screen text-[#111111] flex flex-col font-sans">
       <canvas ref={canvasRef} className="hidden" />
 
       <Navbar />
@@ -398,9 +416,15 @@ export default function BgRemoverPage() {
             style={{ animation: "fade-in-up 0.4s ease-out" }}
           >
             <div className="text-center space-y-3">
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
-                Remove Background
-              </h1>
+              <SplitText
+                text="Remove Background"
+                className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight"
+                delay={35}
+                duration={0.85}
+                splitType="words, chars"
+                tag="h1"
+                textAlign="center"
+              />
               <p className="text-sm text-[#6E6D68] flex items-center justify-center gap-2 flex-wrap">
                 <span>Free</span>
                 <span className="text-[#DDDDD8]">•</span>
@@ -657,6 +681,13 @@ export default function BgRemoverPage() {
                 {isCustomizing ? "Customization active" : "Quick export ready"}
               </span>
             </div>
+
+            {/* ── Continue in Other Infyn Tools ───────────────────────────── */}
+            <ContinuePipelineBar
+              currentTool="bg-remover"
+              getImageBlob={getExportBlob}
+              imageName={fileName ? fileName.replace(/\.[^.]+$/, "-nobg.png") : "nobg.png"}
+            />
 
             {/* ── Collapsible Customization Drawer ───────────────────────────── */}
             {isCustomizing && (

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import JSZip from "jszip";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -13,6 +13,9 @@ import {
   convertSingleImage,
   OutputTargetFormat,
 } from "@/components/image-tools/converter/heic-engine";
+import { getPipelineImage } from "@/components/image-tools/pipeline-storage";
+import { ContinuePipelineBar } from "@/components/image-tools/continue-pipeline-bar";
+import SplitText from "@/components/SplitText";
 
 const DEFAULT_SETTINGS: HeicConvertSettings = {
   format: "image/jpeg",
@@ -107,6 +110,21 @@ export default function HeicToJpgPage() {
     setItems([]);
   };
 
+  // ── Auto-convert Pipeline Image on mount ──────────────────────────────────
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const pipelineFile = await getPipelineImage();
+      if (pipelineFile && active) {
+        processFiles([pipelineFile], settings);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [processFiles, settings]);
+
   const handleAddMore = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
     if (files.length > 0) {
@@ -151,7 +169,7 @@ export default function HeicToJpgPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBFBFA] text-[#111111] flex flex-col font-sans">
+    <div className="min-h-screen text-[#111111] flex flex-col font-sans">
       <Navbar />
 
       {/* Hidden input for Add More files */}
@@ -174,11 +192,20 @@ export default function HeicToJpgPage() {
           >
             <div className="text-center space-y-3">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5F4EE] border border-[#EAEAE5] text-xs font-semibold text-[#111111] mb-1">
-                <span>📱 iPhone & Camera Photos</span>
+                <svg className="h-3.5 w-3.5 text-[#6E6D68]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                </svg>
+                <span>iPhone & Camera Photos</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
-                HEIC to JPG Converter
-              </h1>
+              <SplitText
+                text="HEIC to JPG Converter"
+                className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight"
+                delay={35}
+                duration={0.85}
+                splitType="words, chars"
+                tag="h1"
+                textAlign="center"
+              />
               <p className="text-sm text-[#6E6D68] flex items-center justify-center gap-2 flex-wrap">
                 <span>Convert .HEIC & .HEIF to JPG or PNG</span>
                 <span className="text-[#DDDDD8]">•</span>
@@ -381,70 +408,82 @@ export default function HeicToJpgPage() {
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="rounded-2xl border border-[#EAEAE5] bg-white p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs hover:border-[#BEBDB9] transition-all"
+                  className="rounded-2xl border border-[#EAEAE5] bg-white p-4 sm:p-5 flex flex-col gap-3 shadow-xs hover:border-[#BEBDB9] transition-all"
                 >
-                  <div className="flex items-center gap-4 min-w-0 flex-1">
-                    {/* Thumbnail */}
-                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-[#EAEAE5] bg-[#F8F8F6] shrink-0 shadow-2xs">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={item.convertedUrl}
-                        alt={item.originalName}
-                        className="w-full h-full object-cover"
-                      />
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 min-w-0 flex-1">
+                      {/* Thumbnail */}
+                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-[#EAEAE5] bg-[#F8F8F6] shrink-0 shadow-2xs">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={item.convertedUrl}
+                          alt={item.originalName}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      {/* Metadata */}
+                      <div className="min-w-0 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-bold text-[#111111] truncate max-w-[220px] sm:max-w-xs" title={item.originalName}>
+                            {item.originalName}
+                          </p>
+                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
+                            {item.originalType} → {item.outputFormatLabel}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-[#6E6D68]">
+                          <span>{formatBytes(item.originalSize)}</span>
+                          <span className="text-[#DDDDD8]">·</span>
+                          <span className="font-bold text-[#111111]">{formatBytes(item.convertedSize)}</span>
+                          <span className="text-[#DDDDD8]">·</span>
+                          <span className="text-[11px] text-[#9E9D98]">
+                            {item.convertedWidth} × {item.convertedHeight} px
+                          </span>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Metadata */}
-                    <div className="min-w-0 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-bold text-[#111111] truncate max-w-[220px] sm:max-w-xs" title={item.originalName}>
-                          {item.originalName}
-                        </p>
-                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
-                          {item.originalType} → {item.outputFormatLabel}
-                        </span>
-                      </div>
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 self-end sm:self-center shrink-0 w-full sm:w-auto justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-[#EAEAE5]">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const a = document.createElement("a");
+                          a.href = item.convertedUrl;
+                          a.download = item.outputFileName;
+                          a.click();
+                        }}
+                        className="h-8 px-4 rounded-xl bg-[#111111] text-xs font-semibold text-white hover:bg-[#262626] active:scale-95 transition-all inline-flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>Download {item.outputFormatLabel}</span>
+                      </button>
 
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-[#6E6D68]">
-                        <span>{formatBytes(item.originalSize)}</span>
-                        <span className="text-[#DDDDD8]">·</span>
-                        <span className="font-bold text-[#111111]">{formatBytes(item.convertedSize)}</span>
-                        <span className="text-[#DDDDD8]">·</span>
-                        <span className="text-[11px] text-[#9E9D98]">
-                          {item.convertedWidth} × {item.convertedHeight} px
-                        </span>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveItem(item.id)}
+                        className="h-8 w-8 rounded-xl border border-transparent hover:border-[#EAEAE5] hover:bg-[#F8F8F6] text-[#9E9D98] hover:text-red-600 transition-all flex items-center justify-center cursor-pointer"
+                        title="Remove item"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2 self-end sm:self-center shrink-0 w-full sm:w-auto justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-[#EAEAE5]">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const a = document.createElement("a");
-                        a.href = item.convertedUrl;
-                        a.download = item.outputFileName;
-                        a.click();
-                      }}
-                      className="h-8 px-4 rounded-xl bg-[#111111] text-xs font-semibold text-white hover:bg-[#262626] active:scale-95 transition-all inline-flex items-center gap-1.5 shadow-2xs"
-                    >
-                      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                      </svg>
-                      <span>Download {item.outputFormatLabel}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveItem(item.id)}
-                      className="h-8 w-8 rounded-xl border border-transparent hover:border-[#EAEAE5] hover:bg-[#F8F8F6] text-[#9E9D98] hover:text-red-600 transition-all flex items-center justify-center"
-                      title="Remove item"
-                    >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
+                  {/* Bottom Pipeline Continuation Strip */}
+                  <div className="pt-2 border-t border-[#F5F4EE]">
+                    <ContinuePipelineBar
+                      currentTool="heic-to-jpg"
+                      variant="inline"
+                      getImageBlob={() => item.convertedBlob}
+                      imageName={item.outputFileName}
+                    />
                   </div>
                 </div>
               ))}

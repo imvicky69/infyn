@@ -24,6 +24,38 @@ export function calculateSavings(originalSize: number, newSize: number): {
 }
 
 /**
+ * Universal browser-safe download helper that guarantees exact file names and extensions.
+ */
+export function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.style.display = "none";
+  a.href = url;
+
+  // Guarantee valid image extension
+  let safeName = filename || "image.jpg";
+  if (!/\.(jpg|jpeg|png|webp|avif|gif)$/i.test(safeName)) {
+    const ext =
+      blob.type === "image/png"
+        ? ".png"
+        : blob.type === "image/webp"
+        ? ".webp"
+        : ".jpg";
+    safeName = `${safeName}${ext}`;
+  }
+
+  a.download = safeName;
+  a.setAttribute("download", safeName);
+  document.body.appendChild(a);
+  a.click();
+
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 1500);
+}
+
+/**
  * Universal HEIC / HEIF converter using multi-strategy WASM and browser canvas.
  */
 export async function convertHeicToJpeg(file: File): Promise<File> {

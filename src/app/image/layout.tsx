@@ -13,13 +13,13 @@ export const metadata: Metadata = {
     "heic to jpg online free",
   ],
   alternates: {
-    canonical: "https://infyn.app/image",
+    canonical: "https://infyn.indivio.in/image",
   },
   openGraph: {
-    title: "Free In-Browser Image Tools Suite — Infyn",
+    title: "Free In-Browser Image Tools Suite — Infyn by Indivio",
     description:
       "All-in-one private image toolkit. Remove backgrounds, compress sizes by 90%, and convert HEIC photos with zero cloud uploads.",
-    url: "https://infyn.app/image",
+    url: "https://infyn.indivio.in/image",
     images: [{ url: "/logo-clear.png", width: 800, height: 800, alt: "Infyn Image Tools Suite" }],
   },
 };

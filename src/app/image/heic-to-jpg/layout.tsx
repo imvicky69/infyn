@@ -16,13 +16,13 @@ export const metadata: Metadata = {
     "open heic file on windows free",
   ],
   alternates: {
-    canonical: "https://infyn.app/image/heic-to-jpg",
+    canonical: "https://infyn.indivio.in/image/heic-to-jpg",
   },
   openGraph: {
     title: "Free HEIC to JPG Converter — Convert iPhone Photos Locally",
     description:
       "Batch convert iPhone .HEIC photos to universal JPG or PNG format. 100% private in-browser WebAssembly conversion with instant ZIP download.",
-    url: "https://infyn.app/image/heic-to-jpg",
+    url: "https://infyn.indivio.in/image/heic-to-jpg",
     images: [{ url: "/logo-clear.png", width: 800, height: 800, alt: "Free HEIC to JPG Converter" }],
   },
 };
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Infyn Free HEIC to JPG Converter",
-  url: "https://infyn.app/image/heic-to-jpg",
+  name: "Infyn by Indivio — Free HEIC to JPG Converter",
+  url: "https://infyn.indivio.in/image/heic-to-jpg",
   applicationCategory: "MultimediaApplication",
   operatingSystem: "All (Web Browser)",
   offers: {
