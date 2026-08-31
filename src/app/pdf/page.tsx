@@ -8,12 +8,12 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import SplitText from "@/components/SplitText";
 
-interface ImageToolItem {
+interface PdfToolItem {
   href: string;
   title: string;
   badge: string;
   badgeColor: string;
-  category: "all" | "ai" | "compression" | "conversion" | "resize";
+  category: "all" | "conversion" | "builder" | "security";
   categoryLabel: string;
   description: string;
   tags: string[];
@@ -21,173 +21,78 @@ interface ImageToolItem {
   icon: React.ReactNode;
 }
 
-const IMAGE_TOOLS: ImageToolItem[] = [
+const PDF_TOOLS: PdfToolItem[] = [
   {
-    href: "/image/bg-remover",
-    title: "Background Remover",
-    badge: "Neural AI",
-    badgeColor: "bg-emerald-50 text-emerald-800 border-emerald-200/80",
-    category: "ai",
-    categoryLabel: "AI Vision",
-    description:
-      "Erase backgrounds from portraits and products with on-device neural AI. Add custom colors or studio gradients.",
-    tags: ["On-Device AI", "No Watermark", "HD Export"],
-    formats: ["PNG", "JPG", "WEBP"],
-    icon: (
-      <div className="relative h-11 w-11 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-700 shadow-2xs group-hover:scale-105 transition-transform">
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
-        </svg>
-      </div>
-    ),
-  },
-  {
-    href: "/image/compressor",
-    title: "Image Compressor",
-    badge: "Up to -90%",
+    href: "/pdf/pdf-to-image",
+    title: "PDF to Image Converter",
+    badge: "HD Export",
     badgeColor: "bg-blue-50 text-blue-800 border-blue-200/80",
-    category: "compression",
-    categoryLabel: "Size Optimizer",
+    category: "conversion",
+    categoryLabel: "Extraction",
     description:
-      "Drastically shrink image file sizes without quality loss. Supports target KB limits, WebP conversion, and batch ZIP export.",
-    tags: ["Target KB Limit", "Batch ZIP", "Visual Slider"],
-    formats: ["JPG", "PNG", "WEBP", "AVIF"],
+      "Convert every page of your PDF into high-definition JPG, PNG, or WebP images. Download individual pages or 1-Click ZIP.",
+    tags: ["Batch ZIP", "Page Select", "300 DPI Export"],
+    formats: ["PDF → JPG", "PNG", "WEBP"],
     icon: (
       <div className="relative h-11 w-11 rounded-2xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-700 shadow-2xs group-hover:scale-105 transition-transform">
         <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0 0h4.5m-4.5 0L9 3.75M20.25 3.75h-4.5m0 0v4.5m0-4.5L15 9m5.25 11.25v-4.5m0 0h-4.5m4.5 0L15 20.25M3.75 20.25h4.5m0 0v-4.5m0 4.5L9 15" />
-        </svg>
-      </div>
-    ),
-  },
-  {
-    href: "/image/resizer",
-    title: "Image Resizer",
-    badge: "Social Presets",
-    badgeColor: "bg-purple-50 text-purple-800 border-purple-200/80",
-    category: "resize",
-    categoryLabel: "Scale & Crop",
-    description:
-      "Scale pixel dimensions, reposition crop windows, or fit with blurred background. Preconfigured for Instagram, YouTube, and WhatsApp.",
-    tags: ["Pan & Zoom", "Aspect Lock", "Blur Fit"],
-    formats: ["JPG", "PNG", "WEBP", "HEIC", "AVIF"],
-    icon: (
-      <div className="relative h-11 w-11 rounded-2xl bg-purple-50 border border-purple-200/80 flex items-center justify-center text-purple-700 shadow-2xs group-hover:scale-105 transition-transform">
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M9 9h6v6H9V9z" />
-        </svg>
-      </div>
-    ),
-  },
-  {
-    href: "/image/converter",
-    title: "Universal Image Converter",
-    badge: "All Formats",
-    badgeColor: "bg-amber-50 text-amber-800 border-amber-200/80",
-    category: "conversion",
-    categoryLabel: "Format Converter",
-    description:
-      "Batch convert images between HEIC, JPG, PNG, WebP, and AVIF formats with 1-click popular presets and instant ZIP download.",
-    tags: ["1-Click Presets", "Batch 50+", "ZIP Download"],
-    formats: ["HEIC", "JPG", "PNG", "WEBP", "AVIF"],
-    icon: (
-      <div className="relative h-11 w-11 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-800 shadow-2xs group-hover:scale-105 transition-transform">
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-        </svg>
-      </div>
-    ),
-  },
-  {
-    href: "/image/heic-to-jpg",
-    title: "HEIC to JPG Converter",
-    badge: "WASM Engine",
-    badgeColor: "bg-rose-50 text-rose-800 border-rose-200/80",
-    category: "conversion",
-    categoryLabel: "iPhone Photos",
-    description:
-      "Decode and convert Apple iPhone .HEIC and .HEIF photos into universally compatible JPG or PNG images with full camera EXIF preserved.",
-    tags: ["Apple HEIC", "Full Camera Res", "Batch ZIP"],
-    formats: ["HEIC", "HEIF", "JPG", "PNG"],
-    icon: (
-      <div className="relative h-11 w-11 rounded-2xl bg-rose-50 border border-rose-200/80 flex items-center justify-center text-rose-700 shadow-2xs group-hover:scale-105 transition-transform">
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-        </svg>
-      </div>
-    ),
-  },
-  {
-    href: "/image/exif-remover",
-    title: "Metadata & EXIF Remover",
-    badge: "100% Sanitized",
-    badgeColor: "bg-teal-50 text-teal-800 border-teal-200/80",
-    category: "all",
-    categoryLabel: "Privacy & Security",
-    description:
-      "Strip hidden GPS location coordinates, camera models, capture timestamps, and personal tracking data from photos before sharing.",
-    tags: ["GPS Coordinates", "Camera & Lens", "Zero Uploads"],
-    formats: ["JPG", "PNG", "WEBP", "HEIC", "TIFF"],
-    icon: (
-      <div className="relative h-11 w-11 rounded-2xl bg-teal-50 border border-teal-200/80 flex items-center justify-center text-teal-700 shadow-2xs group-hover:scale-105 transition-transform">
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
         </svg>
       </div>
     ),
   },
   {
     href: "/image/img-to-pdf",
-    title: "Image to PDF",
+    title: "Image to PDF Converter",
     badge: "Drag & Reorder",
     badgeColor: "bg-orange-50 text-orange-800 border-orange-200/80",
-    category: "conversion",
-    categoryLabel: "PDF Builder",
+    category: "builder",
+    categoryLabel: "Document Builder",
     description:
-      "Convert one or more images into a PDF. Upload, drag to reorder pages, pick page size (A4, Letter, A5, Legal), set margins and download.",
-    tags: ["Batch Upload", "Drag Reorder", "Custom Size"],
-    formats: ["JPG", "PNG", "WEBP", "AVIF"],
+      "Combine photos and images into a single PDF document. Rearrange pages visually, pick page sizes (A4, Letter, Auto), and set margins.",
+    tags: ["A4 / Letter", "Auto Scale", "Grid Reorder"],
+    formats: ["JPG", "PNG", "WEBP → PDF"],
     icon: (
       <div className="relative h-11 w-11 rounded-2xl bg-orange-50 border border-orange-200/80 flex items-center justify-center text-orange-700 shadow-2xs group-hover:scale-105 transition-transform">
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
       </div>
     ),
   },
 ];
 
-const UPCOMING_TOOLS = [
+const UPCOMING_PDF_TOOLS = [
   {
-    title: "SVG Optimizer & Cleaner",
+    title: "PDF Merger & Combiner",
     badge: "Free Soon",
-    category: "Vector",
-    description: "Minify SVG vectors, strip unnecessary metadata and comments, and optimize SVG code for web apps.",
+    category: "Organize",
+    description: "Merge multiple PDF documents into one cleanly organized file with custom page reordering.",
     icon: (
       <svg className="h-5 w-5 text-[#6E6D68]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
       </svg>
     ),
   },
   {
-    title: "Image Cropper & Resizer",
+    title: "PDF Splitter & Page Extractor",
     badge: "Free Soon",
-    category: "Dimensions",
-    description: "Precise pixel cropping, predefined social media canvas sizes, circular avatar cutouts, and dimension scaling.",
+    category: "Split",
+    description: "Extract selected page ranges or split a large PDF into individual standalone documents.",
     icon: (
       <svg className="h-5 w-5 text-[#6E6D68]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M9 9h6v6H9V9z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565m-9.71 6.194l9.71-6.194" />
       </svg>
     ),
   },
   {
-    title: "Blur & Watermark Tool",
+    title: "PDF Compressor & Minifier",
     badge: "Free Soon",
-    category: "Privacy",
-    description: "Easily censor sensitive info, blur faces/license plates, or add custom branding watermarks in-browser.",
+    category: "Compression",
+    description: "Reduce PDF document file size for easy email attachment without losing text clarity.",
     icon: (
       <svg className="h-5 w-5 text-[#6E6D68]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0 0h4.5m-4.5 0L9 3.75M20.25 3.75h-4.5m0 0v4.5m0-4.5L15 9m5.25 11.25v-4.5m0 0h-4.5m4.5 0L15 20.25M3.75 20.25h4.5m0 0v-4.5m0 4.5L9 15" />
       </svg>
     ),
   },
@@ -213,12 +118,12 @@ const itemVariants: Variants = {
   },
 };
 
-export default function ImageHubPage() {
+export default function PdfHubPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const filteredTools = useMemo(() => {
-    return IMAGE_TOOLS.filter((tool) => {
+    return PDF_TOOLS.filter((tool) => {
       const matchesCategory =
         selectedCategory === "all" || tool.category === selectedCategory;
       const matchesSearch =
@@ -244,13 +149,13 @@ export default function ImageHubPage() {
           className="text-center space-y-4 max-w-2xl mx-auto"
         >
           <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#EAEAE5] text-xs font-semibold text-[#111111] shadow-2xs">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>100% Free • In-Browser Processing • Zero Uploads</span>
+            <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+            <span>100% Free • In-Browser Document Processing • Zero Uploads</span>
           </motion.div>
 
           <motion.div variants={itemVariants}>
             <SplitText
-              text="Image Utilities Suite"
+              text="PDF Utilities Suite"
               className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#111111]"
               delay={35}
               duration={0.85}
@@ -264,7 +169,7 @@ export default function ImageHubPage() {
             variants={itemVariants}
             className="text-xs sm:text-sm text-[#6E6D68] leading-relaxed"
           >
-            A minimal collection of private, high-performance image processing tools running 100% locally on your device.
+            A high-speed collection of client-side PDF document tools running locally on your device. Zero servers, zero limits, zero ads.
           </motion.p>
         </motion.div>
 
@@ -273,7 +178,7 @@ export default function ImageHubPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#EAEAE5] pb-4">
             <div>
               <h2 className="text-lg font-bold tracking-tight text-[#111111]">
-                Active Image Tools ({filteredTools.length})
+                Active PDF Utilities ({filteredTools.length})
               </h2>
             </div>
 
@@ -301,10 +206,8 @@ export default function ImageHubPage() {
               <div className="inline-flex rounded-xl bg-[#F5F4EE] p-1 border border-[#EAEAE5]">
                 {[
                   { id: "all", label: "All" },
-                  { id: "ai", label: "AI" },
-                  { id: "compression", label: "Compress" },
-                  { id: "resize", label: "Resize" },
                   { id: "conversion", label: "Convert" },
+                  { id: "builder", label: "Create" },
                 ].map((cat) => (
                   <button
                     key={cat.id}
@@ -400,7 +303,7 @@ export default function ImageHubPage() {
 
           {filteredTools.length === 0 && (
             <div className="text-center py-12 rounded-2xl border border-dashed border-[#EAEAE5] bg-white space-y-2">
-              <p className="text-sm font-semibold text-[#111111]">No image tools match &ldquo;{searchQuery}&rdquo;</p>
+              <p className="text-sm font-semibold text-[#111111]">No PDF tools match &ldquo;{searchQuery}&rdquo;</p>
               <button
                 onClick={() => {
                   setSearchQuery("");
@@ -419,9 +322,9 @@ export default function ImageHubPage() {
           <div className="flex items-center justify-between border-b border-[#EAEAE5] pb-3">
             <div>
               <h2 className="text-sm font-bold uppercase tracking-wider text-[#111111]">
-                Upcoming Image Utilities
+                Upcoming PDF Utilities
               </h2>
-              <p className="text-xs text-[#6E6D68]">Next additions to the Infyn Image Suite</p>
+              <p className="text-xs text-[#6E6D68]">In active development · 100% Free Forever</p>
             </div>
             <span className="text-xs font-semibold text-[#9E9D98] bg-[#F5F4EE] px-2.5 py-1 rounded-full border border-[#EAEAE5]">
               Roadmap
@@ -429,7 +332,7 @@ export default function ImageHubPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {UPCOMING_TOOLS.map((tool) => (
+            {UPCOMING_PDF_TOOLS.map((tool) => (
               <motion.div
                 key={tool.title}
                 whileHover={{ y: -2 }}
@@ -461,50 +364,50 @@ export default function ImageHubPage() {
         <section className="rounded-3xl border border-[#EAEAE5] bg-white p-6 sm:p-8 space-y-5 shadow-2xs">
           <div className="space-y-1.5 max-w-xl">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[#9E9D98]">
-              Privacy Guarantee
+              Document Privacy
             </span>
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#111111]">
-              Why Client-Side Image Processing Matters
+              Why Client-Side PDF Processing Matters
             </h2>
             <p className="text-xs text-[#6E6D68] leading-relaxed">
-              Traditional online converters upload your personal photos and sensitive documents to remote servers. Infyn does all computation directly on your device CPU and GPU.
+              Legal documents, contracts, bank statements, and private records should never be uploaded to unknown remote servers. Infyn renders and creates PDFs 100% locally in your browser memory.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
             <div className="space-y-2 p-4 rounded-2xl bg-[#FBFBFA] border border-[#EAEAE5]">
-              <div className="h-8 w-8 rounded-xl bg-white border border-[#EAEAE5] flex items-center justify-center text-purple-700 shadow-2xs">
+              <div className="h-8 w-8 rounded-xl bg-white border border-[#EAEAE5] flex items-center justify-center text-blue-700 shadow-2xs">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                 </svg>
               </div>
-              <h3 className="text-xs font-bold text-[#111111]">Complete Data Privacy</h3>
+              <h3 className="text-xs font-bold text-[#111111]">Zero Cloud Uploads</h3>
               <p className="text-xs text-[#6E6D68] leading-relaxed">
-                Images never leave your computer or phone. No analytics tracking, server logs, or stored files.
-              </p>
-            </div>
-
-            <div className="space-y-2 p-4 rounded-2xl bg-[#FBFBFA] border border-[#EAEAE5]">
-              <div className="h-8 w-8 rounded-xl bg-white border border-[#EAEAE5] flex items-center justify-center text-amber-700 shadow-2xs">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-                </svg>
-              </div>
-              <h3 className="text-xs font-bold text-[#111111]">Instant Zero Upload Lag</h3>
-              <p className="text-xs text-[#6E6D68] leading-relaxed">
-                No slow uploading or downloading 50MB files to the cloud. Everything processes in milliseconds.
+                PDFs are parsed and rendered directly with Mozilla PDF.js inside your browser thread. No logs, no telemetry.
               </p>
             </div>
 
             <div className="space-y-2 p-4 rounded-2xl bg-[#FBFBFA] border border-[#EAEAE5]">
               <div className="h-8 w-8 rounded-xl bg-white border border-[#EAEAE5] flex items-center justify-center text-emerald-700 shadow-2xs">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                </svg>
+              </div>
+              <h3 className="text-xs font-bold text-[#111111]">Instant Batch Conversions</h3>
+              <p className="text-xs text-[#6E6D68] leading-relaxed">
+                Export 50-page documents to high-res JPGs or combine hundreds of photos in seconds with 1-click ZIP export.
+              </p>
+            </div>
+
+            <div className="space-y-2 p-4 rounded-2xl bg-[#FBFBFA] border border-[#EAEAE5]">
+              <div className="h-8 w-8 rounded-xl bg-white border border-[#EAEAE5] flex items-center justify-center text-rose-700 shadow-2xs">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               </div>
-              <h3 className="text-xs font-bold text-[#111111]">100% Free Without Watermarks</h3>
+              <h3 className="text-xs font-bold text-[#111111]">No Watermarks or Subscriptions</h3>
               <p className="text-xs text-[#6E6D68] leading-relaxed">
-                Batch compress 100 images or remove backgrounds on gigabytes of photos without hitting limits.
+                100% free forever without daily page limits, banner ads, or stamped logos on your exported pages.
               </p>
             </div>
           </div>

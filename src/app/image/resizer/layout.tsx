@@ -17,13 +17,13 @@ export const metadata: Metadata = {
     "private image resizer wasm",
   ],
   alternates: {
-    canonical: "https://infyn.indivio.in/image/resizer",
+    canonical: "https://infyn.software/image/resizer",
   },
   openGraph: {
     title: "Free Image Resizer — Resize Dimensions & Social Presets (Private)",
     description:
       "Resize images in your browser with zero cloud uploads. Supports Instagram, YouTube, WhatsApp presets, aspect ratio locking, and batch ZIP export.",
-    url: "https://infyn.indivio.in/image/resizer",
+    url: "https://infyn.software/image/resizer",
     images: [{ url: "/logo-clear.png", width: 800, height: 800, alt: "Free Image Resizer" }],
   },
 };
@@ -32,7 +32,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "Infyn by Indivio — Free Image Resizer",
-  url: "https://infyn.indivio.in/image/resizer",
+  url: "https://infyn.software/image/resizer",
   applicationCategory: "MultimediaApplication",
   operatingSystem: "All (Web Browser)",
   offers: {

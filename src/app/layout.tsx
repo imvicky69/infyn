@@ -1,9 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Geist } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const viewport: Viewport = {
   themeColor: "#FBFBFA",
@@ -13,7 +18,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://infyn.indivio.in"),
+  metadataBase: new URL("https://infyn.software"),
   title: {
     default: "Infyn by Indivio — 100% Free, Ad-Free & Private In-Browser Utilities",
     template: "%s | Infyn by Indivio",
@@ -57,7 +62,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://infyn.indivio.in",
+    url: "https://infyn.software",
     siteName: "Infyn by Indivio",
     title: "Infyn by Indivio — 100% Free, Ad-Free & Private In-Browser Utilities",
     description:
@@ -84,7 +89,7 @@ export const metadata: Metadata = {
     apple: "/logo.png",
   },
   alternates: {
-    canonical: "https://infyn.indivio.in",
+    canonical: "https://infyn.software",
   },
 };
 
@@ -94,7 +99,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html lang="en" className={cn("font-sans", plusJakartaSans.variable)}>
       <head>
         <link rel="icon" href="/logo.png" type="image/png" />
       </head>

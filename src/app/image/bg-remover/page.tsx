@@ -22,6 +22,10 @@ import { TransformToolbar } from "@/components/image-tools/bg-remover/transform-
 import { getPipelineImage } from "@/components/image-tools/pipeline-storage";
 import { ContinuePipelineBar } from "@/components/image-tools/continue-pipeline-bar";
 import SplitText from "@/components/SplitText";
+import {
+  MaskEditorCanvas,
+  type MaskEditorHandle,
+} from "@/components/image-tools/bg-remover/mask-editor";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Stage = "idle" | "busy" | "done" | "error";
@@ -74,11 +78,13 @@ export default function BgRemoverPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const previewBoxRef = useRef<HTMLDivElement>(null);
   const workerRef = useRef<Worker | null>(null);
+  const maskEditorRef = useRef<MaskEditorHandle>(null);
 
   const [stage, setStage] = useState<Stage>("idle");
   const [progress, setProgress] = useState({ text: "", value: 0 });
   const [sourceUrl, setSourceUrl] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [editedResultUrl, setEditedResultUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState("");
   const [fileSize, setFileSize] = useState(0);
   const [imageDims, setImageDims] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
@@ -86,6 +92,10 @@ export default function BgRemoverPage() {
 
   // ── Customization Drawer Collapse / Expand state ────────────────────────────
   const [isCustomizing, setIsCustomizing] = useState<boolean>(false);
+
+  // ── Manual touch-up editor state ────────────────────────────────────────────
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isApplyingEdits, setIsApplyingEdits] = useState(false);
 
   // ── Background customization state ──────────────────────────────────────────
   const [bgMode, setBgMode] = useState<BackgroundMode>("transparent");
@@ -142,8 +152,10 @@ export default function BgRemoverPage() {
   const reset = useCallback(() => {
     if (sourceUrl) URL.revokeObjectURL(sourceUrl);
     if (resultUrl) URL.revokeObjectURL(resultUrl);
+    if (editedResultUrl) URL.revokeObjectURL(editedResultUrl);
     setSourceUrl(null);
     setResultUrl(null);
+    setEditedResultUrl(null);
     setStage("idle");
     setProgress({ text: "", value: 0 });
     setErrorMsg("");
@@ -155,7 +167,8 @@ export default function BgRemoverPage() {
     setScale(1);
     setFlipH(false);
     setIsCustomizing(false);
-  }, [sourceUrl, resultUrl]);
+    setIsEditing(false);
+  }, [sourceUrl, resultUrl, editedResultUrl]);
 
   // ── Process ─────────────────────────────────────────────────────────────────
   const processFile = useCallback(
@@ -682,6 +695,138 @@ export default function BgRemoverPage() {
               </span>
             </div>
 
+            {/* ── Manual Touch-Up Editor ─────────────────────────────────── */}
+            <div className="rounded-2xl border border-[#EAEAE5] bg-white shadow-2xs overflow-hidden">
+              {/* Header toggle */}
+              <button
+                onClick={() => setIsEditing((p) => !p)}
+                className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#FDFDF9] transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`h-8 w-8 rounded-xl flex items-center justify-center border transition-all ${
+                    isEditing
+                      ? "bg-indigo-50 border-indigo-200/80 text-indigo-700"
+                      : "bg-[#F5F4EE] border-[#EAEAE5] text-[#6E6D68]"
+                  }`}>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
+                    </svg>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[13px] font-bold text-[#111111] tracking-[-0.01em]">
+                      Manual Touch-Up
+                    </p>
+                    <p className="text-[11px] text-[#9E9D98] mt-0.5">
+                      Erase leftover background · Restore missing areas
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {isEditing && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+                      Active
+                    </span>
+                  )}
+                  <svg
+                    className={`h-4 w-4 text-[#9E9D98] transition-transform duration-200 ${isEditing ? "rotate-180" : ""}`}
+                    fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </button>
+
+              {/* Editor panel */}
+              {isEditing && resultUrl && sourceUrl && (
+                <div className="px-5 pb-5 space-y-4" style={{ animation: "fade-in-up 0.25s ease-out" }}>
+                  <MaskEditorCanvas
+                    ref={maskEditorRef}
+                    resultUrl={editedResultUrl ?? resultUrl}
+                    sourceUrl={sourceUrl}
+                  />
+
+                  {/* Apply & Undo row */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <button
+                      onClick={async () => {
+                        if (!maskEditorRef.current) return;
+                        setIsApplyingEdits(true);
+                        try {
+                          const blob = await maskEditorRef.current.exportPng();
+                          if (!blob) return;
+                          if (editedResultUrl) URL.revokeObjectURL(editedResultUrl);
+                          const newUrl = URL.createObjectURL(blob);
+                          setEditedResultUrl(newUrl);
+                          // Also update the result canvas for export compositing
+                          const img = new window.Image();
+                          img.onload = () => {
+                            const canvas = canvasRef.current;
+                            if (!canvas) return;
+                            canvas.width = img.naturalWidth;
+                            canvas.height = img.naturalHeight;
+                            const ctx = canvas.getContext("2d")!;
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(img, 0, 0);
+                            setResultUrl(newUrl);
+                          };
+                          img.src = newUrl;
+                        } finally {
+                          setIsApplyingEdits(false);
+                        }
+                      }}
+                      disabled={isApplyingEdits}
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-[13px] font-bold hover:bg-indigo-700 active:scale-[0.98] transition-all disabled:opacity-50"
+                    >
+                      {isApplyingEdits ? (
+                        <>
+                          <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z" />
+                          </svg>
+                          Applying…
+                        </>
+                      ) : (
+                        <>
+                          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                          </svg>
+                          Apply Edits to Result
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      onClick={() => maskEditorRef.current?.undo()}
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-[#EAEAE5] bg-white text-[13px] font-semibold text-[#111111] hover:bg-[#F5F4EE] hover:border-[#BEBDB9] active:scale-[0.98] transition-all"
+                    >
+                      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                      </svg>
+                      Undo
+                    </button>
+
+                    {editedResultUrl && (
+                      <button
+                        onClick={() => {
+                          URL.revokeObjectURL(editedResultUrl);
+                          setEditedResultUrl(null);
+                        }}
+                        className="px-3 py-2.5 rounded-xl border border-[#EAEAE5] bg-white text-[12px] font-semibold text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition-all"
+                        title="Reset to original AI result"
+                      >
+                        Reset
+                      </button>
+                    )}
+                  </div>
+
+                  <p className="text-[11px] text-[#9E9D98] text-center">
+                    Paint with the <strong className="text-[#111111]">Erase</strong> brush to remove leftover background.
+                    Use <strong className="text-[#111111]">Restore</strong> to bring back missing parts.
+                  </p>
+                </div>
+              )}
+            </div>
+
             {/* ── Continue in Other Infyn Tools ───────────────────────────── */}
             <ContinuePipelineBar
               currentTool="bg-remover"
@@ -768,6 +913,7 @@ export default function BgRemoverPage() {
               badges={[
                 "100% In-browser",
                 "BRIA RMBG-1.4",
+                "Manual brush editor",
                 "Custom aspect ratios",
                 "Move & resize subject",
                 "Your image never leaves your device",

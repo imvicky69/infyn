@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://infyn.indivio.in/sitemap.xml",
+    sitemap: "https://infyn.software/sitemap.xml",
   };
 }

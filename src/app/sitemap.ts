@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://infyn.indivio.in";
+  const baseUrl = "https://infyn.software";
   const currentDate = new Date();
 
   return [

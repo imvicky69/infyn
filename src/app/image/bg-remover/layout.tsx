@@ -17,13 +17,13 @@ export const metadata: Metadata = {
     "change photo background color free",
   ],
   alternates: {
-    canonical: "https://infyn.indivio.in/image/bg-remover",
+    canonical: "https://infyn.software/image/bg-remover",
   },
   openGraph: {
     title: "Free AI Background Remover — Instant In-Browser (No Watermark)",
     description:
       "Remove backgrounds from any photo in seconds with AI. 100% private, runs entirely on your device with no uploads or signups required.",
-    url: "https://infyn.indivio.in/image/bg-remover",
+    url: "https://infyn.software/image/bg-remover",
     images: [{ url: "/logo-clear.png", width: 800, height: 800, alt: "Free AI Background Remover" }],
   },
 };
@@ -32,7 +32,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "Infyn by Indivio — AI Background Remover",
-  url: "https://infyn.indivio.in/image/bg-remover",
+  url: "https://infyn.software/image/bg-remover",
   applicationCategory: "MultimediaApplication",
   operatingSystem: "All (Web Browser)",
   offers: {
