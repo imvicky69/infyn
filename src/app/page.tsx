@@ -7,6 +7,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { NpmShowcase } from "@/components/npm-showcase";
 import SplitText from "@/components/SplitText";
 import {
   Eraser,
@@ -480,6 +481,9 @@ export default function HomePage() {
                 </div>
               </section>
         </div>
+
+        {/* ── NPM Package & Developer SDK Showcase ──────────────────── */}
+        <NpmShowcase />
 
         {/* ── Architecture Comparison ───────────────────────────────── */}
         <section className="rounded-3xl border border-[#EAEAE5] bg-white p-6 sm:p-8 space-y-5 shadow-sm">
