@@ -18,7 +18,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/pdf/protector",
     "/pdf/splitter",
     "/pdf/unlocker",
-    "/pdf/pdf-to-image"
+    "/pdf/pdf-to-image",
+    "/docs"
   ];
 
   return routes.map((route) => ({

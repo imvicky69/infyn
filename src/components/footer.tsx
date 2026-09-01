@@ -12,13 +12,19 @@ const IMAGE_LINKS = [
 ];
 
 const PDF_LINKS = [
-  { href: "/image/img-to-pdf", label: "Image to PDF" },
+  { href: "/pdf/merger", label: "PDF Merger" },
+  { href: "/pdf/splitter", label: "PDF Splitter" },
+  { href: "/pdf/protector", label: "PDF Protector" },
+  { href: "/pdf/unlocker", label: "PDF Unlocker" },
   { href: "/pdf/pdf-to-image", label: "PDF to Image" },
+  { href: "/image/img-to-pdf", label: "Image to PDF" },
 ];
 
 const DEV_LINKS = [
-  { href: "https://github.com/imvicky69/infyn/issues", label: "Suggest a Tool ↗", external: true },
+  { href: "/docs", label: "Documentation & SDK", external: false },
+  { href: "https://www.npmjs.com/package/infyn", label: "NPM Package ↗", external: true },
   { href: "https://github.com/imvicky69/infyn", label: "GitHub Repository ↗", external: true },
+  { href: "https://github.com/imvicky69/infyn/issues", label: "Suggest a Tool ↗", external: true },
 ];
 
 const PRIVACY_BADGES = [
@@ -120,17 +126,27 @@ export function Footer() {
               Open Source
             </h3>
             <nav className="flex flex-col gap-2">
-              {DEV_LINKS.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors tracking-[-0.005em] leading-snug"
-                >
-                  {link.label}
-                </a>
-              ))}
+              {DEV_LINKS.map((link) =>
+                link.external ? (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors tracking-[-0.005em] leading-snug"
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors tracking-[-0.005em] leading-snug"
+                  >
+                    {link.label}
+                  </Link>
+                )
+              )}
             </nav>
           </div>
         </div>

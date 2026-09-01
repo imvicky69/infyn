@@ -19,6 +19,7 @@ import {
   Combine,
   Unlock,
   Scissors,
+  BookOpen,
 } from "lucide-react";
 
 function GithubIcon({ className = "h-4 w-4" }: { className?: string }) {
@@ -356,6 +357,22 @@ export function Navbar() {
               </AnimatePresence>
             </div>
 
+            {/* Docs & SDK */}
+            <Link
+              href="/docs"
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all tracking-[-0.01em] ${
+                pathname.startsWith("/docs")
+                  ? "bg-[#F0EFEA] text-[#111111]"
+                  : "text-[#6E6D68] hover:text-[#111111] hover:bg-[#F5F4EE]"
+              }`}
+            >
+              <BookOpen className="h-3.5 w-3.5 text-[#9E9D98]" />
+              <span>Docs</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                SDK
+              </span>
+            </Link>
+
             {/* Divider */}
             <div className="w-px h-4 bg-[#EAEAE5] mx-1.5" />
 
@@ -485,7 +502,16 @@ export function Navbar() {
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-[#F5F4EE] flex items-center justify-center">
+              <div className="pt-2 border-t border-[#F5F4EE] flex items-center justify-between gap-3">
+                <Link
+                  href="/docs"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex-1 flex items-center justify-center gap-2 p-2.5 rounded-xl border border-[#EAEAE5] bg-[#FBFBFA] text-xs font-bold text-[#111111] hover:bg-[#F5F4EE] transition-colors"
+                >
+                  <BookOpen className="h-4 w-4 text-[#6E6D68]" />
+                  <span>Developer Docs & SDK</span>
+                </Link>
+
                 <a
                   href="https://github.com/imvicky69/infyn"
                   target="_blank"
