@@ -14,17 +14,17 @@ export const metadata: Metadata = {
     "photo privacy cleaner client side",
     "remove camera info from photo",
     "batch exif remover zip",
-    "infyn by indivio exif remover",
+    "infyn exif remover",
   ],
   alternates: {
     canonical: "https://infyn.software/image/exif-remover",
   },
   openGraph: {
-    title: "Free Image Metadata & EXIF Remover — Infyn by Indivio",
+    title: "Free Image Metadata & EXIF Remover — Infyn",
     description:
       "Strip GPS location, camera details, timestamps, and hidden metadata from photos privately in your browser with zero server uploads.",
     url: "https://infyn.software/image/exif-remover",
-    siteName: "Infyn by Indivio",
+    siteName: "Infyn",
     type: "website",
     images: [{ url: "/logo-clear.png", width: 800, height: 800, alt: "Free Image Metadata Remover" }],
   },
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Infyn by Indivio — Image Metadata & EXIF Remover",
+  name: "Infyn — Image Metadata & EXIF Remover",
   url: "https://infyn.software/image/exif-remover",
   description:
     "100% Free client-side EXIF and image metadata remover. Strip GPS location, camera parameters, and timestamps without cloud uploads.",

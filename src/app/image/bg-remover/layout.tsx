@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Infyn by Indivio — AI Background Remover",
+  name: "Infyn — AI Background Remover",
   url: "https://infyn.software/image/bg-remover",
   applicationCategory: "MultimediaApplication",
   operatingSystem: "All (Web Browser)",

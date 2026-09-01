@@ -6,6 +6,20 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Eraser,
+  Minimize2,
+  Maximize2,
+  ArrowLeftRight,
+  FileImage,
+  ShieldCheck,
+  FileOutput,
+  Images,
+  Lock,
+  Combine,
+  Unlock,
+  Scissors,
+} from "lucide-react";
 
 function GithubIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -19,114 +33,97 @@ function GithubIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
-const IMAGE_TOOLS = [
+interface NavTool {
+  name: string;
+  href: string;
+  desc: string;
+  icon: React.ReactNode;
+  badge?: string;
+}
+
+const IMAGE_TOOLS: NavTool[] = [
   {
     name: "Background Remover",
     href: "/image/bg-remover",
     badge: "AI",
-    badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     desc: "Instant transparent cutouts",
-    iconBg: "bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-700 border-emerald-200/60",
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
-      </svg>
-    ),
+    icon: <Eraser className="h-4 w-4" />,
   },
   {
     name: "Image Compressor",
     href: "/image/compressor",
-    badge: "−90%",
-    badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
+    badge: "Batch",
     desc: "Lossless & quality control",
-    iconBg: "bg-gradient-to-br from-blue-100 to-blue-50 text-blue-700 border-blue-200/60",
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M4 10h6m0 0V4m0 6L3 3m17 7h-6m0 0V4m0 6l7-7" />
-      </svg>
-    ),
+    icon: <Minimize2 className="h-4 w-4" />,
   },
   {
-    name: "Image Resizer & Crop",
+    name: "Image Resizer",
     href: "/image/resizer",
-    badge: "Presets",
-    badgeColor: "bg-purple-50 text-purple-700 border-purple-200",
     desc: "Framing & social aspect ratios",
-    iconBg: "bg-gradient-to-br from-purple-100 to-purple-50 text-purple-700 border-purple-200/60",
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-      </svg>
-    ),
+    icon: <Maximize2 className="h-4 w-4" />,
   },
   {
     name: "Universal Converter",
     href: "/image/converter",
-    badge: "5 Formats",
-    badgeColor: "bg-amber-50 text-amber-700 border-amber-200",
+    badge: "Batch",
     desc: "JPG · PNG · WEBP · AVIF · HEIC",
-    iconBg: "bg-gradient-to-br from-amber-100 to-amber-50 text-amber-700 border-amber-200/60",
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-      </svg>
-    ),
+    icon: <ArrowLeftRight className="h-4 w-4" />,
   },
   {
-    name: "Apple HEIC to JPG",
+    name: "HEIC to JPG",
     href: "/image/heic-to-jpg",
-    badge: "WASM",
-    badgeColor: "bg-rose-50 text-rose-700 border-rose-200",
     desc: "Batch iPhone photo conversion",
-    iconBg: "bg-gradient-to-br from-rose-100 to-rose-50 text-rose-700 border-rose-200/60",
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
-      </svg>
-    ),
+    icon: <FileImage className="h-4 w-4" />,
   },
   {
-    name: "EXIF & Metadata Remover",
+    name: "Metadata Remover",
     href: "/image/exif-remover",
     badge: "Privacy",
-    badgeColor: "bg-teal-50 text-teal-700 border-teal-200",
     desc: "Strip GPS, camera & timestamps",
-    iconBg: "bg-gradient-to-br from-teal-100 to-teal-50 text-teal-700 border-teal-200/60",
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
+    icon: <ShieldCheck className="h-4 w-4" />,
   },
 ];
 
-const PDF_TOOLS_NAV = [
+const PDF_TOOLS_NAV: NavTool[] = [
   {
-    name: "PDF to Image Converter",
-    href: "/pdf/pdf-to-image",
-    badge: "New",
-    badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
-    desc: "Extract pages to HD JPG, PNG, WEBP",
-    iconBg: "bg-gradient-to-br from-blue-100 to-blue-50 text-blue-700 border-blue-200/60",
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-      </svg>
-    ),
+    name: "Image to PDF",
+    href: "/image/img-to-pdf",
+    desc: "Convert photos to PDF with page reorder",
+    icon: <FileOutput className="h-4 w-4" />,
   },
   {
-    name: "Image to PDF Converter",
-    href: "/image/img-to-pdf",
-    badge: "Popular",
-    badgeColor: "bg-orange-50 text-orange-700 border-orange-200",
-    desc: "Convert photos to PDF with page reorder",
-    iconBg: "bg-gradient-to-br from-orange-100 to-orange-50 text-orange-700 border-orange-200/60",
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-      </svg>
-    ),
+    name: "PDF to Image",
+    href: "/pdf/pdf-to-image",
+    desc: "Extract pages to HD JPG, PNG, WEBP",
+    icon: <Images className="h-4 w-4" />,
+  },
+  {
+    name: "PDF Protector",
+    href: "/pdf/protector",
+    badge: "New",
+    desc: "Secure PDFs with an AES-256 password",
+    icon: <Lock className="h-4 w-4" />,
+  },
+  {
+    name: "PDF Merger",
+    href: "/pdf/merger",
+    badge: "New",
+    desc: "Combine multiple PDFs into a single file",
+    icon: <Combine className="h-4 w-4" />,
+  },
+  {
+    name: "PDF Unlocker",
+    href: "/pdf/unlocker",
+    badge: "New",
+    desc: "Remove passwords from your PDFs",
+    icon: <Unlock className="h-4 w-4" />,
+  },
+  {
+    name: "PDF Splitter",
+    href: "/pdf/splitter",
+    badge: "New",
+    desc: "Extract or split pages from a PDF",
+    icon: <Scissors className="h-4 w-4" />,
   },
 ];
 
@@ -167,7 +164,6 @@ export function Navbar() {
       {/* Main nav bar */}
       <div className="border-b border-[#EAEAE5]/70 bg-[#FBFBFA]/90 backdrop-blur-2xl">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
-
           {/* Brand */}
           <Link
             href="/"
@@ -186,18 +182,14 @@ export function Navbar() {
               />
             </div>
             <div className="flex flex-col leading-none">
-              <span className="font-bold text-[15px] tracking-[-0.03em] text-[#111111]">
+              <span className="font-bold text-[#111111] text-lg tracking-tight">
                 infyn
-              </span>
-              <span className="text-[9px] font-semibold text-[#BEBDB9] tracking-[0.06em] uppercase">
-                by indivio
               </span>
             </div>
           </Link>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-0.5">
-
             {/* Image Tools dropdown */}
             <div
               className="relative"
@@ -242,10 +234,6 @@ export function Navbar() {
                       <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
                         Image Suite
                       </span>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.5 rounded-full">
-                        <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
-                        In-Browser
-                      </span>
                     </div>
 
                     <div className="space-y-0.5">
@@ -260,7 +248,7 @@ export function Navbar() {
                               isActive ? "bg-[#F5F4EE]" : "hover:bg-[#F8F8F6]"
                             }`}
                           >
-                            <div className={`h-8 w-8 rounded-[10px] flex items-center justify-center shrink-0 border ${tool.iconBg}`}>
+                            <div className="h-8 w-8 rounded-lg bg-[#FBFBFA] border border-[#EAEAE5] flex items-center justify-center text-[#111111] shrink-0">
                               {tool.icon}
                             </div>
                             <div className="min-w-0 flex-1">
@@ -268,28 +256,17 @@ export function Navbar() {
                                 <span className="font-semibold text-[13px] text-[#111111] truncate tracking-[-0.01em]">
                                   {tool.name}
                                 </span>
-                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 ${tool.badgeColor}`}>
-                                  {tool.badge}
-                                </span>
+                                {tool.badge && (
+                                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5F4EE] text-[#6E6D68] border border-[#EAEAE5] shrink-0">
+                                    {tool.badge}
+                                  </span>
+                                )}
                               </div>
                               <p className="text-[11px] text-[#9E9D98] truncate mt-0.5">{tool.desc}</p>
                             </div>
                           </Link>
                         );
                       })}
-                    </div>
-
-                    <div className="pt-1.5 mt-0.5 border-t border-[#F5F4EE]">
-                      <Link
-                        href="/image"
-                        onClick={() => setImageDropdownOpen(false)}
-                        className="flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-semibold text-[#6E6D68] hover:text-[#111111] hover:bg-[#F5F4EE] transition-colors group/footer"
-                      >
-                        <span>View all image tools</span>
-                        <svg className="h-3.5 w-3.5 transition-transform group-hover/footer:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                        </svg>
-                      </Link>
                     </div>
                   </motion.div>
                 )}
@@ -313,7 +290,6 @@ export function Navbar() {
                 }`}
               >
                 <span>PDF Tools</span>
-                <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
                 <motion.svg
                   animate={{ rotate: pdfDropdownOpen ? 180 : 0 }}
                   transition={{ duration: 0.18, ease: "easeInOut" }}
@@ -341,10 +317,6 @@ export function Navbar() {
                       <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
                         PDF Suite
                       </span>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-700 bg-blue-50 border border-blue-200/80 px-1.5 py-0.5 rounded-full">
-                        <span className="h-1 w-1 rounded-full bg-blue-500 animate-pulse" />
-                        No Uploads
-                      </span>
                     </div>
 
                     <div className="space-y-0.5">
@@ -359,7 +331,7 @@ export function Navbar() {
                               isActive ? "bg-[#F5F4EE]" : "hover:bg-[#F8F8F6]"
                             }`}
                           >
-                            <div className={`h-8 w-8 rounded-[10px] flex items-center justify-center shrink-0 border ${tool.iconBg}`}>
+                            <div className="h-8 w-8 rounded-lg bg-[#FBFBFA] border border-[#EAEAE5] flex items-center justify-center text-[#111111] shrink-0">
                               {tool.icon}
                             </div>
                             <div className="min-w-0 flex-1">
@@ -367,28 +339,17 @@ export function Navbar() {
                                 <span className="font-semibold text-[13px] text-[#111111] truncate tracking-[-0.01em]">
                                   {tool.name}
                                 </span>
-                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 ${tool.badgeColor}`}>
-                                  {tool.badge}
-                                </span>
+                                {tool.badge && (
+                                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5F4EE] text-[#6E6D68] border border-[#EAEAE5] shrink-0">
+                                    {tool.badge}
+                                  </span>
+                                )}
                               </div>
                               <p className="text-[11px] text-[#9E9D98] truncate mt-0.5">{tool.desc}</p>
                             </div>
                           </Link>
                         );
                       })}
-                    </div>
-
-                    <div className="pt-1.5 mt-0.5 border-t border-[#F5F4EE]">
-                      <Link
-                        href="/pdf"
-                        onClick={() => setPdfDropdownOpen(false)}
-                        className="flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-semibold text-[#6E6D68] hover:text-[#111111] hover:bg-[#F5F4EE] transition-colors group/footer"
-                      >
-                        <span>View all PDF tools</span>
-                        <svg className="h-3.5 w-3.5 transition-transform group-hover/footer:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                        </svg>
-                      </Link>
                     </div>
                   </motion.div>
                 )}
@@ -408,30 +369,12 @@ export function Navbar() {
             >
               <GithubIcon className="h-4 w-4" />
             </a>
-
-            {/* Primary CTA */}
-            <Link
-              href="/image/bg-remover"
-              className="ml-1 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#111111] text-white text-[13px] font-bold tracking-[-0.01em] hover:bg-[#1a1a1a] active:scale-[0.97] transition-all shadow-sm"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-              <span>Remove BG</span>
-              <svg className="h-3 w-3 opacity-60" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </Link>
           </nav>
 
           {/* Mobile right controls */}
           <div className="flex md:hidden items-center gap-2">
-            <Link
-              href="/pdf/pdf-to-image"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#111111] text-white text-[12px] font-bold active:scale-95 transition-all"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
-              <span>PDF to Img</span>
-            </Link>
-
+            {/* Removed the active tool pill to keep it completely minimal on mobile */}
+            
             <button
               type="button"
               onClick={() => setMobileMenuOpen((p) => !p)}
@@ -472,16 +415,12 @@ export function Navbar() {
             className="overflow-hidden border-b border-[#EAEAE5] bg-white/97 backdrop-blur-2xl md:hidden shadow-lg"
           >
             <div className="max-w-5xl mx-auto px-4 py-4 space-y-4">
-
               {/* PDF Tools Section */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between px-1 pb-1.5 border-b border-[#F5F4EE]">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-blue-700">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
                     PDF Utilities
                   </span>
-                  <Link href="/pdf" onClick={() => setMobileMenuOpen(false)} className="text-[10px] font-semibold text-[#6E6D68] hover:text-[#111111]">
-                    PDF Hub →
-                  </Link>
                 </div>
 
                 <div className="grid grid-cols-1 gap-0.5">
@@ -493,7 +432,7 @@ export function Navbar() {
                       className="flex items-center justify-between p-2.5 rounded-xl hover:bg-[#F8F8F6] transition-all"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className={`h-8 w-8 rounded-[10px] flex items-center justify-center shrink-0 border ${tool.iconBg}`}>
+                        <div className="h-8 w-8 rounded-[10px] flex items-center justify-center shrink-0 border bg-[#FBFBFA] border-[#EAEAE5] text-[#111111]">
                           {tool.icon}
                         </div>
                         <div className="min-w-0">
@@ -501,9 +440,11 @@ export function Navbar() {
                           <p className="text-[10px] text-[#9E9D98] truncate">{tool.desc}</p>
                         </div>
                       </div>
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 ml-2 ${tool.badgeColor}`}>
-                        {tool.badge}
-                      </span>
+                      {tool.badge && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5F4EE] text-[#6E6D68] border border-[#EAEAE5] shrink-0 ml-2">
+                          {tool.badge}
+                        </span>
+                      )}
                     </Link>
                   ))}
                 </div>
@@ -515,9 +456,6 @@ export function Navbar() {
                   <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
                     Image Tools Suite
                   </span>
-                  <Link href="/image" onClick={() => setMobileMenuOpen(false)} className="text-[10px] font-semibold text-[#6E6D68] hover:text-[#111111]">
-                    Image Hub →
-                  </Link>
                 </div>
 
                 <div className="grid grid-cols-1 gap-0.5">
@@ -526,37 +464,28 @@ export function Navbar() {
                       key={tool.href}
                       href={tool.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between p-2 rounded-xl hover:bg-[#F8F8F6] transition-all"
+                      className="flex items-center justify-between p-2.5 rounded-xl hover:bg-[#F8F8F6] transition-all"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className={`h-7 w-7 rounded-[8px] flex items-center justify-center shrink-0 border ${tool.iconBg}`}>
+                        <div className="h-8 w-8 rounded-[10px] flex items-center justify-center shrink-0 border bg-[#FBFBFA] border-[#EAEAE5] text-[#111111]">
                           {tool.icon}
                         </div>
-                        <p className="font-semibold text-[12px] text-[#111111] truncate">{tool.name}</p>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-[13px] text-[#111111] truncate">{tool.name}</p>
+                          <p className="text-[10px] text-[#9E9D98] truncate">{tool.desc}</p>
+                        </div>
                       </div>
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 ${tool.badgeColor}`}>
-                        {tool.badge}
-                      </span>
+                      {tool.badge && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5F4EE] text-[#6E6D68] border border-[#EAEAE5] shrink-0 ml-2">
+                          {tool.badge}
+                        </span>
+                      )}
                     </Link>
                   ))}
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-[#F5F4EE] flex items-center gap-2">
-                <Link
-                  href="/pdf"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 py-2 px-3 rounded-xl border border-[#EAEAE5] bg-[#FBFBFA] text-[#111111] font-semibold text-[12px] text-center hover:bg-[#F5F4EE] transition-colors"
-                >
-                  PDF Suite
-                </Link>
-                <Link
-                  href="/image"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 py-2 px-3 rounded-xl border border-[#EAEAE5] bg-[#FBFBFA] text-[#111111] font-semibold text-[12px] text-center hover:bg-[#F5F4EE] transition-colors"
-                >
-                  Image Suite
-                </Link>
+              <div className="pt-2 border-t border-[#F5F4EE] flex items-center justify-center">
                 <a
                   href="https://github.com/imvicky69/infyn"
                   target="_blank"

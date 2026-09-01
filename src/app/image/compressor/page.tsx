@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Navbar } from "@/components/navbar";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import { DropZone } from "@/components/image-tools/dropzone";
 import { PrivacyBadges } from "@/components/image-tools/privacy-badges";
@@ -147,6 +148,7 @@ export default function ImageCompressorPage() {
   return (
     <div className="min-h-screen text-[#111111] flex flex-col font-sans">
       <Navbar />
+      <Breadcrumbs />
 
       {/* Hidden input for Add More */}
       <input

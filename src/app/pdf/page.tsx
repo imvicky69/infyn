@@ -5,6 +5,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { Navbar } from "@/components/navbar";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import SplitText from "@/components/SplitText";
 
@@ -60,31 +61,81 @@ const PDF_TOOLS: PdfToolItem[] = [
       </div>
     ),
   },
+  {
+    href: "/pdf/protector",
+    title: "PDF Protector",
+    badge: "New",
+    badgeColor: "bg-emerald-50 text-emerald-800 border-emerald-200/80",
+    category: "security",
+    categoryLabel: "Security",
+    description: "Secure your PDFs with an AES-256 password to restrict access. Fast, offline, and safe.",
+    tags: ["AES-256", "Batch Encrypt", "No Upload"],
+    formats: ["PDF"],
+    icon: (
+      <div className="relative h-11 w-11 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-700 shadow-2xs group-hover:scale-105 transition-transform">
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+      </div>
+    ),
+  },
+  {
+    href: "/pdf/merger",
+    title: "PDF Merger",
+    badge: "New",
+    badgeColor: "bg-purple-50 text-purple-800 border-purple-200/80",
+    category: "builder",
+    categoryLabel: "Document Builder",
+    description: "Combine multiple PDF documents into one cleanly organized file with custom drag-and-drop page reordering.",
+    tags: ["Drag & Drop", "Combine PDFs", "No Upload"],
+    formats: ["PDF"],
+    icon: (
+      <div className="relative h-11 w-11 rounded-2xl bg-purple-50 border border-purple-200/80 flex items-center justify-center text-purple-700 shadow-2xs group-hover:scale-105 transition-transform">
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+      </div>
+    ),
+  },
+  {
+    href: "/pdf/unlocker",
+    title: "PDF Unlocker",
+    badge: "New",
+    badgeColor: "bg-blue-50 text-blue-800 border-blue-200/80",
+    category: "security",
+    categoryLabel: "Security",
+    description: "Remove passwords and unlock encrypted PDF documents safely and instantly.",
+    tags: ["Decrypt", "Remove Password", "No Upload"],
+    formats: ["PDF"],
+    icon: (
+      <div className="relative h-11 w-11 rounded-2xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-700 shadow-2xs group-hover:scale-105 transition-transform">
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+      </div>
+    ),
+  },
+  {
+    href: "/pdf/splitter",
+    title: "PDF Splitter",
+    badge: "New",
+    badgeColor: "bg-pink-50 text-pink-800 border-pink-200/80",
+    category: "builder",
+    categoryLabel: "Document Builder",
+    description: "Visually select pages to extract into a new PDF or split into multiple individual documents.",
+    tags: ["Extract Pages", "Split PDF", "No Upload"],
+    formats: ["PDF"],
+    icon: (
+      <div className="relative h-11 w-11 rounded-2xl bg-pink-50 border border-pink-200/80 flex items-center justify-center text-pink-700 shadow-2xs group-hover:scale-105 transition-transform">
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+      </div>
+    ),
+  },
 ];
 
 const UPCOMING_PDF_TOOLS = [
-  {
-    title: "PDF Merger & Combiner",
-    badge: "Free Soon",
-    category: "Organize",
-    description: "Merge multiple PDF documents into one cleanly organized file with custom page reordering.",
-    icon: (
-      <svg className="h-5 w-5 text-[#6E6D68]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-      </svg>
-    ),
-  },
-  {
-    title: "PDF Splitter & Page Extractor",
-    badge: "Free Soon",
-    category: "Split",
-    description: "Extract selected page ranges or split a large PDF into individual standalone documents.",
-    icon: (
-      <svg className="h-5 w-5 text-[#6E6D68]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565m-9.71 6.194l9.71-6.194" />
-      </svg>
-    ),
-  },
   {
     title: "PDF Compressor & Minifier",
     badge: "Free Soon",
@@ -139,6 +190,7 @@ export default function PdfHubPage() {
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-[#E8E6DE] selection:text-black">
       <Navbar />
+      <Breadcrumbs />
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-16 space-y-16">
         {/* ── Hub Header ──────────────────────────────────────────────── */}
@@ -208,6 +260,7 @@ export default function PdfHubPage() {
                   { id: "all", label: "All" },
                   { id: "conversion", label: "Convert" },
                   { id: "builder", label: "Create" },
+                  { id: "security", label: "Security" },
                 ].map((cat) => (
                   <button
                     key={cat.id}

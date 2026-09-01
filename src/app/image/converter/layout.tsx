@@ -19,11 +19,11 @@ export const metadata: Metadata = {
     canonical: "https://infyn.software/image/converter",
   },
   openGraph: {
-    title: "Free Universal Image Converter — Infyn by Indivio",
+    title: "Free Universal Image Converter — Infyn",
     description:
       "Batch convert HEIC, JPG, PNG, WebP, and AVIF locally in your browser with zero quality loss and instant ZIP download.",
     url: "https://infyn.software/image/converter",
-    siteName: "Infyn by Indivio",
+    siteName: "Infyn",
     type: "website",
   },
 };
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Infyn by Indivio — Universal Image Converter",
+  name: "Infyn — Universal Image Converter",
   url: "https://infyn.software/image/converter",
   description:
     "100% Free client-side image converter supporting HEIC, PNG, JPG, WebP, and AVIF without cloud uploads.",

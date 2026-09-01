@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ∞ Infyn
 
-## Getting Started
+**Fast, free, privacy-focused in-browser utilities.**
 
-First, run the development server:
+Infyn is a premium, minimal, open-source utility platform designed to give you powerful tools right in your browser. We believe that simple, everyday utilities shouldn't be hidden behind paywalls, intrusive ads, or unnecessary cloud uploads.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](https://opensource.org/licenses/MIT)
+[![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-blue.svg)](CONTRIBUTING.md)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚡ Core Principles
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Open Source:** Built by the community, for the community.
+- **Privacy-First (Zero Uploads):** All processing happens locally in your browser using WebAssembly and HTML5 Canvas. Your files never touch our servers.
+- **No Signups, No Accounts:** Get straight to what you need to do without friction.
+- **100% Free & Ad-Free:** No subscriptions, no paywalls, no watermarks, and absolutely no tracking cookies.
+- **Batch-First:** Designed to process dozens of files at once, with 1-click ZIP downloads.
 
-## Learn More
+## 🛠️ Current Tools
 
-To learn more about Next.js, take a look at the following resources:
+### Image Suite
+- **Background Remover:** Instant transparent cutouts using in-browser AI.
+- **Image Compressor:** Drastically shrink image file sizes without quality loss (Batch support).
+- **Image Resizer & Crop:** Scale pixel dimensions and fit with blurred backgrounds.
+- **Universal Converter:** Convert between JPG, PNG, WEBP, AVIF, and HEIC natively.
+- **HEIC to JPG:** Convert Apple iPhone photos effortlessly.
+- **Metadata Remover:** Strip hidden GPS coordinates and camera models for privacy.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### PDF Suite
+- **Image to PDF:** Convert one or more images into a PDF document.
+- **PDF to Image:** Extract every page of your PDF into high-res JPG or PNG.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+*Check out our roadmap or suggest a tool to see what's coming next!*
 
-## Deploy on Vercel
+## 🚀 Getting Started (Local Development)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Want to run Infyn locally or build your own tool? It's incredibly easy to set up.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Prerequisites
+- Node.js (v18 or higher recommended)
+- npm or pnpm
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/imvicky69/infyn.git
+   cd infyn
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🤝 Contributing & Suggesting a Tool
+
+We love community contributions! Whether you're fixing a bug, improving the UI, or building a completely new in-browser tool for the suite, your help is welcome.
+
+- **Suggest a Tool:** Have an idea for a privacy-first utility? Open a [Feature Request](https://github.com/imvicky69/infyn/issues/new/choose).
+- **Build a Tool:** We have an established architecture and shared design system for building new tools easily.
+- **Contribute:** Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct, development workflow, and how to submit a Pull Request.
+
+## 🛡️ Security
+
+If you discover a security vulnerability, please review our [Security Policy](SECURITY.md) for reporting instructions. Do not report security vulnerabilities on the public GitHub issue tracker.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

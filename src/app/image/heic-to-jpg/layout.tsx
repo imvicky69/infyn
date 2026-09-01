@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Infyn by Indivio — Free HEIC to JPG Converter",
+  name: "Infyn — Free HEIC to JPG Converter",
   url: "https://infyn.software/image/heic-to-jpg",
   applicationCategory: "MultimediaApplication",
   operatingSystem: "All (Web Browser)",

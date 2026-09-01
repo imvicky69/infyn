@@ -3,6 +3,7 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/navbar";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import { DropZone } from "@/components/image-tools/dropzone";
 import { PrivacyBadges } from "@/components/image-tools/privacy-badges";
@@ -158,12 +159,13 @@ export default function PdfToImagePage() {
         setProgressText("All pages rendered!");
         setPages(rendered);
         setStage("done");
-      } catch (err) {
+      } catch (err: any) {
         console.error("PDF Render Error:", err);
+        const isEncrypted = err?.name === "PasswordException" || err?.message?.toLowerCase().includes("password") || err?.message?.toLowerCase().includes("encrypt");
         setErrorMsg(
-          err instanceof Error
-            ? err.message
-            : "Could not decode or parse this PDF file."
+          isEncrypted
+            ? "This PDF is password-protected. Please unlock it using the PDF Unlocker tool first."
+            : (err instanceof Error ? err.message : "Could not decode or parse this PDF file.")
         );
         setStage("error");
       }
@@ -317,10 +319,11 @@ export default function PdfToImagePage() {
   const selectedCount = pages.filter((p) => p.selected).length;
 
   return (
-    <div className="min-h-screen flex flex-col font-sans selection:bg-[#E8E6DE] selection:text-black">
+    <div className="min-h-screen text-[#111111] flex flex-col font-sans">
       <Navbar />
+      <Breadcrumbs />
 
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-14 space-y-8">
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col py-8">
 
         {/* ── Page Header ─────────────────────────────────────────── */}
         <motion.div

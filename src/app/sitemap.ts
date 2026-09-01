@@ -1,57 +1,30 @@
-import type { MetadataRoute } from "next";
+import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://infyn.software";
-  const currentDate = new Date();
-
-  return [
-    {
-      url: baseUrl,
-      lastModified: currentDate,
-      changeFrequency: "daily",
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/image`,
-      lastModified: currentDate,
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/image/bg-remover`,
-      lastModified: currentDate,
-      changeFrequency: "weekly",
-      priority: 0.95,
-    },
-    {
-      url: `${baseUrl}/image/compressor`,
-      lastModified: currentDate,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/image/resizer`,
-      lastModified: currentDate,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/image/converter`,
-      lastModified: currentDate,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/image/heic-to-jpg`,
-      lastModified: currentDate,
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    {
-      url: `${baseUrl}/image/exif-remover`,
-      lastModified: currentDate,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
+  
+  const routes = [
+    "",
+    "/image",
+    "/image/bg-remover",
+    "/image/compressor",
+    "/image/converter",
+    "/image/exif-remover",
+    "/image/heic-to-jpg",
+    "/image/resizer",
+    "/image/img-to-pdf",
+    "/pdf",
+    "/pdf/merger",
+    "/pdf/protector",
+    "/pdf/splitter",
+    "/pdf/unlocker",
+    "/pdf/pdf-to-image"
   ];
+
+  return routes.map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: route === "" ? "weekly" : "monthly",
+    priority: route === "" ? 1.0 : route.split("/").length === 2 ? 0.9 : 0.8,
+  }));
 }

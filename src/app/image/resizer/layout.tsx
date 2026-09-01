@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Infyn by Indivio — Free Image Resizer",
+  name: "Infyn — Free Image Resizer",
   url: "https://infyn.software/image/resizer",
   applicationCategory: "MultimediaApplication",
   operatingSystem: "All (Web Browser)",

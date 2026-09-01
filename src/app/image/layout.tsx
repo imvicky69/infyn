@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     canonical: "https://infyn.software/image",
   },
   openGraph: {
-    title: "Free In-Browser Image Tools Suite — Infyn by Indivio",
+    title: "Free In-Browser Image Tools Suite — Infyn",
     description:
       "All-in-one private image toolkit. Remove backgrounds, compress sizes by 90%, and convert HEIC photos with zero cloud uploads.",
     url: "https://infyn.software/image",

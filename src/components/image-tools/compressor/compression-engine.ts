@@ -311,6 +311,12 @@ export async function compressImage(
     }
 
     finalBlob = exportedBlob;
+    
+    // Strict fallback: if we failed to reduce the size, and we didn't resize or change the format intentionally,
+    // just revert to the original file to prevent degradation without benefit.
+    if (finalBlob.size >= file.size && settings.resizeMode === "original" && mimeType === file.type) {
+      finalBlob = file;
+    }
   }
 
   const compressedUrl = URL.createObjectURL(finalBlob);

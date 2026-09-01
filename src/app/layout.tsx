@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -20,14 +21,14 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://infyn.software"),
   title: {
-    default: "Infyn by Indivio — 100% Free, Ad-Free & Private In-Browser Utilities",
-    template: "%s | Infyn by Indivio",
+    default: "Infyn — 100% Free, Ad-Free & Private In-Browser Utilities",
+    template: "%s | Infyn",
   },
   description:
-    "100% Free and Ad-Free in-browser utilities by Indivio. AI background removal, batch image compressor, resizer, and universal image converter running locally on your device with zero server uploads.",
+    "100% Free and Ad-Free in-browser utilities. AI background removal, batch image compressor, resizer, PDF tools, and universal image converter running locally on your device with zero server uploads.",
   keywords: [
-    "infyn by indivio",
-    "indivio tools",
+    "infyn",
+    "infyn tools",
     "ad free background remover",
     "ad free image compressor",
     "ad free heic to jpg converter",
@@ -43,11 +44,12 @@ export const metadata: Metadata = {
     "zero upload image converter",
     "free media toolkit without ads",
     "no signup photo tools",
+    "pdf merger free no upload",
+    "remove pdf password client side",
+    "split pdf free",
+    "free pdf protector online"
   ],
-  authors: [{ name: "Indivio", url: "https://indivio.in" }],
-  creator: "Indivio",
-  publisher: "Indivio",
-  applicationName: "Infyn by Indivio",
+  applicationName: "Infyn",
   robots: {
     index: true,
     follow: true,
@@ -63,24 +65,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://infyn.software",
-    siteName: "Infyn by Indivio",
-    title: "Infyn by Indivio — 100% Free, Ad-Free & Private In-Browser Utilities",
+    siteName: "Infyn",
+    title: "Infyn — 100% Free, Ad-Free & Private In-Browser Utilities",
     description:
-      "AI background remover, batch image compressor, resizer, and converter running 100% locally in your browser. 100% Ad-Free, zero cloud uploads, zero signups, free forever by Indivio.",
+      "AI background remover, batch image compressor, PDF tools, and converter running 100% locally in your browser. 100% Ad-Free, zero cloud uploads, zero signups, free forever.",
     images: [
       {
         url: "/logo-clear.png",
         width: 800,
         height: 800,
-        alt: "Infyn by Indivio — Free & Ad-Free In-Browser Toolkit",
+        alt: "Infyn — Free & Ad-Free In-Browser Toolkit",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Infyn by Indivio — 100% Free & Ad-Free In-Browser Utilities",
+    title: "Infyn — 100% Free & Ad-Free In-Browser Utilities",
     description:
-      "100% client-side privacy with zero ads. Remove backgrounds with AI, compress images by 90%, and convert HEIC photos with zero server uploads.",
+      "100% client-side privacy with zero ads. Remove backgrounds with AI, compress images, and manage PDFs with zero server uploads.",
     images: ["/logo-clear.png"],
   },
   icons: {
@@ -104,6 +106,19 @@ export default function RootLayout({
         <link rel="icon" href="/logo.png" type="image/png" />
       </head>
       <body className="font-sans antialiased min-h-screen text-[#111111] selection:bg-[#E8E6DE] selection:text-black relative">
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-FSW6CGT3R5"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-FSW6CGT3R5');
+          `}
+        </Script>
         {/* Soft Global Ambient Glow Orbs */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10" aria-hidden="true">
           {/* Top Center Ambient Aura */}

@@ -79,9 +79,9 @@ export function CompressorItemCard({
         <div className="flex items-center gap-3 self-end sm:self-center shrink-0 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-[#EAEAE5]">
           
           {/* Savings Pill */}
-          {item.isLargerThanOriginal ? (
-            <div className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-1 text-xs font-semibold text-amber-800" title="This image is already highly compressed in its original format. Try WebP or lower quality.">
-              <span>⚡ Optimal</span>
+          {item.savedBytes === 0 ? (
+            <div className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-1 text-xs font-semibold text-amber-800" title="This image is already highly optimized. To reduce size further, use 'Target Size Mode' or reduce dimensions.">
+              <span>⚡ Already Optimal</span>
             </div>
           ) : (
             <div className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-1 text-xs font-bold text-emerald-700">
