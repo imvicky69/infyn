@@ -40,6 +40,75 @@ Infyn is a modern, open-source web utility suite offering essential image and PD
 
 ---
 
+## 📦 NPM Package (`infyn`)
+
+You can install Infyn directly into your React, Next.js, Vue, Vite, or Node web project to process PDFs and images locally with zero cloud API keys:
+
+```bash
+npm install infyn
+# or
+pnpm add infyn
+# or
+yarn add infyn
+```
+
+### 1. All-in-One Import
+```typescript
+import { 
+  mergePDFs, 
+  splitPDF, 
+  encryptPDF, 
+  decryptPDF, 
+  compressImage, 
+  removeExif, 
+  convertHeicToJpg 
+} from "infyn";
+```
+
+### 2. Subpath Imports (Optimized for Tree-Shaking)
+If you only need a specific domain, import directly from the subpath to keep your bundle minimal:
+
+#### 📄 PDF Utilities (`infyn/pdf`)
+```typescript
+import { mergePDFs, extractPDFPages, splitPDF, encryptPDF, decryptPDF, isPDFEncrypted } from "infyn/pdf";
+
+// Merge multiple PDF files into 1 document
+const mergedBytes = await mergePDFs([file1, file2]);
+const mergedBlob = new Blob([mergedBytes], { type: "application/pdf" });
+
+// Extract specific pages (1-indexed: pages 1, 3, and 5)
+const extractedBytes = await extractPDFPages(myPdfFile, [1, 3, 5]);
+
+// Password-protect a PDF
+const protectedBytes = await encryptPDF(myPdfFile, "mySecretPassword123");
+
+// Unlock an encrypted PDF
+const decryptedBytes = await decryptPDF(encryptedFile, "mySecretPassword123");
+```
+
+#### 🖼️ Image Utilities (`infyn/image`)
+```typescript
+import { compressImage, convertImage, convertHeicToJpg, removeExif } from "infyn/image";
+
+// Compress an image with dimension & quality constraints
+const result = await compressImage(photoFile, {
+  quality: 0.75,
+  maxWidth: 1920
+});
+console.log(`Compressed from ${result.originalSize} to ${result.compressedSize} bytes (Saved ${result.savedPercentage}%)`);
+
+// Strip EXIF / GPS metadata
+const cleanImageBlob = await removeExif(photoFile);
+
+// Convert Apple HEIC to standard JPEG
+const jpegBlob = await convertHeicToJpg(heicFile);
+
+// Convert between formats (PNG -> WebP)
+const webpBlob = await convertImage(pngFile, "image/webp", 0.85);
+```
+
+---
+
 ## 🏗️ Tech Stack
 
 - **Framework:** [Next.js](https://nextjs.org/) (App Router, Turbopack)

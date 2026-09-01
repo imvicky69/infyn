@@ -1,12 +1,63 @@
 {
   "name": "infyn",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Fast, 100% free, client-side in-browser PDF and image processing utilities.",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./pdf": {
+      "types": "./dist/pdf/index.d.ts",
+      "import": "./dist/pdf/index.mjs",
+      "require": "./dist/pdf/index.cjs"
+    },
+    "./image": {
+      "types": "./dist/image/index.d.ts",
+      "import": "./dist/image/index.mjs",
+      "require": "./dist/image/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "infyn",
+    "pdf",
+    "pdf-merger",
+    "pdf-splitter",
+    "pdf-protector",
+    "pdf-unlocker",
+    "image-compressor",
+    "heic-to-jpg",
+    "exif-remover",
+    "client-side",
+    "browser",
+    "wasm"
+  ],
+  "author": "Infyn",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imvicky69/infyn.git"
+  },
+  "bugs": {
+    "url": "https://github.com/imvicky69/infyn/issues"
+  },
+  "homepage": "https://infyn.software",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:lib": "tsup",
+    "prepublishOnly": "npm run build:lib"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -43,6 +94,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
     "tailwindcss": "^4",
+    "tsup": "^8.5.1",
     "typescript": "^5"
   }
 }
