@@ -1,45 +1,62 @@
 # ∞ Infyn
 
-**Fast, free, privacy-focused in-browser utilities.**
+**Fast, 100% free, and private in-browser utilities — zero server uploads.**
 
-Infyn is a premium, minimal, open-source utility platform designed to give you powerful tools right in your browser. We believe that simple, everyday utilities shouldn't be hidden behind paywalls, intrusive ads, or unnecessary cloud uploads.
+Infyn is a modern, open-source web utility suite offering essential image and PDF tools that execute entirely in the user's browser. No subscriptions, no credit cards, no tracking ads, and your files never touch a remote server.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](https://opensource.org/licenses/MIT)
 [![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-blue.svg)](CONTRIBUTING.md)
+[![Next.js](https://img.shields.io/badge/Next.js-15+-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?logo=typescript)](https://www.typescriptlang.org/)
 
 ---
 
-## ⚡ Core Principles
+## ⚡ Core Philosophy
 
-- **Open Source:** Built by the community, for the community.
-- **Privacy-First (Zero Uploads):** All processing happens locally in your browser using WebAssembly and HTML5 Canvas. Your files never touch our servers.
-- **No Signups, No Accounts:** Get straight to what you need to do without friction.
-- **100% Free & Ad-Free:** No subscriptions, no paywalls, no watermarks, and absolutely no tracking cookies.
-- **Batch-First:** Designed to process dozens of files at once, with 1-click ZIP downloads.
+- **🔒 100% Client-Side Privacy (Zero Cloud Uploads):** All image manipulation, AI segmentation, encryption/decryption, and PDF rendering run locally on your device via WebAssembly (WASM), Web Workers, and HTML5 Canvas.
+- **🚫 100% Free & Ad-Free:** No paywalls, no watermark additions on exports, no subscriptions, and no intrusive ads.
+- **📦 Batch-First:** Designed to handle multiple files in bulk with instant 1-click ZIP downloads.
+- **🚀 Zero Friction:** No login or signup required. Just open and use.
 
-## 🛠️ Current Tools
+---
 
-### Image Suite
-- **Background Remover:** Instant transparent cutouts using in-browser AI.
-- **Image Compressor:** Drastically shrink image file sizes without quality loss (Batch support).
-- **Image Resizer & Crop:** Scale pixel dimensions and fit with blurred backgrounds.
-- **Universal Converter:** Convert between JPG, PNG, WEBP, AVIF, and HEIC natively.
-- **HEIC to JPG:** Convert Apple iPhone photos effortlessly.
-- **Metadata Remover:** Strip hidden GPS coordinates and camera models for privacy.
+## 🛠️ Tools & Capabilities
 
-### PDF Suite
-- **Image to PDF:** Convert one or more images into a PDF document.
-- **PDF to Image:** Extract every page of your PDF into high-res JPG or PNG.
+### 📄 PDF Suite
+- **[PDF Merger](/src/app/pdf/merger):** Combine multiple PDFs into a single document with visual drag-and-drop reordering.
+- **[PDF Splitter & Page Extractor](/src/app/pdf/splitter):** Visual page grid to extract specific pages into a new PDF or split into individual PDFs (ZIP download).
+- **[PDF Password Protector](/src/app/pdf/protector):** Secure confidential PDFs with standard AES-256 password encryption in browser.
+- **[PDF Unlocker](/src/app/pdf/unlocker):** Remove passwords and access restrictions from encrypted PDF documents safely.
+- **[PDF to Image](/src/app/pdf/pdf-to-image):** Render and export all or selected pages into high-resolution JPG/PNG images.
+- **[Image to PDF](/src/app/image/img-to-pdf):** Convert and combine images into clean, formatted PDF documents with custom margins and page sizes.
 
-*Check out our roadmap or suggest a tool to see what's coming next!*
+### 🖼️ Image Suite
+- **[AI Background Remover](/src/app/image/bg-remover):** Automated transparent cutout generation using in-browser machine learning models.
+- **[Batch Image Compressor](/src/app/image/compressor):** Reduce image file sizes drastically with custom percentage and target size controls.
+- **[Image Resizer & Crop](/src/app/image/resizer):** Resize dimensions, change aspect ratios, and fit photos with blurred canvas padding.
+- **[Universal Image Converter](/src/app/image/converter):** Batch convert between JPG, PNG, WEBP, AVIF, and HEIC.
+- **[HEIC to JPG Converter](/src/app/image/heic-to-jpg):** Seamlessly decode Apple iPhone `.heic`/`.heif` photos into universally compatible JPEGs via WASM.
+- **[EXIF & Metadata Remover](/src/app/image/exif-remover):** Strip GPS locations, camera serials, and device metadata from photos before sharing.
+
+---
+
+## 🏗️ Tech Stack
+
+- **Framework:** [Next.js](https://nextjs.org/) (App Router, Turbopack)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **Animations:** [Framer Motion](https://www.framer.com/motion/)
+- **PDF Engine:** `pdf-lib`, `pdfjs-dist`, `cryptpdf`
+- **Compression & Archiving:** `jszip`
+- **Icons:** `lucide-react`
+
+---
 
 ## 🚀 Getting Started (Local Development)
 
-Want to run Infyn locally or build your own tool? It's incredibly easy to set up.
-
 ### Prerequisites
-- Node.js (v18 or higher recommended)
-- npm or pnpm
+- Node.js (v18.18 or higher recommended)
+- npm, pnpm, or yarn
 
 ### Installation
 
@@ -54,25 +71,31 @@ Want to run Infyn locally or build your own tool? It's incredibly easy to set up
    npm install
    ```
 
-3. Run the development server:
+3. Start the development server:
    ```bash
    npm run dev
    ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 🤝 Contributing & Suggesting a Tool
+---
 
-We love community contributions! Whether you're fixing a bug, improving the UI, or building a completely new in-browser tool for the suite, your help is welcome.
+## 🤝 Contributing & Submitting Features
 
-- **Suggest a Tool:** Have an idea for a privacy-first utility? Open a [Feature Request](https://github.com/imvicky69/infyn/issues/new/choose).
-- **Build a Tool:** We have an established architecture and shared design system for building new tools easily.
-- **Contribute:** Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct, development workflow, and how to submit a Pull Request.
+Contributions from the open-source community are always welcome! Whether you are resolving issues, adding new client-side tools, or enhancing documentation:
 
-## 🛡️ Security
+1. Check existing issues or open a [Feature Request / Bug Report](https://github.com/imvicky69/infyn/issues).
+2. Review our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
+3. Create a feature branch, commit your changes, and open a Pull Request.
 
-If you discover a security vulnerability, please review our [Security Policy](SECURITY.md) for reporting instructions. Do not report security vulnerabilities on the public GitHub issue tracker.
+---
+
+## 🛡️ Security & Privacy
+
+Infyn processes all user data locally on the client machine. If you discover a security flaw or potential data leakage, please review our [Security Policy](SECURITY.md) for reporting guidelines.
+
+---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is open source and available under the [MIT License](LICENSE).
