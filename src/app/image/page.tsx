@@ -24,6 +24,26 @@ interface ImageToolItem {
 
 const IMAGE_TOOLS: ImageToolItem[] = [
   {
+    href: "/image/qr-code",
+    title: "QR Code Generator",
+    badge: "Vector SVG",
+    badgeColor: "bg-indigo-50 text-indigo-800 border-indigo-200/80",
+    category: "conversion",
+    categoryLabel: "Vector & Generator",
+    description:
+      "Design custom QR codes with dot matrix patterns, central logos, Wi-Fi presets, gradients, and frames. Export high-res PNG and vector SVG.",
+    tags: ["Custom Logo", "Wi-Fi & vCard", "Vector SVG"],
+    formats: ["PNG", "SVG", "PDF"],
+    icon: (
+      <div className="relative h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-200/80 flex items-center justify-center text-indigo-700 shadow-2xs group-hover:scale-105 transition-transform">
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h3v3h-3v-3zM13.5 19.5h3v.75h-3v-.75zM19.5 13.5h.75v3h-.75v-3zM19.5 19.5h.75v.75h-.75v-.75z" />
+        </svg>
+      </div>
+    ),
+  },
+  {
     href: "/image/bg-remover",
     title: "Background Remover",
     badge: "Neural AI",
@@ -42,6 +62,7 @@ const IMAGE_TOOLS: ImageToolItem[] = [
       </div>
     ),
   },
+
   {
     href: "/image/compressor",
     title: "Image Compressor",

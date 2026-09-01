@@ -31,7 +31,7 @@ export function Breadcrumbs() {
   let currentPath = "";
 
   return (
-    <nav aria-label="Breadcrumb" className="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-2">
+    <nav aria-label="Breadcrumb" className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
       <ol className="flex items-center space-x-2 text-sm text-[#9E9D98]">
         <li>
           <Link href="/" className="hover:text-[#111111] transition-colors flex items-center gap-1">

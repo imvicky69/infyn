@@ -48,7 +48,8 @@ const PRIVACY_BADGES = [
 export function Footer() {
   return (
     <footer className="border-t border-[#EAEAE5] bg-[#FBFBFA]">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+
         <div className="py-12 grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-10">
           
           {/* Brand column */}

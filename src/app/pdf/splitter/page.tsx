@@ -48,9 +48,10 @@ export default function PdfSplitterPage() {
 
       setProgressText("Loading PDF document…");
       const loadingTask = pdfjsLib.getDocument({
-        data: new Uint8Array(buffer),
+        data: new Uint8Array(buffer.slice(0)),
       });
       const pdf = await loadingTask.promise;
+
 
       const totalPages = pdf.numPages;
       if (totalPages === 0) {
@@ -191,9 +192,11 @@ export default function PdfSplitterPage() {
     setProgressText(`Processing ${selectedPages.length} pages...`);
 
     try {
-      const originalPdf = await PDFDocument.load(pdfArrayBuffer);
+      const freshBuffer = await pdfFile.arrayBuffer();
+      const originalPdf = await PDFDocument.load(freshBuffer);
       
       const baseName = pdfFile.name.replace(/\.[^.]+$/, "");
+
 
       if (mode === "extract") {
         setProgress(30);

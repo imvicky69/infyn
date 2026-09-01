@@ -309,10 +309,41 @@ const protectedBytes = await encryptPDF(myPdfFile, "superSecretPassword");
 const unlockedBytes = await decryptPDF(encryptedPdfFile, "superSecretPassword");`}
               />
             </div>
+
+            {/* compressPDF */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-bold text-[#111111] font-mono">
+                compressPDF(file, options)
+              </h3>
+
+              <p className="text-sm text-[#6E6D68]">
+                Reduces PDF document size up to 90% via multi-strategy in-browser raster downsampling and structural object stream compaction.
+              </p>
+
+              <CodeBlock
+                title="compressPDF Example"
+                code={`import { compressPDF } from "infyn/pdf";
+
+// 1. Compress with Recommended Preset (balanced clarity & size)
+const result = await compressPDF(myPdfFile, { preset: "recommended" });
+
+// 2. Compress for Strict Portal Limits (<500 KB or <200 KB)
+const targetResult = await compressPDF(myPdfFile, {
+  preset: "target",
+  targetSizeKb: 500
+});
+
+console.log("Original Size:", result.originalSize);
+console.log("Compressed Size:", result.compressedSize);
+console.log("Savings:", result.savedPercentage + "%");
+const compressedBlob = new Blob([result.data], { type: "application/pdf" });`}
+              />
+            </div>
           </section>
 
           {/* 3. Image Utilities */}
           <section id="image-sdk" className="space-y-8 scroll-mt-24 border-t border-[#EAEAE5] pt-12">
+
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 text-xs font-mono font-bold mb-2">
                 infyn/image
@@ -374,7 +405,37 @@ const anonymizedBlob = await removeExif(photoFile);
 const webpBlob = await convertImage(pngFile, "image/webp", 0.9);`}
               />
             </div>
+
+            {/* generateQRCode */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-bold text-[#111111] font-mono">
+                generateQRCode(text, options)
+              </h3>
+              <p className="text-sm text-[#6E6D68]">
+                Generate high-resolution PNG bytes or vector SVG strings in-browser with customizable colors and error correction.
+              </p>
+
+              <CodeBlock
+                title="QR Code Generator Example"
+                code={`import { generateQRCode } from "infyn/image";
+
+// 1. Generate High-Res PNG bytes (512px - 4000px)
+const pngBytes = await generateQRCode("https://infyn.software", {
+  width: 1024,
+  errorCorrectionLevel: "H",
+  colorDark: "#111111",
+  colorLight: "#FFFFFF",
+  format: "png"
+});
+
+// 2. Generate crisp vector SVG markup
+const svgString = await generateQRCode("WIFI:T:WPA;S:MyWiFi;P:Secret;;", {
+  format: "svg"
+});`}
+              />
+            </div>
           </section>
+
 
           {/* 4. React & Next.js Guide */}
           <section id="react-integration" className="space-y-6 scroll-mt-24 border-t border-[#EAEAE5] pt-12">

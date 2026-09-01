@@ -6,14 +6,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     "",
     "/image",
+    "/image/qr-code",
     "/image/bg-remover",
     "/image/compressor",
+
     "/image/converter",
     "/image/exif-remover",
     "/image/heic-to-jpg",
     "/image/resizer",
     "/image/img-to-pdf",
     "/pdf",
+    "/pdf/compressor",
     "/pdf/merger",
     "/pdf/protector",
     "/pdf/splitter",
@@ -21,6 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/pdf/pdf-to-image",
     "/docs"
   ];
+
 
   return routes.map((route) => ({
     url: `${baseUrl}${route}`,

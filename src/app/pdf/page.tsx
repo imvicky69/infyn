@@ -14,7 +14,7 @@ interface PdfToolItem {
   title: string;
   badge: string;
   badgeColor: string;
-  category: "all" | "conversion" | "builder" | "security";
+  category: "all" | "conversion" | "builder" | "security" | "compression";
   categoryLabel: string;
   description: string;
   tags: string[];
@@ -23,6 +23,25 @@ interface PdfToolItem {
 }
 
 const PDF_TOOLS: PdfToolItem[] = [
+  {
+    href: "/pdf/compressor",
+    title: "PDF Compressor & Minifier",
+    badge: "Batch",
+    badgeColor: "bg-indigo-50 text-indigo-800 border-indigo-200/80",
+    category: "compression",
+    categoryLabel: "Compression",
+    description:
+      "Drastically shrink PDF document file sizes up to 90% without quality loss. Target size limits & 1-Click ZIP export.",
+    tags: ["Target KB Mode", "Multi-Preset", "No Upload"],
+    formats: ["PDF"],
+    icon: (
+      <div className="relative h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-200/80 flex items-center justify-center text-indigo-700 shadow-2xs group-hover:scale-105 transition-transform">
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0 0h4.5m-4.5 0L9 3.75M20.25 3.75h-4.5m0 0v4.5m0-4.5L15 9m5.25 11.25v-4.5m0 0h-4.5m4.5 0L15 20.25M3.75 20.25h4.5m0 0v-4.5m0 4.5L9 15" />
+        </svg>
+      </div>
+    ),
+  },
   {
     href: "/pdf/pdf-to-image",
     title: "PDF to Image Converter",
@@ -137,17 +156,18 @@ const PDF_TOOLS: PdfToolItem[] = [
 
 const UPCOMING_PDF_TOOLS = [
   {
-    title: "PDF Compressor & Minifier",
+    title: "PDF Page Rotator & Organizer",
     badge: "Free Soon",
-    category: "Compression",
-    description: "Reduce PDF document file size for easy email attachment without losing text clarity.",
+    category: "Organizer",
+    description: "Visually rotate, duplicate, or reorder individual pages within your PDF documents.",
     icon: (
       <svg className="h-5 w-5 text-[#6E6D68]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0 0h4.5m-4.5 0L9 3.75M20.25 3.75h-4.5m0 0v4.5m0-4.5L15 9m5.25 11.25v-4.5m0 0h-4.5m4.5 0L15 20.25M3.75 20.25h4.5m0 0v-4.5m0 4.5L9 15" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
       </svg>
     ),
   },
 ];
+
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -258,6 +278,7 @@ export default function PdfHubPage() {
               <div className="inline-flex rounded-xl bg-[#F5F4EE] p-1 border border-[#EAEAE5]">
                 {[
                   { id: "all", label: "All" },
+                  { id: "compression", label: "Compress" },
                   { id: "conversion", label: "Convert" },
                   { id: "builder", label: "Create" },
                   { id: "security", label: "Security" },
@@ -275,6 +296,7 @@ export default function PdfHubPage() {
                   </button>
                 ))}
               </div>
+
             </div>
           </div>
 

@@ -29,7 +29,8 @@ import {
   Lock,
   Combine,
   Unlock,
-  Scissors
+  Scissors,
+  QrCode
 } from "lucide-react";
 
 interface ToolItem {
@@ -44,6 +45,15 @@ interface ToolItem {
 
 const TOOLS: ToolItem[] = [
   {
+    href: "/image/qr-code",
+    title: "QR Code Generator",
+    category: "image",
+    badge: "Vector",
+    description: "Design custom QR codes with logos, colors, Wi-Fi presets & frames.",
+    formats: ["PNG", "SVG", "PDF"],
+    icon: QrCode,
+  },
+  {
     href: "/image/bg-remover",
     title: "Background Remover",
     category: "image",
@@ -52,6 +62,7 @@ const TOOLS: ToolItem[] = [
     formats: ["PNG", "JPG", "WEBP"],
     icon: Eraser,
   },
+
   {
     href: "/image/compressor",
     title: "Image Compressor",
@@ -93,6 +104,15 @@ const TOOLS: ToolItem[] = [
     description: "Strip hidden GPS coordinates and camera models from photos.",
     formats: ["JPG", "PNG", "WEBP", "HEIC"],
     icon: ShieldCheck,
+  },
+  {
+    href: "/pdf/compressor",
+    title: "PDF Compressor",
+    category: "pdf",
+    badge: "Batch",
+    description: "Drastically shrink PDF document file sizes up to 90% in-browser.",
+    formats: ["PDF"],
+    icon: Minimize2,
   },
   {
     href: "/image/img-to-pdf",
@@ -150,9 +170,9 @@ const TOOLS: ToolItem[] = [
 
 const UPCOMING = [
   {
-    title: "PDF Merger & Splitter",
+    title: "PDF Page Rotator & Organizer",
     category: "pdf",
-    desc: "Combine multiple PDF documents or extract page ranges locally.",
+    desc: "Visually rotate, duplicate, or reorder individual pages within a PDF.",
     icon: Files,
   },
   {
@@ -163,6 +183,7 @@ const UPCOMING = [
   },
   {
     title: "Base64 & Data URI Studio",
+
     category: "developer",
     desc: "Convert assets into production-ready Base64 and CSS data URI strings.",
     icon: Binary,
@@ -170,11 +191,12 @@ const UPCOMING = [
 ];
 
 const POPULAR_TOOLS = [
+  "/image/qr-code",
   "/image/bg-remover",
   "/image/compressor",
-  "/image/resizer",
-  "/image/converter",
+  "/pdf/compressor",
 ];
+
 
 const COMPARISONS = [
   {
@@ -376,19 +398,20 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-3 mt-6">
+              <Link href="/image/qr-code" className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors">
+                QR Code generator
+              </Link>
               <Link href="/image/bg-remover" className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors">
                 Remove background
               </Link>
               <Link href="/image/compressor" className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors">
                 Compress image
               </Link>
-              <Link href="/image/resizer" className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors">
-                Resize image
-              </Link>
-              <Link href="/image/heic-to-jpg" className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors">
-                Convert HEIC
+              <Link href="/pdf/compressor" className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors">
+                Compress PDF
               </Link>
             </div>
+
 
             <div className="mt-14 flex flex-col items-center gap-2">
               <a href="#tools" className="h-10 w-10 rounded-full border border-[#EAEAE5] bg-white flex items-center justify-center text-[#9E9D98] hover:border-[#111111] hover:text-[#111111] transition-colors animate-bounce shadow-sm">

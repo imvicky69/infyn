@@ -20,6 +20,7 @@ import {
   Unlock,
   Scissors,
   BookOpen,
+  QrCode,
 } from "lucide-react";
 
 function GithubIcon({ className = "h-4 w-4" }: { className?: string }) {
@@ -44,12 +45,20 @@ interface NavTool {
 
 const IMAGE_TOOLS: NavTool[] = [
   {
+    name: "QR Code Generator",
+    href: "/image/qr-code",
+    badge: "Vector",
+    desc: "Custom shapes, logos & frames",
+    icon: <QrCode className="h-4 w-4" />,
+  },
+  {
     name: "Background Remover",
     href: "/image/bg-remover",
     badge: "AI",
     desc: "Instant transparent cutouts",
     icon: <Eraser className="h-4 w-4" />,
   },
+
   {
     name: "Image Compressor",
     href: "/image/compressor",
@@ -86,6 +95,13 @@ const IMAGE_TOOLS: NavTool[] = [
 ];
 
 const PDF_TOOLS_NAV: NavTool[] = [
+  {
+    name: "PDF Compressor",
+    href: "/pdf/compressor",
+    badge: "Batch",
+    desc: "Shrink PDF file size up to 90%",
+    icon: <Minimize2 className="h-4 w-4" />,
+  },
   {
     name: "Image to PDF",
     href: "/image/img-to-pdf",
@@ -128,6 +144,7 @@ const PDF_TOOLS_NAV: NavTool[] = [
   },
 ];
 
+
 export function Navbar() {
   const pathname = usePathname();
   const [imageDropdownOpen, setImageDropdownOpen] = useState(false);
@@ -164,8 +181,9 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full">
       {/* Main nav bar */}
       <div className="border-b border-[#EAEAE5]/70 bg-[#FBFBFA]/90 backdrop-blur-2xl">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Brand */}
+
           <Link
             href="/"
             className="flex items-center gap-2.5 group"
@@ -197,10 +215,9 @@ export function Navbar() {
               onMouseEnter={handleImageMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              <button
-                type="button"
-                onClick={() => setImageDropdownOpen((p) => !p)}
-                aria-expanded={imageDropdownOpen}
+              <Link
+                href="/image"
+                onClick={() => setImageDropdownOpen(false)}
                 className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all cursor-pointer tracking-[-0.01em] ${
                   imageDropdownOpen || pathname.startsWith("/image")
                     ? "bg-[#F0EFEA] text-[#111111]"
@@ -219,7 +236,7 @@ export function Navbar() {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </motion.svg>
-              </button>
+              </Link>
 
               {/* Image Dropdown */}
               <AnimatePresence>
@@ -235,6 +252,13 @@ export function Navbar() {
                       <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
                         Image Suite
                       </span>
+                      <Link
+                        href="/image"
+                        onClick={() => setImageDropdownOpen(false)}
+                        className="text-[11px] font-bold text-[#111111] hover:underline"
+                      >
+                        View All →
+                      </Link>
                     </div>
 
                     <div className="space-y-0.5">
@@ -280,10 +304,9 @@ export function Navbar() {
               onMouseEnter={handlePdfMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              <button
-                type="button"
-                onClick={() => setPdfDropdownOpen((p) => !p)}
-                aria-expanded={pdfDropdownOpen}
+              <Link
+                href="/pdf"
+                onClick={() => setPdfDropdownOpen(false)}
                 className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all cursor-pointer tracking-[-0.01em] ${
                   pdfDropdownOpen || pathname.startsWith("/pdf")
                     ? "bg-[#F0EFEA] text-[#111111]"
@@ -302,7 +325,7 @@ export function Navbar() {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </motion.svg>
-              </button>
+              </Link>
 
               {/* PDF Dropdown */}
               <AnimatePresence>
@@ -318,7 +341,15 @@ export function Navbar() {
                       <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
                         PDF Suite
                       </span>
+                      <Link
+                        href="/pdf"
+                        onClick={() => setPdfDropdownOpen(false)}
+                        className="text-[11px] font-bold text-[#111111] hover:underline"
+                      >
+                        View All →
+                      </Link>
                     </div>
+
 
                     <div className="space-y-0.5">
                       {PDF_TOOLS_NAV.map((tool) => {
@@ -357,9 +388,26 @@ export function Navbar() {
               </AnimatePresence>
             </div>
 
+            {/* QR Code dedicated button */}
+            <Link
+              href="/image/qr-code"
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all tracking-[-0.01em] ${
+                pathname === "/image/qr-code"
+                  ? "bg-[#F0EFEA] text-[#111111]"
+                  : "text-[#6E6D68] hover:text-[#111111] hover:bg-[#F5F4EE]"
+              }`}
+            >
+              <QrCode className="h-3.5 w-3.5 text-[#9E9D98]" />
+              <span>QR Code</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+                New
+              </span>
+            </Link>
+
             {/* Docs & SDK */}
             <Link
               href="/docs"
+
               className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all tracking-[-0.01em] ${
                 pathname.startsWith("/docs")
                   ? "bg-[#F0EFEA] text-[#111111]"
@@ -408,7 +456,7 @@ export function Navbar() {
                   className="block h-[1.5px] w-4 bg-[#111111] origin-center transition-all"
                 />
                 <motion.span
-                  variants={{ open: { opacity: 0, x: -4 }, closed: { opacity: 1, x: 0 } }}
+                  variants={{ open: { opacity: 0 }, closed: { opacity: 1 } }}
                   className="block h-[1.5px] w-4 bg-[#111111] transition-all"
                 />
                 <motion.span
@@ -432,12 +480,38 @@ export function Navbar() {
             className="overflow-hidden border-b border-[#EAEAE5] bg-white/97 backdrop-blur-2xl md:hidden shadow-lg"
           >
             <div className="max-w-5xl mx-auto px-4 py-4 space-y-4">
+              {/* Featured QR Code Banner on Mobile */}
+              <Link
+                href="/image/qr-code"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between p-3 rounded-2xl bg-indigo-50/80 border border-indigo-200/80 transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-xl bg-white border border-indigo-200 flex items-center justify-center text-indigo-700 shadow-2xs">
+                    <QrCode className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-[13px] text-[#111111]">QR Code Generator</p>
+                    <p className="text-[11px] text-[#6E6D68]">Design custom codes with logos & Wi-Fi</p>
+                  </div>
+                </div>
+                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-white text-indigo-700 border border-indigo-200 shrink-0">
+                  New
+                </span>
+              </Link>
               {/* PDF Tools Section */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between px-1 pb-1.5 border-b border-[#F5F4EE]">
                   <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
                     PDF Utilities
                   </span>
+                  <Link
+                    href="/pdf"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-[11px] font-bold text-[#111111] hover:underline"
+                  >
+                    View All PDF Tools →
+                  </Link>
                 </div>
 
                 <div className="grid grid-cols-1 gap-0.5">
@@ -473,7 +547,15 @@ export function Navbar() {
                   <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
                     Image Tools Suite
                   </span>
+                  <Link
+                    href="/image"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-[11px] font-bold text-[#111111] hover:underline"
+                  >
+                    View All Image Tools →
+                  </Link>
                 </div>
+
 
                 <div className="grid grid-cols-1 gap-0.5">
                   {IMAGE_TOOLS.map((tool) => (

@@ -47,8 +47,21 @@ export const metadata: Metadata = {
     "pdf merger free no upload",
     "remove pdf password client side",
     "split pdf free",
-    "free pdf protector online"
+    "free pdf protector online",
+    "free pdf compressor online",
+    "compress pdf to 200kb",
+    "compress pdf to 500kb",
+    "reduce pdf size in kb",
+    "shrink pdf online without watermark",
+    "client side pdf compression",
+    "free qr code generator",
+    "custom qr code with logo",
+    "wifi qr code generator free",
+    "vector svg qr code generator",
+    "ad free qr code generator"
   ],
+
+
   applicationName: "Infyn",
   robots: {
     index: true,

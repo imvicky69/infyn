@@ -49,6 +49,10 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+html {
+  overflow-x: clip;
+}
+
 body {
   background-color: #FBFBFA;
   background-image: 
@@ -61,7 +65,10 @@ body {
   color: #111111;
   font-family: var(--font-sans);
   min-height: 100vh;
+  overflow-x: clip;
 }
+
+
 
 /* Infinity shimmer trace animation */
 @keyframes shimmer-trace {

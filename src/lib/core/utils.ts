@@ -39,3 +39,20 @@ export async function toUint8Array(input: BinaryInput): Promise<Uint8Array> {
 export function toBlob(data: Uint8Array | ArrayBuffer, mimeType: string): Blob {
   return new Blob([data as any], { type: mimeType });
 }
+
+/**
+ * Calculates saved bytes and percentage between original and new size.
+ */
+export function calculateSavings(
+  originalSize: number,
+  newSize: number
+): { savedBytes: number; savedPercentage: number; isReduced: boolean } {
+  const diff = originalSize - newSize;
+  const percentage = originalSize > 0 ? Math.round((diff / originalSize) * 100) : 0;
+  return {
+    savedBytes: Math.max(0, diff),
+    savedPercentage: Math.max(0, percentage),
+    isReduced: diff > 0,
+  };
+}
+
