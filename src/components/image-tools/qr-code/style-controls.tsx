@@ -516,10 +516,17 @@ export function StyleControls({ style, onChange }: StyleControlsProps) {
 
         {/* 3. Logo & Center Icon Drawer */}
         <div className="rounded-2xl border border-[#EAEAE5] bg-[#FBFBFA] overflow-hidden transition-all">
-          <button
-            type="button"
+          <div
+            role="button"
+            tabIndex={0}
             onClick={() => toggleSection("logo")}
-            className="w-full px-4 py-3 text-left flex items-center justify-between gap-3 hover:bg-[#F5F4EE] transition-colors cursor-pointer"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggleSection("logo");
+              }
+            }}
+            className="w-full px-4 py-3 text-left flex items-center justify-between gap-3 hover:bg-[#F5F4EE] transition-colors cursor-pointer select-none"
           >
             <div className="flex items-center gap-2.5">
               <Circle className="h-4 w-4 text-[#6E6D68]" />
@@ -537,7 +544,7 @@ export function StyleControls({ style, onChange }: StyleControlsProps) {
                       errorCorrectionLevel: "H",
                     });
                   }}
-                  className="text-[11px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded-lg border border-indigo-200 transition-colors"
+                  className="text-[11px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded-lg border border-indigo-200 transition-colors cursor-pointer"
                 >
                   + Add Infyn Logo
                 </button>
@@ -557,8 +564,7 @@ export function StyleControls({ style, onChange }: StyleControlsProps) {
                 <ChevronDown className="h-4 w-4" />
               </motion.div>
             </div>
-
-          </button>
+          </div>
 
           <AnimatePresence>
             {openSection === "logo" && (

@@ -32,9 +32,9 @@ export function Breadcrumbs() {
 
   return (
     <nav aria-label="Breadcrumb" className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
-      <ol className="flex items-center space-x-2 text-sm text-[#9E9D98]">
+      <ol className="flex items-center space-x-2 text-sm text-[#9E9D98] dark:text-zinc-500">
         <li>
-          <Link href="/" className="hover:text-[#111111] transition-colors flex items-center gap-1">
+          <Link href="/" className="hover:text-[#111111] dark:hover:text-white transition-colors flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
@@ -49,15 +49,15 @@ export function Breadcrumbs() {
 
           return (
             <li key={currentPath} className="flex items-center space-x-2">
-              <svg className="w-4 h-4 text-[#EAEAE5]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-[#EAEAE5] dark:text-zinc-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
               {isLast ? (
-                <span className="font-semibold text-[#111111] capitalize" aria-current="page">
+                <span className="font-semibold text-[#111111] dark:text-zinc-200 capitalize" aria-current="page">
                   {label}
                 </span>
               ) : (
-                <Link href={currentPath} className="hover:text-[#111111] transition-colors capitalize">
+                <Link href={currentPath} className="hover:text-[#111111] dark:hover:text-white transition-colors capitalize">
                   {label}
                 </Link>
               )}

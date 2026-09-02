@@ -127,42 +127,42 @@ export function NpmShowcase() {
   };
 
   return (
-    <section className="relative rounded-3xl border border-[#EAEAE5] bg-gradient-to-b from-white via-[#FDFDFD] to-[#F8F8F6] p-6 sm:p-10 shadow-sm overflow-hidden">
+    <section className="relative rounded-3xl border border-[#EAEAE5] dark:border-zinc-800/80 bg-gradient-to-b from-white via-[#FDFDFD] to-[#F8F8F6] dark:from-[#141417] dark:via-[#121215] dark:to-[#0E0E10] p-6 sm:p-10 shadow-sm dark:shadow-2xl overflow-hidden transition-colors">
       
       {/* Decorative background glow */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-400/8 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-indigo-400/8 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-400/8 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-indigo-400/8 dark:bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
       <div className="flex flex-col lg:flex-row gap-10 lg:items-center justify-between">
         
         {/* Left Column: Value Proposition & Install Command */}
         <div className="max-w-xl space-y-6">
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold shadow-2xs">
-              <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold shadow-2xs">
+              <Sparkles className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>NPM Package v1.0.0 Live</span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#111111] dark:text-[#EDEDEC] tracking-tight leading-tight">
               Add client-side superpowers to your own React & Web apps.
             </h2>
 
-            <p className="text-sm text-[#6E6D68] leading-relaxed">
-              Don&apos;t pay for cloud converters or heavy backend microservices. Install <code className="font-mono text-xs px-1.5 py-0.5 rounded bg-[#F5F4EE] border border-[#EAEAE5] text-[#111111] font-bold">infyn</code> to process PDFs and images directly inside the user&apos;s browser.
+            <p className="text-sm text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
+              Don&apos;t pay for cloud converters or heavy backend microservices. Install <code className="font-mono text-xs px-1.5 py-0.5 rounded bg-[#F5F4EE] dark:bg-zinc-800 border border-[#EAEAE5] dark:border-zinc-700 text-[#111111] dark:text-zinc-200 font-bold">infyn</code> to process PDFs and images directly inside the user&apos;s browser.
             </p>
           </div>
 
           {/* Quick Install Bar with PM switcher */}
           <div className="space-y-2">
-            <div className="flex items-center gap-1 bg-[#F5F4EE] p-1 rounded-xl w-fit border border-[#EAEAE5]">
+            <div className="flex items-center gap-1 bg-[#F5F4EE] dark:bg-zinc-900/90 p-1 rounded-xl w-fit border border-[#EAEAE5] dark:border-zinc-800">
               {PACKAGE_MANAGERS.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => setPm(item.id)}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     pm === item.id
-                      ? "bg-white text-[#111111] shadow-xs"
-                      : "text-[#6E6D68] hover:text-[#111111]"
+                      ? "bg-white dark:bg-zinc-800 text-[#111111] dark:text-white shadow-xs"
+                      : "text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white"
                   }`}
                 >
                   {item.name}
@@ -173,15 +173,15 @@ export function NpmShowcase() {
             {/* Terminal Copy Box */}
             <div 
               onClick={copyPmCommand}
-              className="group relative flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-[#111111] text-white font-mono text-xs sm:text-sm cursor-pointer hover:bg-[#1A1A18] transition-all shadow-md active:scale-[0.99]"
+              className="group relative flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-[#111111] dark:bg-[#18181B] border border-transparent dark:border-zinc-800 text-white font-mono text-xs sm:text-sm cursor-pointer hover:bg-[#1A1A18] dark:hover:bg-zinc-800 transition-all shadow-md active:scale-[0.99]"
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <Terminal className="h-4 w-4 text-emerald-400 shrink-0" />
                 <span className="text-emerald-400 select-none">$</span>
-                <span className="truncate text-[#EAEAE5] font-semibold">{activePmObj.command}</span>
+                <span className="truncate text-[#EAEAE5] dark:text-zinc-200 font-semibold">{activePmObj.command}</span>
               </div>
 
-              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/10 group-hover:bg-white/20 text-[#BEBDB9] group-hover:text-white transition-colors shrink-0 text-xs">
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/10 dark:bg-white/5 group-hover:bg-white/20 text-[#BEBDB9] dark:text-zinc-400 group-hover:text-white transition-colors shrink-0 text-xs">
                 {copiedPm ? (
                   <>
                     <Check className="h-3.5 w-3.5 text-emerald-400" />
@@ -207,8 +207,8 @@ export function NpmShowcase() {
             ].map((feature) => {
               const Icon = feature.icon;
               return (
-                <div key={feature.label} className="flex items-center gap-2 text-xs font-medium text-[#6E6D68]">
-                  <div className="h-5 w-5 rounded-md bg-white border border-[#EAEAE5] flex items-center justify-center shrink-0 text-emerald-600">
+                <div key={feature.label} className="flex items-center gap-2 text-xs font-medium text-[#6E6D68] dark:text-zinc-400">
+                  <div className="h-5 w-5 rounded-md bg-white dark:bg-zinc-800 border border-[#EAEAE5] dark:border-zinc-700 flex items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-400">
                     <Icon className="h-3 w-3" />
                   </div>
                   <span>{feature.label}</span>
@@ -221,7 +221,7 @@ export function NpmShowcase() {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
               href="/docs"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#111111] text-white text-xs font-bold hover:bg-[#262626] transition-all shadow-xs"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-xs font-bold hover:bg-[#262626] dark:hover:bg-zinc-200 transition-all shadow-xs"
             >
               <span>Explore Full SDK Guide</span>
               <ArrowRight className="h-3.5 w-3.5" />
@@ -231,7 +231,7 @@ export function NpmShowcase() {
               href="https://www.npmjs.com/package/infyn"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-[#EAEAE5] text-[#111111] text-xs font-bold hover:bg-[#F5F4EE] transition-all shadow-xs"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-[#EAEAE5] dark:border-zinc-800 text-[#111111] dark:text-zinc-200 text-xs font-bold hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 transition-all shadow-xs"
             >
               <span>npmjs.com/package/infyn</span>
               <ExternalLink className="h-3.5 w-3.5 opacity-60" />
@@ -241,20 +241,20 @@ export function NpmShowcase() {
 
         {/* Right Column: Interactive Code Showcase Window */}
         <div className="w-full lg:max-w-md xl:max-w-lg">
-          <div className="rounded-2xl border border-[#2A2A28] bg-[#111111] shadow-xl overflow-hidden flex flex-col">
+          <div className="rounded-2xl border border-[#2A2A28] dark:border-zinc-800 bg-[#111111] dark:bg-[#0E0E10] shadow-xl overflow-hidden flex flex-col">
             
             {/* Window Titlebar */}
-            <div className="px-4 py-3 bg-[#1C1C1A] border-b border-[#2A2A28] flex items-center justify-between">
+            <div className="px-4 py-3 bg-[#1C1C1A] dark:bg-[#151518] border-b border-[#2A2A28] dark:border-zinc-800 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]" />
-                <span className="ml-2 text-[11px] font-mono text-[#9E9D98]">example.ts</span>
+                <span className="ml-2 text-[11px] font-mono text-[#9E9D98] dark:text-zinc-400">example.ts</span>
               </div>
 
               <button
                 onClick={copySampleCode}
-                className="flex items-center gap-1 text-[11px] text-[#9E9D98] hover:text-white px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 transition-colors"
+                className="flex items-center gap-1 text-[11px] text-[#9E9D98] dark:text-zinc-400 hover:text-white px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
                 title="Copy code snippet"
               >
                 {copiedCode ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
@@ -263,7 +263,7 @@ export function NpmShowcase() {
             </div>
 
             {/* Example Tabs */}
-            <div className="flex border-b border-[#2A2A28] bg-[#141413] overflow-x-auto no-scrollbar">
+            <div className="flex border-b border-[#2A2A28] dark:border-zinc-800 bg-[#141413] dark:bg-[#111113] overflow-x-auto no-scrollbar">
               {CODE_SAMPLES.map((sample) => {
                 const Icon = sample.icon;
                 const isActive = activeSampleId === sample.id;
@@ -271,10 +271,10 @@ export function NpmShowcase() {
                   <button
                     key={sample.id}
                     onClick={() => setActiveSampleId(sample.id)}
-                    className={`flex items-center gap-2 px-3.5 py-2.5 text-xs font-medium border-b-2 transition-all shrink-0 ${
+                    className={`flex items-center gap-2 px-3.5 py-2.5 text-xs font-medium border-b-2 transition-all shrink-0 cursor-pointer ${
                       isActive
                         ? "border-emerald-400 text-white bg-white/5"
-                        : "border-transparent text-[#9E9D98] hover:text-[#EAEAE5]"
+                        : "border-transparent text-[#9E9D98] dark:text-zinc-500 hover:text-[#EAEAE5] dark:hover:text-zinc-300"
                     }`}
                   >
                     <Icon className="h-3.5 w-3.5" />
@@ -285,7 +285,7 @@ export function NpmShowcase() {
             </div>
 
             {/* Explanation Strip */}
-            <div className="px-4 py-2 bg-[#1A1A18] border-b border-[#2A2A28] text-[11px] text-[#BEBDB9] flex items-center justify-between">
+            <div className="px-4 py-2 bg-[#1A1A18] dark:bg-[#131316] border-b border-[#2A2A28] dark:border-zinc-800 text-[11px] text-[#BEBDB9] dark:text-zinc-400 flex items-center justify-between">
               <span>{activeSample.explanation}</span>
               <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">
                 {activeSample.tag}
@@ -293,7 +293,7 @@ export function NpmShowcase() {
             </div>
 
             {/* Code Body */}
-            <div className="p-4 overflow-x-auto text-xs font-mono text-[#EAEAE5] leading-relaxed min-h-[170px] flex items-center">
+            <div className="p-4 overflow-x-auto text-xs font-mono text-[#EAEAE5] dark:text-zinc-200 leading-relaxed min-h-[170px] flex items-center">
               <AnimatePresence mode="wait">
                 <motion.pre
                   key={activeSample.id}

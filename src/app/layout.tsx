@@ -3,6 +3,8 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/components/theme-provider";
+import { LoadingProvider } from "@/components/loading-provider";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -15,7 +17,10 @@ export const viewport: Viewport = {
   themeColor: "#FBFBFA",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 5,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  interactiveWidget: "resizes-content",
 };
 
 export const metadata: Metadata = {
@@ -114,39 +119,92 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", plusJakartaSans.variable)}>
+    <html lang="en" suppressHydrationWarning className={cn("font-sans", plusJakartaSans.variable)}>
       <head>
         <link rel="icon" href="/logo.png" type="image/png" />
-      </head>
-      <body className="font-sans antialiased min-h-screen text-[#111111] selection:bg-[#E8E6DE] selection:text-black relative">
-        {/* Google Analytics */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-FSW6CGT3R5"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-FSW6CGT3R5');
-          `}
-        </Script>
-        {/* Soft Global Ambient Glow Orbs */}
-        <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10" aria-hidden="true">
-          {/* Top Center Ambient Aura */}
-          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] sm:w-[1000px] h-[500px] rounded-full bg-gradient-to-tr from-emerald-400/20 via-indigo-400/18 to-amber-300/12 blur-[100px] opacity-90" />
-          {/* Top Right Subtle Violet/Indigo Glow */}
-          <div className="absolute top-[15%] -right-28 w-[450px] h-[450px] rounded-full bg-gradient-to-bl from-indigo-400/15 via-purple-300/10 to-transparent blur-[90px] opacity-80" />
-          {/* Middle Left Subtle Teal/Emerald Glow */}
-          <div className="absolute top-[40%] -left-32 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-teal-400/15 via-emerald-300/10 to-transparent blur-[95px] opacity-80" />
-          {/* Bottom Ambient Warmth */}
-          <div className="absolute -bottom-40 left-1/3 w-[600px] h-[400px] rounded-full bg-gradient-to-t from-amber-300/10 via-emerald-300/8 to-transparent blur-[110px] opacity-70" />
-        </div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Zero-FOUC theme initialization
+              (function() {
+                try {
+                  var stored = localStorage.getItem('infyn-theme');
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  var isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
+                  if (isDark) {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.style.colorScheme = 'light';
+                  }
+                } catch (e) {}
+              })();
 
-        <div className="relative z-10 flex flex-col min-h-screen">
-          {children}
-        </div>
+              // Prevent unwanted mobile zoom, mis-zoom, and accidental gesture zooming
+              if (typeof window !== 'undefined') {
+                // Prevent iOS Safari pinch-to-zoom gestures
+                document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
+                document.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
+                document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
+                
+                // Prevent double-tap zoom on mobile while preserving normal tapping
+                var _lastTouchEnd = 0;
+                document.addEventListener('touchend', function(e) {
+                  var now = Date.now();
+                  if (now - _lastTouchEnd <= 300) {
+                    var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+                    if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+                      e.preventDefault();
+                    }
+                  }
+                  _lastTouchEnd = now;
+                }, { passive: false });
+
+                // Prevent multi-touch pinch on touchmove
+                document.addEventListener('touchmove', function(e) {
+                  if (e.touches && e.touches.length > 1) {
+                    e.preventDefault();
+                  }
+                }, { passive: false });
+              }
+            `,
+          }}
+        />
+      </head>
+      <body className="font-sans antialiased min-h-screen w-full max-w-full overflow-x-clip text-[#111111] dark:text-[#EDEDEC] bg-[#FBFBFA] dark:bg-[#0C0C0E] selection:bg-[#E8E6DE] dark:selection:bg-zinc-800 selection:text-black dark:selection:text-white relative">
+        <ThemeProvider>
+          {/* Google Analytics */}
+          <Script
+            src="https://www.googletagmanager.com/gtag/js?id=G-FSW6CGT3R5"
+            strategy="afterInteractive"
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-FSW6CGT3R5');
+            `}
+          </Script>
+          {/* Soft Global Ambient Glow Orbs */}
+          <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10" aria-hidden="true">
+            {/* Top Center Ambient Aura */}
+            <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] sm:w-[1000px] h-[500px] rounded-full bg-gradient-to-tr from-emerald-400/20 via-indigo-400/18 to-amber-300/12 blur-[100px] opacity-90 dark:opacity-40" />
+            {/* Top Right Subtle Violet/Indigo Glow */}
+            <div className="absolute top-[15%] -right-28 w-[450px] h-[450px] rounded-full bg-gradient-to-bl from-indigo-400/15 via-purple-300/10 to-transparent blur-[90px] opacity-80 dark:opacity-30" />
+            {/* Middle Left Subtle Teal/Emerald Glow */}
+            <div className="absolute top-[40%] -left-32 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-teal-400/15 via-emerald-300/10 to-transparent blur-[95px] opacity-80 dark:opacity-30" />
+            {/* Bottom Ambient Warmth */}
+            <div className="absolute -bottom-40 left-1/3 w-[600px] h-[400px] rounded-full bg-gradient-to-t from-amber-300/10 via-emerald-300/8 to-transparent blur-[110px] opacity-70 dark:opacity-30" />
+          </div>
+
+          <div className="relative z-10 flex flex-col min-h-screen w-full max-w-full">
+            <LoadingProvider>
+              {children}
+            </LoadingProvider>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

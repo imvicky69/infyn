@@ -22,6 +22,7 @@ const PDF_LINKS = [
 
 const DEV_LINKS = [
   { href: "/docs", label: "Documentation & SDK", external: false },
+  { href: "/contributing", label: "Contributing Guide", external: false },
   { href: "https://www.npmjs.com/package/infyn", label: "NPM Package ↗", external: true },
   { href: "https://github.com/imvicky69/infyn", label: "GitHub Repository ↗", external: true },
   { href: "https://github.com/imvicky69/infyn/issues", label: "Suggest a Tool ↗", external: true },
@@ -47,7 +48,7 @@ const PRIVACY_BADGES = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-[#EAEAE5] bg-[#FBFBFA]">
+    <footer className="border-t border-[#EAEAE5] dark:border-zinc-800 bg-[#FBFBFA] dark:bg-[#0C0C0E]">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
         <div className="py-12 grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-10">
@@ -63,12 +64,12 @@ export function Footer() {
                 style={{ width: "auto", height: "22px" }}
                 className="object-contain group-hover:scale-105 transition-transform"
               />
-              <span className="font-bold text-[#111111] text-lg tracking-tight">
+              <span className="font-bold text-[#111111] dark:text-white text-lg tracking-tight">
                 infyn
               </span>
             </Link>
 
-            <p className="text-[13px] text-[#6E6D68] leading-[1.7] max-w-[280px] tracking-[-0.005em]">
+            <p className="text-[13px] text-[#6E6D68] dark:text-zinc-400 leading-[1.7] max-w-[280px] tracking-[-0.005em]">
               Free, ad-free in-browser utilities that never upload your files. Built for speed and privacy.
             </p>
 
@@ -87,7 +88,7 @@ export function Footer() {
 
           {/* Image Tools column */}
           <div className="md:col-span-3 space-y-3.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9E9D98] dark:text-zinc-500">
               Image
             </h3>
             <nav className="flex flex-col gap-2">
@@ -95,7 +96,7 @@ export function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors tracking-[-0.005em] leading-snug"
+                  className="text-[13px] font-medium text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors tracking-[-0.005em] leading-snug"
                 >
                   {link.label}
                 </Link>
@@ -105,7 +106,7 @@ export function Footer() {
 
           {/* PDF Tools column */}
           <div className="md:col-span-2 space-y-3.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9E9D98] dark:text-zinc-500">
               PDF
             </h3>
             <nav className="flex flex-col gap-2">
@@ -113,7 +114,7 @@ export function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors tracking-[-0.005em] leading-snug"
+                  className="text-[13px] font-medium text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors tracking-[-0.005em] leading-snug"
                 >
                   {link.label}
                 </Link>
@@ -123,7 +124,7 @@ export function Footer() {
 
           {/* Developer / Open Source */}
           <div className="md:col-span-2 space-y-3.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9E9D98] dark:text-zinc-500">
               Open Source
             </h3>
             <nav className="flex flex-col gap-2">
@@ -134,7 +135,7 @@ export function Footer() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors tracking-[-0.005em] leading-snug"
+                    className="text-[13px] font-medium text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors tracking-[-0.005em] leading-snug"
                   >
                     {link.label}
                   </a>
@@ -142,7 +143,7 @@ export function Footer() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors tracking-[-0.005em] leading-snug"
+                    className="text-[13px] font-medium text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors tracking-[-0.005em] leading-snug"
                   >
                     {link.label}
                   </Link>
@@ -153,11 +154,11 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-[#EAEAE5] py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[11px] text-[#9E9D98] tracking-[-0.005em]">
+        <div className="border-t border-[#EAEAE5] dark:border-zinc-800 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-[11px] text-[#9E9D98] dark:text-zinc-500 tracking-[-0.005em]">
             © {new Date().getFullYear()} Infyn · All operations run locally in your browser.
           </p>
-          <div className="flex items-center gap-1.5 text-[11px] text-[#9E9D98]">
+          <div className="flex items-center gap-1.5 text-[11px] text-[#9E9D98] dark:text-zinc-500">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>Zero data collection</span>
           </div>

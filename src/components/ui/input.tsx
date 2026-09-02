@@ -39,7 +39,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             type={type}
             ref={ref}
-            className={`w-full rounded-lg border bg-white px-3.5 py-2 text-sm text-[#111111] placeholder-[#9E9D98] transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-[#111111] disabled:cursor-not-allowed disabled:opacity-60 ${
+            className={`w-full rounded-lg border bg-white px-3.5 py-2 text-base sm:text-sm text-[#111111] placeholder-[#9E9D98] transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-[#111111] disabled:cursor-not-allowed disabled:opacity-60 ${
               leftIcon ? "pl-9" : ""
             } ${rightIcon ? "pr-9" : ""} ${
               error
@@ -85,7 +85,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           ref={ref}
           rows={rows}
-          className={`w-full rounded-lg border bg-white p-3 text-sm text-[#111111] placeholder-[#9E9D98] transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-[#111111] disabled:cursor-not-allowed disabled:opacity-60 ${
+          className={`w-full rounded-lg border bg-white p-3 text-base sm:text-sm text-[#111111] placeholder-[#9E9D98] transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-[#111111] disabled:cursor-not-allowed disabled:opacity-60 ${
             error
               ? "border-red-500 focus:ring-red-500"
               : "border-[#EAEAE5] hover:border-[#D0D0C8] focus:border-[#111111]"

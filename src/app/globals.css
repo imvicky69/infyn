@@ -50,7 +50,13 @@
 }
 
 html {
+  width: 100%;
+  max-width: 100%;
   overflow-x: clip;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overscroll-behavior-x: none;
 }
 
 body {
@@ -65,7 +71,14 @@ body {
   color: #111111;
   font-family: var(--font-sans);
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
   overflow-x: clip;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overscroll-behavior-x: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 
@@ -218,6 +231,7 @@ body {
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply text-foreground;
@@ -228,6 +242,15 @@ body {
   h1, h2, h3, h4 {
     text-rendering: optimizeLegibility;
     letter-spacing: -0.025em;
+  }
+
+  /* Prevent iOS Safari auto-zoom on input focus */
+  @media screen and (max-width: 768px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
   }
 }
 
@@ -272,4 +295,297 @@ body {
     black 93%,
     transparent 100%
   );
+}
+
+/* ── Custom sleek scrollbar for overlays and drawers ────────── */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #BEBDB9 transparent;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #D8D7D2;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #BEBDB9;
+}
+
+/* ── Global Dark Mode System ────────────────────────────────── */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: #0c0c0e !important;
+  background-image: 
+    radial-gradient(ellipse 90% 60% at 50% -15%, rgba(16, 185, 129, 0.12) 0%, rgba(99, 102, 241, 0.1) 38%, rgba(245, 158, 11, 0.05) 70%, transparent 100%),
+    radial-gradient(circle 700px at 10% 20%, rgba(16, 185, 129, 0.07) 0%, transparent 60%),
+    radial-gradient(circle 700px at 90% 30%, rgba(99, 102, 241, 0.08) 0%, rgba(244, 63, 94, 0.04) 50%, transparent 70%),
+    radial-gradient(circle 900px at 50% 90%, rgba(59, 130, 246, 0.05) 0%, rgba(16, 185, 129, 0.03) 50%, transparent 80%) !important;
+  color: #ededec !important;
+}
+
+/* Invert black ink logos automatically in dark mode */
+.dark img[src*="logo-clear.png"] {
+  filter: invert(1) brightness(1.1);
+}
+
+/* Automatic Surfaces & Cards */
+.dark .bg-white {
+  background-color: #141417 !important;
+}
+.dark .bg-white\/98,
+.dark .bg-white\/97,
+.dark .bg-white\/95,
+.dark .bg-white\/90,
+.dark .bg-white\/80 {
+  background-color: rgba(20, 20, 23, 0.95) !important;
+}
+.dark .bg-white\/70,
+.dark .bg-white\/60,
+.dark .bg-white\/50,
+.dark .bg-white\/40,
+.dark .bg-white\/30 {
+  background-color: rgba(20, 20, 23, 0.65) !important;
+}
+.dark .bg-white\/20,
+.dark .bg-white\/15 {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+.dark .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+.dark .bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Automatic Gradients in Dark Mode */
+.dark .from-white {
+  --tw-gradient-from: #141417 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(20, 20, 23, 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.dark .via-\[\#FDFDFD\] {
+  --tw-gradient-via: #121215 var(--tw-gradient-via-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), #121215 var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+.dark .to-\[\#F8F8F6\] {
+  --tw-gradient-to: #0E0E10 var(--tw-gradient-to-position) !important;
+}
+
+.dark .bg-\[\#FBFBFA\] {
+  background-color: #0c0c0e !important;
+}
+.dark .bg-\[\#FBFBFA\]\/90 {
+  background-color: rgba(12, 12, 14, 0.9) !important;
+}
+.dark .bg-\[\#FBFBFA\]\/80,
+.dark .bg-\[\#FBFBFA\]\/70,
+.dark .bg-\[\#FBFBFA\]\/60 {
+  background-color: rgba(20, 20, 23, 0.7) !important;
+}
+
+.dark .bg-\[\#F5F4EE\],
+.dark .bg-\[\#F0EFEA\],
+.dark .bg-\[\#F8F8F6\] {
+  background-color: #1a1a1f !important;
+}
+
+.dark .hover\:bg-\[\#F5F4EE\]:hover,
+.dark .hover\:bg-\[\#F8F8F6\]:hover,
+.dark .hover\:bg-\[\#F0EFEA\]:hover {
+  background-color: #24242b !important;
+}
+
+/* Dark code block containers */
+.dark .border-\[\#2A2A28\] {
+  border-color: #2e2e36 !important;
+}
+.dark .bg-\[\#1C1C1A\] {
+  background-color: #161619 !important;
+}
+.dark .bg-\[\#141413\] {
+  background-color: #121214 !important;
+}
+.dark .bg-\[\#1A1A18\] {
+  background-color: #141417 !important;
+}
+
+/* Automatic Pastel Badges, Tags, & Dual-Tone Icons */
+.dark .bg-emerald-50,
+.dark .bg-emerald-50\/50,
+.dark .bg-emerald-100 {
+  background-color: rgba(6, 78, 59, 0.35) !important;
+}
+.dark .text-emerald-800,
+.dark .text-emerald-700,
+.dark .text-emerald-600 {
+  color: #6ee7b7 !important;
+}
+.dark .border-emerald-100,
+.dark .border-emerald-200,
+.dark .border-emerald-200\/80 {
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+.dark .bg-indigo-50,
+.dark .bg-indigo-50\/50,
+.dark .bg-indigo-100 {
+  background-color: rgba(49, 46, 129, 0.35) !important;
+}
+.dark .text-indigo-800,
+.dark .text-indigo-700,
+.dark .text-indigo-600 {
+  color: #a5b4fc !important;
+}
+.dark .border-indigo-100,
+.dark .border-indigo-200,
+.dark .border-indigo-200\/80 {
+  border-color: rgba(99, 102, 241, 0.25) !important;
+}
+
+.dark .bg-blue-50,
+.dark .bg-blue-50\/50,
+.dark .bg-blue-100 {
+  background-color: rgba(30, 58, 138, 0.35) !important;
+}
+.dark .text-blue-800,
+.dark .text-blue-700,
+.dark .text-blue-600 {
+  color: #93c5fd !important;
+}
+.dark .border-blue-100,
+.dark .border-blue-200,
+.dark .border-blue-200\/80 {
+  border-color: rgba(59, 130, 246, 0.25) !important;
+}
+
+.dark .bg-purple-50,
+.dark .bg-purple-50\/50,
+.dark .bg-purple-100 {
+  background-color: rgba(88, 28, 135, 0.35) !important;
+}
+.dark .text-purple-800,
+.dark .text-purple-700,
+.dark .text-purple-600 {
+  color: #d8b4fe !important;
+}
+.dark .border-purple-100,
+.dark .border-purple-200,
+.dark .border-purple-200\/80 {
+  border-color: rgba(168, 85, 247, 0.25) !important;
+}
+
+.dark .bg-amber-50,
+.dark .bg-amber-50\/50,
+.dark .bg-amber-100 {
+  background-color: rgba(120, 53, 15, 0.35) !important;
+}
+.dark .text-amber-800,
+.dark .text-amber-700,
+.dark .text-amber-600 {
+  color: #fcd34d !important;
+}
+.dark .border-amber-100,
+.dark .border-amber-200,
+.dark .border-amber-200\/80 {
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+.dark .bg-rose-50,
+.dark .bg-rose-50\/50,
+.dark .bg-rose-100 {
+  background-color: rgba(136, 19, 55, 0.35) !important;
+}
+.dark .text-rose-800,
+.dark .text-rose-700,
+.dark .text-rose-600 {
+  color: #fda4af !important;
+}
+.dark .border-rose-100,
+.dark .border-rose-200,
+.dark .border-rose-200\/80 {
+  border-color: rgba(244, 63, 94, 0.25) !important;
+}
+
+/* Automatic Borders */
+.dark .border-\[\#EAEAE5\],
+.dark .border-\[\#EAEAE5\]\/70,
+.dark .border-\[\#EAEAE5\]\/60 {
+  border-color: #27272e !important;
+}
+.dark .border-\[\#BEBDB9\],
+.dark .border-\[\#D0D0C8\],
+.dark .border-\[\#C8C8C0\] {
+  border-color: #3f3f46 !important;
+}
+.dark .hover\:border-\[\#BEBDB9\]:hover,
+.dark .hover\:border-\[\#111111\]:hover {
+  border-color: #52525b !important;
+}
+
+/* Automatic Ink Text Colors */
+.dark .text-\[\#111111\] {
+  color: #f4f4f5 !important;
+}
+.dark .text-\[\#6E6D68\],
+.dark .text-\[\#71716D\] {
+  color: #a1a1aa !important;
+}
+.dark .text-\[\#9E9D98\] {
+  color: #71717a !important;
+}
+
+/* Inputs, Textareas, Selects */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.dark textarea,
+.dark select {
+  background-color: #141417 !important;
+  color: #f4f4f5 !important;
+  border-color: #27272e !important;
+}
+
+/* Custom sleek scrollbar in dark mode */
+.dark .custom-scrollbar {
+  scrollbar-color: #3f3f46 transparent;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
+/* Ensure button lines and decorative elements adapt in dark mode */
+.dark button .bg-\[\#111111\],
+.dark [role="button"] .bg-\[\#111111\] {
+  background-color: #f4f4f5 !important;
+}
+
+/* Contrast enhancement for primary active items in sidebar, tabs, and option selectors */
+.dark aside button.bg-\[\#111111\],
+.dark nav button.bg-\[\#111111\],
+.dark [role="tab"][aria-selected="true"],
+.dark [aria-selected="true"] {
+  background-color: #f4f4f5 !important;
+  color: #111111 !important;
+  border-color: #f4f4f5 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+}
+.dark aside button.bg-\[\#111111\] svg,
+.dark nav button.bg-\[\#111111\] svg {
+  color: #111111 !important;
+}
+
+/* Universal tactile haptic press feel for interactive buttons across the app */
+button:active:not(:disabled),
+[role="button"]:active:not([aria-disabled="true"]) {
+  transform: scale(0.972);
+  transition: transform 0.08s cubic-bezier(0.2, 0, 0, 1);
 }

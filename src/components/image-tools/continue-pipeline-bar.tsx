@@ -131,15 +131,15 @@ export function ContinuePipelineBar({
   }
 
   return (
-    <div className={`rounded-2xl border border-[#EAEAE5] bg-white p-4 space-y-3 shadow-2xs ${className}`}>
+    <div className={`rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-zinc-900/80 p-4 space-y-3 shadow-2xs ${className}`}>
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-xs font-bold text-[#111111]">
-          <svg className="h-3.5 w-3.5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <div className="flex items-center gap-1.5 text-xs font-bold text-[#111111] dark:text-white">
+          <svg className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
           </svg>
           <span>Continue editing with this image</span>
         </div>
-        <span className="text-[10px] font-semibold text-[#9E9D98]">Upload once • Transform anywhere</span>
+        <span className="text-[10px] font-semibold text-[#9E9D98] dark:text-zinc-500">Upload once • Transform anywhere</span>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 pt-1">
@@ -150,10 +150,10 @@ export function ContinuePipelineBar({
               key={tool.id}
               onClick={() => handleSelectTool(tool)}
               disabled={navigatingTo !== null}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F5F4EE] hover:bg-[#EAEAE5] border border-[#EAEAE5] text-xs font-semibold text-[#111111] hover:border-[#BEBDB9] active:scale-98 transition-all cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F5F4EE] dark:bg-zinc-800 hover:bg-[#EAEAE5] dark:hover:bg-zinc-700 border border-[#EAEAE5] dark:border-zinc-700 text-xs font-semibold text-[#111111] dark:text-zinc-200 hover:border-[#BEBDB9] dark:hover:border-zinc-600 active:scale-98 transition-all cursor-pointer disabled:opacity-50"
             >
               {isLoading ? (
-                <div className="h-3.5 w-3.5 rounded-full border-2 border-[#111111] border-t-transparent animate-spin" />
+                <div className="h-3.5 w-3.5 rounded-full border-2 border-[#111111] dark:border-white border-t-transparent animate-spin" />
               ) : (
                 tool.icon
               )}

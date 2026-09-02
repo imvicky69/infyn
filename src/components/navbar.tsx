@@ -22,6 +22,8 @@ import {
   BookOpen,
   QrCode,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { AnimatedLogo } from "@/components/animatedLogo";
 
 function GithubIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -150,6 +152,7 @@ export function Navbar() {
   const [imageDropdownOpen, setImageDropdownOpen] = useState(false);
   const [pdfDropdownOpen, setPdfDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeMobileTab, setActiveMobileTab] = useState<"all" | "image" | "pdf">("all");
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -157,6 +160,54 @@ export function Navbar() {
     setImageDropdownOpen(false);
     setPdfDropdownOpen(false);
   }, [pathname]);
+
+  // Sync category tab with current pathname
+  useEffect(() => {
+    if (pathname.startsWith("/pdf")) {
+      setActiveMobileTab("pdf");
+    } else if (pathname.startsWith("/image")) {
+      setActiveMobileTab("image");
+    } else {
+      setActiveMobileTab("all");
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const preventTouch = (e: TouchEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target?.closest("[data-mobile-drawer]")) {
+        e.preventDefault();
+      }
+    };
+
+    const preventWheel = (e: WheelEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target?.closest("[data-mobile-drawer]")) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("touchmove", preventTouch, { passive: false });
+    window.addEventListener("wheel", preventWheel, { passive: false });
+
+    return () => {
+      document.removeEventListener("touchmove", preventTouch);
+      window.removeEventListener("wheel", preventWheel);
+    };
+  }, [mobileMenuOpen]);
+
+  // Close mobile menu on desktop screen resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleImageMouseEnter = () => {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
@@ -178,9 +229,9 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full">
+    <header className={`${mobileMenuOpen ? "fixed" : "sticky"} top-0 left-0 right-0 z-50 w-full`}>
       {/* Main nav bar */}
-      <div className="border-b border-[#EAEAE5]/70 bg-[#FBFBFA]/90 backdrop-blur-2xl">
+      <div className="border-b border-[#EAEAE5]/70 dark:border-zinc-800/80 bg-[#FBFBFA]/90 dark:bg-[#0C0C0E]/90 backdrop-blur-2xl transition-colors">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Brand */}
 
@@ -189,19 +240,15 @@ export function Navbar() {
             className="flex items-center gap-2.5 group"
             aria-label="infyn home"
           >
-            <div className="relative">
-              <Image
-                src="/logo-clear.png"
-                alt="infyn"
-                width={26}
-                height={26}
-                style={{ width: "auto", height: "26px" }}
-                className="object-contain group-hover:scale-105 transition-transform duration-200"
-                priority
+            <div className="relative flex items-center justify-center">
+              <AnimatedLogo
+                variant="navbar"
+                width={32}
+                className="text-[#111111] dark:text-white group-hover:scale-105 transition-transform duration-200"
               />
             </div>
             <div className="flex flex-col leading-none">
-              <span className="font-bold text-[#111111] text-lg tracking-tight">
+              <span className="font-bold text-[#111111] dark:text-white text-lg tracking-tight">
                 infyn
               </span>
             </div>
@@ -404,41 +451,52 @@ export function Navbar() {
               </span>
             </Link>
 
-            {/* Docs & SDK */}
+            {/* Minimal Docs Link */}
             <Link
               href="/docs"
-
-              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all tracking-[-0.01em] ${
+              className={`px-3 py-1.5 rounded-xl text-[13px] font-medium transition-colors ${
                 pathname.startsWith("/docs")
-                  ? "bg-[#F0EFEA] text-[#111111]"
-                  : "text-[#6E6D68] hover:text-[#111111] hover:bg-[#F5F4EE]"
+                  ? "text-[#111111] dark:text-white font-semibold bg-[#F5F4EE] dark:bg-zinc-800/80"
+                  : "text-[#6E6D68] hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800/50"
               }`}
             >
-              <BookOpen className="h-3.5 w-3.5 text-[#9E9D98]" />
-              <span>Docs</span>
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-                SDK
-              </span>
+              Docs
             </Link>
 
             {/* Divider */}
-            <div className="w-px h-4 bg-[#EAEAE5] mx-1.5" />
+            <div className="w-px h-4 bg-[#EAEAE5] dark:bg-zinc-800 mx-1" />
 
-            {/* GitHub */}
-            <a
-              href="https://github.com/imvicky69/infyn"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-xl text-[#9E9D98] hover:text-[#111111] hover:bg-[#F5F4EE] transition-colors"
-              aria-label="GitHub"
-            >
-              <GithubIcon className="h-4 w-4" />
-            </a>
+            {/* Theme toggle */}
+            <ThemeToggle />
+
+            {/* GitHub - Distinct button on docs page */}
+            {pathname.startsWith("/docs") ? (
+              <a
+                href="https://github.com/imvicky69/infyn"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs font-bold text-[#111111] dark:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 active:scale-[0.97] transition-all shadow-2xs"
+                aria-label="GitHub Repository"
+              >
+                <GithubIcon className="h-3.5 w-3.5" />
+                <span>GitHub</span>
+              </a>
+            ) : (
+              <a
+                href="https://github.com/imvicky69/infyn"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-xl text-[#9E9D98] hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 transition-colors"
+                aria-label="GitHub"
+              >
+                <GithubIcon className="h-4 w-4" />
+              </a>
+            )}
           </nav>
 
           {/* Mobile right controls */}
-          <div className="flex md:hidden items-center gap-2">
-            {/* Removed the active tool pill to keep it completely minimal on mobile */}
+          <div className="flex md:hidden items-center gap-1.5">
+            <ThemeToggle />
             
             <button
               type="button"
@@ -453,15 +511,15 @@ export function Navbar() {
               >
                 <motion.span
                   variants={{ open: { rotate: 45, y: 5 }, closed: { rotate: 0, y: 0 } }}
-                  className="block h-[1.5px] w-4 bg-[#111111] origin-center transition-all"
+                  className="block h-[1.5px] w-4 bg-current origin-center transition-all"
                 />
                 <motion.span
                   variants={{ open: { opacity: 0 }, closed: { opacity: 1 } }}
-                  className="block h-[1.5px] w-4 bg-[#111111] transition-all"
+                  className="block h-[1.5px] w-4 bg-current transition-all"
                 />
                 <motion.span
                   variants={{ open: { rotate: -45, y: -5 }, closed: { rotate: 0, y: 0 } }}
-                  className="block h-[1.5px] w-4 bg-[#111111] origin-center transition-all"
+                  className="block h-[1.5px] w-4 bg-current origin-center transition-all"
                 />
               </motion.div>
             </button>
@@ -469,140 +527,243 @@ export function Navbar() {
         </div>
       </div>
 
+      {/* Backdrop overlay for mobile menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            key="mobile-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            onClick={() => setMobileMenuOpen(false)}
+            className="fixed inset-0 top-14 bg-black/25 dark:bg-black/50 backdrop-blur-xs md:hidden z-40"
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Mobile slide-down drawer */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden border-b border-[#EAEAE5] bg-white/97 backdrop-blur-2xl md:hidden shadow-lg"
+            key="mobile-drawer"
+            data-mobile-drawer="true"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-50 max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain custom-scrollbar border-b border-[#EAEAE5] dark:border-zinc-800 bg-white/98 dark:bg-[#141417]/98 backdrop-blur-2xl md:hidden shadow-xl"
+            style={{ WebkitOverflowScrolling: "touch" }}
           >
-            <div className="max-w-5xl mx-auto px-4 py-4 space-y-4">
-              {/* Featured QR Code Banner on Mobile */}
-              <Link
-                href="/image/qr-code"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between p-3 rounded-2xl bg-indigo-50/80 border border-indigo-200/80 transition-all"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-xl bg-white border border-indigo-200 flex items-center justify-center text-indigo-700 shadow-2xs">
-                    <QrCode className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-[13px] text-[#111111]">QR Code Generator</p>
-                    <p className="text-[11px] text-[#6E6D68]">Design custom codes with logos & Wi-Fi</p>
-                  </div>
-                </div>
-                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-white text-indigo-700 border border-indigo-200 shrink-0">
-                  New
-                </span>
-              </Link>
-              {/* PDF Tools Section */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between px-1 pb-1.5 border-b border-[#F5F4EE]">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
-                    PDF Utilities
-                  </span>
-                  <Link
-                    href="/pdf"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-[11px] font-bold text-[#111111] hover:underline"
-                  >
-                    View All PDF Tools →
-                  </Link>
-                </div>
-
-                <div className="grid grid-cols-1 gap-0.5">
-                  {PDF_TOOLS_NAV.map((tool) => (
-                    <Link
-                      key={tool.href}
-                      href={tool.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between p-2.5 rounded-xl hover:bg-[#F8F8F6] transition-all"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-8 w-8 rounded-[10px] flex items-center justify-center shrink-0 border bg-[#FBFBFA] border-[#EAEAE5] text-[#111111]">
-                          {tool.icon}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-semibold text-[13px] text-[#111111] truncate">{tool.name}</p>
-                          <p className="text-[10px] text-[#9E9D98] truncate">{tool.desc}</p>
-                        </div>
-                      </div>
-                      {tool.badge && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5F4EE] text-[#6E6D68] border border-[#EAEAE5] shrink-0 ml-2">
-                          {tool.badge}
-                        </span>
-                      )}
-                    </Link>
-                  ))}
-                </div>
+            <div className="max-w-xl mx-auto px-4 py-3.5 space-y-4 pb-8">
+              {/* Category Segmented Control */}
+              <div className="flex items-center p-1 rounded-xl bg-[#F5F4EE] border border-[#EAEAE5] gap-1">
+                <button
+                  type="button"
+                  onClick={() => setActiveMobileTab("all")}
+                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    activeMobileTab === "all"
+                      ? "bg-white text-[#111111] shadow-2xs"
+                      : "text-[#6E6D68] hover:text-[#111111]"
+                  }`}
+                >
+                  All ({IMAGE_TOOLS.length + PDF_TOOLS_NAV.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveMobileTab("image")}
+                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    activeMobileTab === "image"
+                      ? "bg-white text-[#111111] shadow-2xs"
+                      : "text-[#6E6D68] hover:text-[#111111]"
+                  }`}
+                >
+                  Image ({IMAGE_TOOLS.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveMobileTab("pdf")}
+                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    activeMobileTab === "pdf"
+                      ? "bg-white text-[#111111] shadow-2xs"
+                      : "text-[#6E6D68] hover:text-[#111111]"
+                  }`}
+                >
+                  PDF ({PDF_TOOLS_NAV.length})
+                </button>
               </div>
 
               {/* Image Tools Section */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between px-1 pb-1.5 border-b border-[#F5F4EE]">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
-                    Image Tools Suite
-                  </span>
-                  <Link
-                    href="/image"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-[11px] font-bold text-[#111111] hover:underline"
-                  >
-                    View All Image Tools →
-                  </Link>
-                </div>
-
-
-                <div className="grid grid-cols-1 gap-0.5">
-                  {IMAGE_TOOLS.map((tool) => (
+              {(activeMobileTab === "all" || activeMobileTab === "image") && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between px-1 pb-1 border-b border-[#F5F4EE]">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
+                      Image Suite
+                    </span>
                     <Link
-                      key={tool.href}
-                      href={tool.href}
+                      href="/image"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between p-2.5 rounded-xl hover:bg-[#F8F8F6] transition-all"
+                      className="text-[11px] font-bold text-[#111111] hover:underline"
                     >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-8 w-8 rounded-[10px] flex items-center justify-center shrink-0 border bg-[#FBFBFA] border-[#EAEAE5] text-[#111111]">
-                          {tool.icon}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-semibold text-[13px] text-[#111111] truncate">{tool.name}</p>
-                          <p className="text-[10px] text-[#9E9D98] truncate">{tool.desc}</p>
-                        </div>
-                      </div>
-                      {tool.badge && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5F4EE] text-[#6E6D68] border border-[#EAEAE5] shrink-0 ml-2">
-                          {tool.badge}
-                        </span>
-                      )}
+                      View All Image Tools →
                     </Link>
-                  ))}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {IMAGE_TOOLS.map((tool) => {
+                      const isActive = pathname === tool.href;
+                      return (
+                        <Link
+                          key={tool.href}
+                          href={tool.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`group flex flex-col justify-between p-2.5 rounded-xl border transition-all ${
+                            isActive
+                              ? "bg-[#F0EFEA] border-[#BEBDB9]"
+                              : "bg-[#FBFBFA]/70 border-[#EAEAE5] hover:bg-white hover:border-[#BEBDB9] active:scale-[0.98]"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="h-7 w-7 rounded-lg bg-white border border-[#EAEAE5] flex items-center justify-center text-[#111111] shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                              {tool.icon}
+                            </div>
+                            {tool.badge && (
+                              <span
+                                className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 ${
+                                  tool.badge === "AI"
+                                    ? "bg-purple-50 text-purple-700 border-purple-200/80"
+                                    : tool.badge === "New"
+                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200/80"
+                                    : tool.badge === "Batch"
+                                    ? "bg-blue-50 text-blue-700 border-blue-200/80"
+                                    : tool.badge === "Vector"
+                                    ? "bg-indigo-50 text-indigo-700 border-indigo-200/80"
+                                    : "bg-[#F5F4EE] text-[#6E6D68] border-[#EAEAE5]"
+                                }`}
+                              >
+                                {tool.badge}
+                              </span>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-bold text-[12px] text-[#111111] leading-tight truncate">
+                              {tool.name}
+                            </p>
+                            <p className="text-[10px] text-[#9E9D98] leading-tight truncate mt-0.5">
+                              {tool.desc}
+                            </p>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="pt-2 border-t border-[#F5F4EE] flex items-center justify-between gap-3">
-                <Link
-                  href="/docs"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 flex items-center justify-center gap-2 p-2.5 rounded-xl border border-[#EAEAE5] bg-[#FBFBFA] text-xs font-bold text-[#111111] hover:bg-[#F5F4EE] transition-colors"
-                >
-                  <BookOpen className="h-4 w-4 text-[#6E6D68]" />
-                  <span>Developer Docs & SDK</span>
-                </Link>
+              {/* PDF Tools Section */}
+              {(activeMobileTab === "all" || activeMobileTab === "pdf") && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between px-1 pb-1 border-b border-[#F5F4EE]">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
+                      PDF Utilities
+                    </span>
+                    <Link
+                      href="/pdf"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="text-[11px] font-bold text-[#111111] hover:underline"
+                    >
+                      View All PDF Tools →
+                    </Link>
+                  </div>
 
-                <a
-                  href="https://github.com/imvicky69/infyn"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl border border-[#EAEAE5] bg-[#FBFBFA] text-[#6E6D68] hover:text-[#111111] hover:bg-[#F5F4EE] transition-colors"
-                  aria-label="GitHub"
-                >
-                  <GithubIcon className="h-4 w-4" />
-                </a>
+                  <div className="grid grid-cols-2 gap-2">
+                    {PDF_TOOLS_NAV.map((tool) => {
+                      const isActive = pathname === tool.href;
+                      return (
+                        <Link
+                          key={tool.href}
+                          href={tool.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`group flex flex-col justify-between p-2.5 rounded-xl border transition-all ${
+                            isActive
+                              ? "bg-[#F0EFEA] border-[#BEBDB9]"
+                              : "bg-[#FBFBFA]/70 border-[#EAEAE5] hover:bg-white hover:border-[#BEBDB9] active:scale-[0.98]"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="h-7 w-7 rounded-lg bg-white border border-[#EAEAE5] flex items-center justify-center text-[#111111] shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                              {tool.icon}
+                            </div>
+                            {tool.badge && (
+                              <span
+                                className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 ${
+                                  tool.badge === "AI"
+                                    ? "bg-purple-50 text-purple-700 border-purple-200/80"
+                                    : tool.badge === "New"
+                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200/80"
+                                    : tool.badge === "Batch"
+                                    ? "bg-blue-50 text-blue-700 border-blue-200/80"
+                                    : tool.badge === "Vector"
+                                    ? "bg-indigo-50 text-indigo-700 border-indigo-200/80"
+                                    : "bg-[#F5F4EE] text-[#6E6D68] border-[#EAEAE5]"
+                                }`}
+                              >
+                                {tool.badge}
+                              </span>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-bold text-[12px] text-[#111111] leading-tight truncate">
+                              {tool.name}
+                            </p>
+                            <p className="text-[10px] text-[#9E9D98] leading-tight truncate mt-0.5">
+                              {tool.desc}
+                            </p>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Quick Links, 3-Mode Theme & GitHub Footer */}
+              <div className="pt-3 border-t border-[#F5F4EE] dark:border-zinc-800/80 space-y-3">
+                <div className="flex items-center justify-between gap-2 px-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E9D98] dark:text-zinc-500">
+                    Appearance
+                  </span>
+                  <ThemeToggle variant="segmented" />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/docs"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-[#EAEAE5] dark:border-zinc-800 bg-[#FBFBFA] dark:bg-zinc-900 text-xs font-semibold text-[#111111] dark:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 active:scale-[0.98] transition-all shadow-2xs"
+                  >
+                    <span>Docs</span>
+                  </Link>
+
+                  <Link
+                    href="/contributing"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-[#EAEAE5] dark:border-zinc-800 bg-[#FBFBFA] dark:bg-zinc-900 text-xs font-semibold text-[#111111] dark:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 active:scale-[0.98] transition-all shadow-2xs"
+                  >
+                    <span>Contribute</span>
+                  </Link>
+
+                  <a
+                    href="https://github.com/imvicky69/infyn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-xl border border-[#EAEAE5] dark:border-zinc-800 bg-[#FBFBFA] dark:bg-zinc-900 text-[#6E6D68] dark:text-zinc-300 hover:text-[#111111] dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 active:scale-[0.98] transition-all shadow-2xs"
+                    aria-label="GitHub"
+                  >
+                    <GithubIcon className="h-4 w-4" />
+                  </a>
+                </div>
               </div>
             </div>
           </motion.div>

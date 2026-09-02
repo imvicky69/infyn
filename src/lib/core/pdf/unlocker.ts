@@ -49,11 +49,17 @@ export async function decryptPDF(
   file: BinaryInput,
   password: string
 ): Promise<Uint8Array> {
+  const bytes = await toUint8Array(file);
+  const isProtected = await isPDFEncrypted(bytes);
+  if (!isProtected) {
+    // If PDF is already unencrypted, return bytes without error
+    return bytes;
+  }
+
   if (!password) {
     throw new Error("Password is required to decrypt the PDF.");
   }
 
-  const bytes = await toUint8Array(file);
   const decryptedData = await cryptDecrypt(bytes, password);
 
   return decryptedData instanceof Uint8Array ? decryptedData : new Uint8Array(decryptedData);

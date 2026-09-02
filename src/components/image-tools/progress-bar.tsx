@@ -11,7 +11,7 @@ export function ProgressBar({
 }) {
   return (
     <div className={`w-full max-w-sm mx-auto flex flex-col gap-3 ${className}`}>
-      <div className="relative h-1.5 w-full rounded-full bg-[#EAEAE5] overflow-hidden">
+      <div className="relative h-1.5 w-full rounded-full bg-[#EAEAE5] dark:bg-zinc-800 overflow-hidden">
         <div
           className="absolute inset-0 rounded-full"
           style={{
@@ -22,11 +22,11 @@ export function ProgressBar({
           }}
         />
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-[#111111] transition-[width] duration-500 ease-out"
+          className="absolute inset-y-0 left-0 rounded-full bg-[#111111] dark:bg-emerald-400 transition-[width] duration-500 ease-out"
           style={{ width: `${value}%` }}
         />
       </div>
-      <div className="flex items-center justify-between text-xs text-[#9E9D98]">
+      <div className="flex items-center justify-between text-xs text-[#9E9D98] dark:text-zinc-400">
         <span
           key={text}
           className="transition-all duration-300"
@@ -34,7 +34,7 @@ export function ProgressBar({
         >
           {text}
         </span>
-        <span className="font-semibold tabular-nums text-[#111111]">{value}%</span>
+        <span className="font-semibold tabular-nums text-[#111111] dark:text-zinc-200">{value}%</span>
       </div>
     </div>
   );

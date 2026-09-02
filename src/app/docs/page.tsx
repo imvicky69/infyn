@@ -18,7 +18,9 @@ import {
   ShieldCheck,
   Zap,
   Sparkles,
-  Search
+  Search,
+  GitPullRequest,
+  ArrowRight,
 } from "lucide-react";
 
 interface CodeSnippetProps {
@@ -37,25 +39,25 @@ function CodeBlock({ code, language = "typescript", title }: CodeSnippetProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-[#EAEAE5] bg-[#111111] overflow-hidden my-4 shadow-sm">
+    <div className="rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-[#111111] dark:bg-[#0E0E10] overflow-hidden my-4 shadow-sm">
       {title && (
-        <div className="px-4 py-2.5 bg-[#1C1C1A] border-b border-[#2A2A28] flex items-center justify-between">
+        <div className="px-4 py-2.5 bg-[#1C1C1A] dark:bg-[#151518] border-b border-[#2A2A28] dark:border-zinc-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]/80 inline-block" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]/80 inline-block" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]/80 inline-block" />
-            <span className="text-xs font-mono text-[#9E9D98] ml-2">{title}</span>
+            <span className="text-xs font-mono text-[#9E9D98] dark:text-zinc-400 ml-2">{title}</span>
           </div>
           <button
             onClick={copyToClipboard}
-            className="flex items-center gap-1.5 text-xs text-[#BEBDB9] hover:text-white transition-colors px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10"
+            className="flex items-center gap-1.5 text-xs text-[#BEBDB9] dark:text-zinc-400 hover:text-white transition-colors px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer"
           >
             {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
             <span>{copied ? "Copied!" : "Copy"}</span>
           </button>
         </div>
       )}
-      <div className="p-4 overflow-x-auto text-sm font-mono text-[#EAEAE5] leading-relaxed">
+      <div className="p-4 overflow-x-auto text-sm font-mono text-[#EAEAE5] dark:text-zinc-200 leading-relaxed">
         <pre>{code}</pre>
       </div>
     </div>
@@ -84,29 +86,29 @@ export default function DocsPage() {
   };
 
   return (
-    <div className="min-h-screen text-[#111111] flex flex-col font-sans bg-[#FBFBFA]">
+    <div className="min-h-screen text-[#111111] dark:text-[#EDEDEC] flex flex-col font-sans bg-[#FBFBFA] dark:bg-[#0C0C0E]">
       <Navbar />
       <Breadcrumbs />
 
       {/* Hero Header */}
-      <header className="border-b border-[#EAEAE5] bg-white/60 backdrop-blur-md pt-12 pb-12">
+      <header className="border-b border-[#EAEAE5] dark:border-zinc-800 bg-white/60 dark:bg-[#141417]/60 backdrop-blur-md pt-12 pb-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold">
-              <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold">
+              <Sparkles className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>NPM Package v1.0.0 is Live</span>
             </div>
             
             <SplitText
               text="Infyn Developer Documentation"
-              className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight"
+              className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight text-[#111111] dark:text-white"
               delay={25}
               duration={0.7}
               splitType="words"
               tag="h1"
             />
 
-            <p className="text-base sm:text-lg text-[#6E6D68] leading-relaxed">
+            <p className="text-base sm:text-lg text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
               Integrate client-side PDF manipulation, image compression, metadata removal, and WASM conversion directly into your React, Next.js, or Vue applications with zero server costs and 100% user privacy.
             </p>
 
@@ -115,20 +117,36 @@ export default function DocsPage() {
                 href="https://www.npmjs.com/package/infyn"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#111111] text-white text-xs font-bold hover:bg-[#262626] transition-all shadow-xs"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-xs font-bold hover:bg-[#262626] dark:hover:bg-zinc-200 active:scale-[0.98] transition-all shadow-xs cursor-pointer"
               >
                 <span>View on npm</span>
                 <ExternalLink className="h-3.5 w-3.5 opacity-70" />
               </a>
+
+              {/* GitHub Button with distinctive open-source badge on docs page */}
               <a
                 href="https://github.com/imvicky69/infyn"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-[#EAEAE5] text-[#111111] text-xs font-bold hover:bg-[#F5F4EE] transition-all shadow-xs"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-[#BEBDB9] dark:border-zinc-700 text-[#111111] dark:text-white text-xs font-bold hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 active:scale-[0.98] transition-all shadow-xs cursor-pointer group"
               >
-                <span>GitHub Repository</span>
-                <ExternalLink className="h-3.5 w-3.5 opacity-70" />
+                <svg className="h-4 w-4 text-[#111111] dark:text-white group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                </svg>
+                <span>GitHub</span>
+                <span className="px-1.5 py-0.2 rounded-full bg-[#F5F4EE] dark:bg-zinc-800 text-[10px] font-mono font-semibold text-[#6E6D68] dark:text-zinc-300">
+                  ★ Star
+                </span>
               </a>
+
+              <Link
+                href="/contributing"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900/60 active:scale-[0.98] transition-all shadow-xs"
+              >
+                <GitPullRequest className="h-3.5 w-3.5" />
+                <span>Contributing Guide</span>
+                <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
           </div>
         </div>
@@ -141,7 +159,7 @@ export default function DocsPage() {
         <aside className="lg:w-64 shrink-0">
           <div className="sticky top-24 space-y-6">
             <div className="space-y-1">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-[#9E9D98] px-3 mb-2">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#9E9D98] dark:text-zinc-500 px-3 mb-2">
                 Documentation Menu
               </p>
               {SECTIONS.map((sec) => {
@@ -151,27 +169,41 @@ export default function DocsPage() {
                   <button
                     key={sec.id}
                     onClick={() => scrollTo(sec.id)}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all text-left ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all text-left cursor-pointer ${
                       isActive
-                        ? "bg-[#111111] text-white shadow-xs"
-                        : "text-[#6E6D68] hover:text-[#111111] hover:bg-[#F5F4EE]"
+                        ? "bg-[#111111] dark:bg-white text-white dark:text-[#111111] shadow-xs"
+                        : "text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800/80"
                     }`}
                   >
-                    <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-white" : "text-[#9E9D98]"}`} />
+                    <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-white dark:text-[#111111]" : "text-[#9E9D98] dark:text-zinc-500"}`} />
                     <span className="truncate">{sec.title}</span>
                   </button>
                 );
               })}
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#F5F4EE] border border-[#EAEAE5] space-y-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#111111]">
-                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+            <div className="p-4 rounded-2xl bg-[#F5F4EE] dark:bg-zinc-900/90 border border-[#EAEAE5] dark:border-zinc-800 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#111111] dark:text-white">
+                <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 <span>Zero Server Uploads</span>
               </div>
-              <p className="text-[11px] text-[#6E6D68] leading-relaxed">
-                All functions process files locally in the user's browser memory. Zero API keys, zero rate limits, zero server infrastructure required.
+              <p className="text-[11px] text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
+                All functions process files locally in the user&apos;s browser memory. Zero API keys, zero rate limits, zero server infrastructure required.
               </p>
+            </div>
+
+            {/* Contributing Guide Link */}
+            <div className="pt-2 border-t border-[#EAEAE5] dark:border-zinc-800">
+              <Link
+                href="/contributing"
+                className="w-full flex items-center justify-between p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-[#EAEAE5] dark:border-zinc-800 text-xs font-bold text-[#111111] dark:text-white hover:border-[#BEBDB9] dark:hover:border-zinc-700 hover:shadow-xs active:scale-[0.98] transition-all group"
+              >
+                <div className="flex items-center gap-2">
+                  <GitPullRequest className="h-4 w-4 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
+                  <span>Contributing Guide</span>
+                </div>
+                <ArrowRight className="h-3.5 w-3.5 text-[#9E9D98] dark:text-zinc-500 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
             </div>
           </div>
         </aside>
@@ -556,17 +588,17 @@ main();`}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-5 rounded-2xl border border-[#EAEAE5] bg-white space-y-2">
-                <h4 className="font-bold text-sm text-[#111111]">WebAssembly & Canvas</h4>
-                <p className="text-xs text-[#6E6D68] leading-relaxed">
+              <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-zinc-900/60 space-y-2">
+                <h4 className="font-bold text-sm text-[#111111] dark:text-white">WebAssembly & Canvas</h4>
+                <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
                   Decoders and raster engines run in WebAssembly bundles and hardware-accelerated 2D HTML5 Canvas contexts.
                 </p>
               </div>
 
-              <div className="p-5 rounded-2xl border border-[#EAEAE5] bg-white space-y-2">
-                <h4 className="font-bold text-sm text-[#111111]">In-Memory WebCrypto</h4>
-                <p className="text-xs text-[#6E6D68] leading-relaxed">
-                  AES-256 PDF encryption and key derivation execute natively via the browser's cryptographic subsystem.
+              <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-zinc-900/60 space-y-2">
+                <h4 className="font-bold text-sm text-[#111111] dark:text-white">In-Memory WebCrypto</h4>
+                <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
+                  AES-256 PDF encryption and key derivation execute natively via the browser&apos;s cryptographic subsystem.
                 </p>
               </div>
             </div>

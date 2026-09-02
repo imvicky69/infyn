@@ -9,6 +9,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { NpmShowcase } from "@/components/npm-showcase";
 import SplitText from "@/components/SplitText";
+import { AnimatedLogo } from "@/components/animatedLogo";
 import {
   Eraser,
   Minimize2,
@@ -312,9 +313,9 @@ export default function HomePage() {
         
         {/* ── Hero Section ─────────────────────────────────────────── */}
         <section className="text-center space-y-7 max-w-3xl mx-auto pt-4 sm:pt-8">
-          <div className="flex justify-center items-center gap-2 mb-6 sm:mb-8">
-             <Image src="/logo-clear.png" alt="Infyn" width={24} height={24} className="object-contain" />
-             <span className="font-extrabold tracking-[-0.03em] text-[22px] text-[#111111]">infyn</span>
+          <div className="flex justify-center items-center gap-2.5 mb-6 sm:mb-8 text-[#111111] dark:text-white">
+             <AnimatedLogo width={42} className="text-[#111111] dark:text-white" />
+             <span className="font-extrabold tracking-[-0.03em] text-[22px] text-[#111111] dark:text-white">infyn</span>
           </div>
 
           <SplitText

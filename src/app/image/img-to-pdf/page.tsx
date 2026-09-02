@@ -75,7 +75,7 @@ function generateId(): string {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
+    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98] dark:text-zinc-500">
       {children}
     </span>
   );
@@ -95,12 +95,13 @@ function OptionPill<T extends string>({
       {options.map((opt) => (
         <button
           key={opt.id}
+          type="button"
           onClick={() => onSelect(opt.id)}
           title={opt.desc}
-          className={`px-3 py-1.5 rounded-xl text-[12px] font-semibold border transition-all cursor-pointer ${
+          className={`px-3 py-1.5 rounded-xl text-[12px] font-semibold border transition-all cursor-pointer active:scale-[0.96] ${
             selected === opt.id
-              ? "bg-[#111111] text-white border-[#111111] shadow-sm"
-              : "bg-white text-[#6E6D68] border-[#EAEAE5] hover:border-[#BEBDB9] hover:text-[#111111]"
+              ? "bg-[#111111] text-white border-[#111111] shadow-xs dark:bg-white dark:text-[#111111] dark:border-white dark:shadow-md"
+              : "bg-white text-[#6E6D68] border-[#EAEAE5] hover:border-[#BEBDB9] hover:text-[#111111] dark:bg-zinc-900/90 dark:text-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:text-white"
           }`}
         >
           {opt.label}
@@ -152,21 +153,21 @@ function ImageGridCard({
       onDragOver={(e) => onDragOver(e, item.id)}
       onDragEnd={onDragEnd}
       onDrop={(e) => onDrop(e, item.id)}
-      className={`group relative flex flex-col rounded-2xl border bg-white overflow-hidden transition-all duration-200 cursor-grab active:cursor-grabbing select-none ${
+      className={`group relative flex flex-col rounded-2xl border bg-white dark:bg-zinc-900 overflow-hidden transition-all duration-200 cursor-grab active:cursor-grabbing select-none ${
         isDragOver
-          ? "border-[#111111] ring-2 ring-[#111111] shadow-md scale-[1.02]"
-          : "border-[#EAEAE5] hover:border-[#BEBDB9] hover:shadow-md"
+          ? "border-[#111111] dark:border-white ring-2 ring-[#111111] dark:ring-white shadow-md scale-[1.02]"
+          : "border-[#EAEAE5] dark:border-zinc-800 hover:border-[#BEBDB9] dark:hover:border-zinc-700 hover:shadow-md"
       }`}
     >
       {/* Top Floating Overlay (Page Pill & Controls) */}
       <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between z-20 pointer-events-none">
         {/* Page Badge */}
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white/95 backdrop-blur-md border border-[#EAEAE5] text-[10px] font-bold text-[#111111] shadow-xs tabular-nums">
-          <span className="text-[#9E9D98] font-medium">Page</span> {index + 1}
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-[#EAEAE5] dark:border-zinc-800 text-[10px] font-bold text-[#111111] dark:text-white shadow-xs tabular-nums">
+          <span className="text-[#9E9D98] dark:text-zinc-400 font-medium">Page</span> {index + 1}
         </span>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-1 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto bg-white/90 backdrop-blur-md p-1 rounded-xl border border-[#EAEAE5] shadow-xs">
+        <div className="flex items-center gap-1 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md p-1 rounded-xl border border-[#EAEAE5] dark:border-zinc-800 shadow-xs">
           <button
             type="button"
             onClick={(e) => {
@@ -174,7 +175,7 @@ function ImageGridCard({
               onMoveLeft(index);
             }}
             disabled={index === 0}
-            className="p-1 rounded-lg text-[#6E6D68] hover:text-[#111111] hover:bg-[#F5F4EE] disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+            className="p-1 rounded-lg text-[#6E6D68] dark:text-zinc-300 hover:text-[#111111] dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
             title="Move earlier"
             aria-label="Move left"
           >
@@ -189,7 +190,7 @@ function ImageGridCard({
               onMoveRight(index);
             }}
             disabled={index === total - 1}
-            className="p-1 rounded-lg text-[#6E6D68] hover:text-[#111111] hover:bg-[#F5F4EE] disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+            className="p-1 rounded-lg text-[#6E6D68] dark:text-zinc-300 hover:text-[#111111] dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
             title="Move later"
             aria-label="Move right"
           >
@@ -197,14 +198,14 @@ function ImageGridCard({
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
             </svg>
           </button>
-          <div className="h-3 w-px bg-[#EAEAE5] mx-0.5" />
+          <div className="h-3 w-px bg-[#EAEAE5] dark:bg-zinc-700 mx-0.5" />
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               onRemove(item.id);
             }}
-            className="p-1 rounded-lg text-[#9E9D98] hover:text-rose-600 hover:bg-rose-50 transition-all"
+            className="p-1 rounded-lg text-[#9E9D98] dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all"
             title="Remove page"
             aria-label="Remove image"
           >
@@ -216,7 +217,7 @@ function ImageGridCard({
       </div>
 
       {/* Preview Thumbnail Area */}
-      <div className="relative w-full aspect-[3/4] bg-[#F8F8F6] p-4 flex items-center justify-center overflow-hidden border-b border-[#EAEAE5]/60">
+      <div className="relative w-full aspect-[3/4] bg-[#F8F8F6] dark:bg-zinc-950/60 p-4 flex items-center justify-center overflow-hidden border-b border-[#EAEAE5]/60 dark:border-zinc-800/60">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={item.url}
@@ -229,13 +230,13 @@ function ImageGridCard({
       </div>
 
       {/* Card Info Footer */}
-      <div className="p-3 bg-white space-y-1">
-        <p className="text-[12px] font-bold text-[#111111] truncate tracking-tight" title={item.name}>
+      <div className="p-3 bg-white dark:bg-zinc-900 space-y-1">
+        <p className="text-[12px] font-bold text-[#111111] dark:text-white truncate tracking-tight" title={item.name}>
           {item.name}
         </p>
-        <div className="flex items-center justify-between text-[10px] font-medium text-[#9E9D98]">
+        <div className="flex items-center justify-between text-[10px] font-medium text-[#9E9D98] dark:text-zinc-400">
           <span>{item.width} × {item.height}px</span>
-          <span className="bg-[#F5F4EE] text-[#6E6D68] px-1.5 py-0.5 rounded-md font-semibold">{item.sizeLabel}</span>
+          <span className="bg-[#F5F4EE] dark:bg-zinc-800 text-[#6E6D68] dark:text-zinc-300 px-1.5 py-0.5 rounded-md font-semibold">{item.sizeLabel}</span>
         </div>
       </div>
     </motion.div>
@@ -661,24 +662,24 @@ export default function ImageToPdfPage() {
               {/* LEFT: Image Grid / List */}
               <div className="space-y-4">
                 {/* List / Grid header toolbar */}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#EAEAE5] pb-3.5">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#EAEAE5] dark:border-zinc-800 pb-3.5">
                   <div className="space-y-0.5">
                     <SectionLabel>Page Order & Preview</SectionLabel>
-                    <p className="text-sm font-bold text-[#111111] tracking-[-0.01em]">
+                    <p className="text-sm font-bold text-[#111111] dark:text-white tracking-[-0.01em]">
                       {images.length} {images.length === 1 ? "Page" : "Pages"} · Drag or use arrows to reorder
                     </p>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {/* View Switcher (Grid / List) */}
-                    <div className="inline-flex rounded-xl bg-[#F5F4EE] p-0.5 border border-[#EAEAE5]">
+                    <div className="inline-flex rounded-xl bg-[#F5F4EE] dark:bg-zinc-800/80 p-0.5 border border-[#EAEAE5] dark:border-zinc-700">
                       <button
                         type="button"
                         onClick={() => setViewMode("grid")}
-                        className={`p-1.5 rounded-lg transition-all ${
+                        className={`p-1.5 rounded-lg transition-all active:scale-[0.95] cursor-pointer ${
                           viewMode === "grid"
-                            ? "bg-white text-[#111111] shadow-2xs"
-                            : "text-[#9E9D98] hover:text-[#111111]"
+                            ? "bg-white dark:bg-zinc-900 text-[#111111] dark:text-white shadow-2xs"
+                            : "text-[#9E9D98] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white"
                         }`}
                         title="Grid view"
                         aria-label="Grid view"
@@ -690,10 +691,10 @@ export default function ImageToPdfPage() {
                       <button
                         type="button"
                         onClick={() => setViewMode("list")}
-                        className={`p-1.5 rounded-lg transition-all ${
+                        className={`p-1.5 rounded-lg transition-all active:scale-[0.95] cursor-pointer ${
                           viewMode === "list"
-                            ? "bg-white text-[#111111] shadow-2xs"
-                            : "text-[#9E9D98] hover:text-[#111111]"
+                            ? "bg-white dark:bg-zinc-900 text-[#111111] dark:text-white shadow-2xs"
+                            : "text-[#9E9D98] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white"
                         }`}
                         title="List view"
                         aria-label="List view"
@@ -708,7 +709,7 @@ export default function ImageToPdfPage() {
                     <button
                       type="button"
                       onClick={() => addMoreRef.current?.click()}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#EAEAE5] bg-white text-[12px] font-semibold text-[#6E6D68] hover:border-[#BEBDB9] hover:text-[#111111] transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-zinc-900 text-[12px] font-semibold text-[#6E6D68] dark:text-zinc-300 hover:border-[#BEBDB9] dark:hover:border-zinc-700 hover:text-[#111111] dark:hover:text-white active:scale-[0.97] transition-all cursor-pointer shadow-xs"
                     >
                       <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -732,7 +733,7 @@ export default function ImageToPdfPage() {
                     <button
                       type="button"
                       onClick={clearAll}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#EAEAE5] bg-white text-[12px] font-semibold text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-zinc-900 text-[12px] font-semibold text-rose-600 dark:text-rose-400 hover:border-rose-200 dark:hover:border-rose-900/60 hover:bg-rose-50 dark:hover:bg-rose-950/30 active:scale-[0.97] transition-all cursor-pointer shadow-xs"
                     >
                       Clear all
                     </button>
@@ -772,16 +773,16 @@ export default function ImageToPdfPage() {
                         const files = Array.from(e.dataTransfer.files);
                         if (files.length) handleFilesSelected(files);
                       }}
-                      className="group flex flex-col items-center justify-center gap-2 aspect-[3/4] rounded-2xl border-2 border-dashed border-[#DDDDD8] hover:border-[#AEAEAD] bg-white hover:bg-[#FDFDF9] cursor-pointer transition-all p-4 text-center select-none"
+                      className="group flex flex-col items-center justify-center gap-2 aspect-[3/4] rounded-2xl border-2 border-dashed border-[#DDDDD8] dark:border-zinc-800 hover:border-[#AEAEAD] dark:hover:border-zinc-700 bg-white dark:bg-zinc-900/50 hover:bg-[#FDFDF9] dark:hover:bg-zinc-900 cursor-pointer active:scale-[0.98] transition-all p-4 text-center select-none"
                     >
-                      <div className="h-10 w-10 rounded-xl bg-[#F5F4EE] border border-[#EAEAE5] flex items-center justify-center text-[#6E6D68] group-hover:scale-110 transition-transform">
+                      <div className="h-10 w-10 rounded-xl bg-[#F5F4EE] dark:bg-zinc-800 border border-[#EAEAE5] dark:border-zinc-700 flex items-center justify-center text-[#6E6D68] dark:text-zinc-300 group-hover:scale-110 transition-transform">
                         <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                       </div>
                       <div className="space-y-0.5">
-                        <p className="text-[12px] font-bold text-[#111111]">Add more images</p>
-                        <p className="text-[10px] text-[#9E9D98]">Click or drop here</p>
+                        <p className="text-[12px] font-bold text-[#111111] dark:text-white">Add more images</p>
+                        <p className="text-[10px] text-[#9E9D98] dark:text-zinc-500">Click or drop here</p>
                       </div>
                     </motion.div>
                   </div>
@@ -824,7 +825,7 @@ export default function ImageToPdfPage() {
 
               {/* RIGHT: Options panel */}
               <div className="space-y-5 lg:sticky lg:top-20">
-                <div className="rounded-2xl border border-[#EAEAE5] bg-white p-5 space-y-5 shadow-2xs">
+                <div className="rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-5 space-y-5 shadow-2xs">
 
                   {/* Page Size */}
                   <div className="space-y-2.5">
@@ -835,14 +836,18 @@ export default function ImageToPdfPage() {
                           key={id}
                           type="button"
                           onClick={() => setOpt("pageSize", id)}
-                          className={`flex flex-col items-start px-2.5 py-2 rounded-xl border text-left transition-all cursor-pointer ${
+                          className={`flex flex-col items-start px-2.5 py-2 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.96] ${
                             options.pageSize === id
-                              ? "bg-[#111111] border-[#111111] text-white"
-                              : "bg-white border-[#EAEAE5] text-[#111111] hover:border-[#BEBDB9]"
+                              ? "bg-[#111111] border-[#111111] text-white shadow-xs dark:bg-white dark:border-white dark:text-[#111111] dark:shadow-md"
+                              : "bg-white border-[#EAEAE5] text-[#111111] hover:border-[#BEBDB9] dark:bg-zinc-900/90 dark:border-zinc-800 dark:text-zinc-200 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/80"
                           }`}
                         >
                           <span className="text-[12px] font-bold leading-none">{ps.label}</span>
-                          <span className={`text-[9px] font-medium mt-1 leading-none ${options.pageSize === id ? "text-white/60" : "text-[#9E9D98]"}`}>
+                          <span className={`text-[9px] font-medium mt-1 leading-none ${
+                            options.pageSize === id
+                              ? "text-white/70 dark:text-zinc-600 font-semibold"
+                              : "text-[#9E9D98] dark:text-zinc-500"
+                          }`}>
                             {ps.desc}
                           </span>
                         </button>
@@ -886,16 +891,20 @@ export default function ImageToPdfPage() {
                           key={opt.id}
                           type="button"
                           onClick={() => setOpt("imageFit", opt.id)}
-                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl border text-left transition-all cursor-pointer active:scale-[0.97] ${
                             options.imageFit === opt.id
-                              ? "bg-[#111111] border-[#111111] text-white"
-                              : "bg-white border-[#EAEAE5] hover:border-[#BEBDB9]"
+                              ? "bg-[#111111] border-[#111111] text-white shadow-xs dark:bg-white dark:border-white dark:text-[#111111] dark:shadow-md"
+                              : "bg-white border-[#EAEAE5] hover:border-[#BEBDB9] dark:bg-zinc-900/90 dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/80"
                           }`}
                         >
-                          <span className={`text-[12px] font-semibold ${options.imageFit === opt.id ? "text-white" : "text-[#111111]"}`}>
+                          <span className={`text-[12px] font-semibold ${
+                            options.imageFit === opt.id ? "text-white dark:text-[#111111]" : "text-[#111111] dark:text-zinc-200"
+                          }`}>
                             {opt.label}
                           </span>
-                          <span className={`text-[10px] ${options.imageFit === opt.id ? "text-white/60" : "text-[#9E9D98]"}`}>
+                          <span className={`text-[10px] ${
+                            options.imageFit === opt.id ? "text-white/70 dark:text-zinc-600 font-medium" : "text-[#9E9D98] dark:text-zinc-500"
+                          }`}>
                             {opt.desc}
                           </span>
                         </button>
@@ -907,7 +916,7 @@ export default function ImageToPdfPage() {
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between">
                       <SectionLabel>JPEG Quality</SectionLabel>
-                      <span className="text-[12px] font-bold text-[#111111] tabular-nums">{options.quality}%</span>
+                      <span className="text-[12px] font-bold text-[#111111] dark:text-white tabular-nums">{options.quality}%</span>
                     </div>
                     <input
                       type="range"
@@ -916,9 +925,9 @@ export default function ImageToPdfPage() {
                       step={1}
                       value={options.quality}
                       onChange={(e) => setOpt("quality", Number(e.target.value))}
-                      className="w-full h-1.5 accent-[#111111] cursor-pointer rounded-full"
+                      className="w-full h-1.5 accent-[#111111] dark:accent-white cursor-pointer rounded-full"
                     />
-                    <div className="flex justify-between text-[10px] text-[#BEBDB9] font-medium">
+                    <div className="flex justify-between text-[10px] text-[#BEBDB9] dark:text-zinc-500 font-medium">
                       <span>Smaller file</span>
                       <span>Higher quality</span>
                     </div>
@@ -930,13 +939,13 @@ export default function ImageToPdfPage() {
                   type="button"
                   onClick={generatePdf}
                   disabled={images.length === 0}
-                  className="w-full inline-flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl bg-[#111111] text-white text-[14px] font-bold tracking-[-0.01em] hover:bg-[#1a1a1a] active:scale-[0.98] transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                  className="w-full inline-flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[14px] font-bold tracking-[-0.01em] hover:bg-[#1a1a1a] dark:hover:bg-zinc-200 active:scale-[0.98] transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                   </svg>
                   Generate PDF
-                  <span className="px-2 py-0.5 rounded-full bg-white/15 text-[11px] font-bold">
+                  <span className="px-2 py-0.5 rounded-full bg-white/15 dark:bg-black/15 text-[11px] font-bold">
                     {images.length} {images.length === 1 ? "page" : "pages"}
                   </span>
                 </button>

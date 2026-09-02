@@ -68,8 +68,8 @@ export function DropZone({
         flex flex-col items-center justify-center gap-5 py-16 sm:py-20 px-6 sm:px-8 text-center
         ${disabled ? "opacity-50 cursor-not-allowed" : ""}
         ${isDragging
-          ? "border-[#111111] bg-[#F0EFEA] scale-[1.01] shadow-lg"
-          : "border-[#DDDDD8] hover:border-[#AEAEAD] bg-white hover:bg-[#FDFDF9]"
+          ? "border-[#111111] dark:border-zinc-400 bg-[#F0EFEA] dark:bg-zinc-800/80 scale-[1.01] shadow-lg"
+          : "border-[#DDDDD8] dark:border-zinc-800 hover:border-[#AEAEAD] dark:hover:border-zinc-700 bg-white dark:bg-zinc-900/60 hover:bg-[#FDFDF9] dark:hover:bg-zinc-900"
         }
         ${className}
       `}
@@ -85,12 +85,12 @@ export function DropZone({
       />
 
       <div
-        className={`flex h-14 w-14 items-center justify-center rounded-2xl border border-[#EAEAE5] bg-[#F8F7F3] transition-transform duration-200 ${
+        className={`flex h-14 w-14 items-center justify-center rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-[#F8F7F3] dark:bg-zinc-800 transition-transform duration-200 ${
           isDragging ? "-translate-y-1.5 scale-110" : ""
         }`}
       >
         <svg
-          className="h-6 w-6 text-[#6E6D68]"
+          className="h-6 w-6 text-[#6E6D68] dark:text-zinc-400"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.6"
@@ -105,14 +105,14 @@ export function DropZone({
       </div>
 
       <div className="space-y-1.5 max-w-sm">
-        <p className="text-sm font-semibold text-[#111111]">
+        <p className="text-sm font-semibold text-[#111111] dark:text-white">
           {isDragging ? "Release to process" : title}
         </p>
-        <p className="text-xs text-[#9E9D98]">{subtitle}</p>
+        <p className="text-xs text-[#9E9D98] dark:text-zinc-400">{subtitle}</p>
       </div>
 
       {formatsText && (
-        <p className="text-[11px] text-[#BEBDB9] tracking-widest font-medium">
+        <p className="text-[11px] text-[#BEBDB9] dark:text-zinc-500 tracking-widest font-medium">
           {formatsText}
         </p>
       )}
