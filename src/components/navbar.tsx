@@ -21,6 +21,7 @@ import {
   Scissors,
   BookOpen,
   QrCode,
+  Download,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AnimatedLogo } from "@/components/animatedLogo";
@@ -451,6 +452,22 @@ export function Navbar() {
               </span>
             </Link>
 
+            {/* Infyn DL App dedicated button */}
+            <Link
+              href="/dl"
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all tracking-[-0.01em] ${
+                pathname.startsWith("/dl")
+                  ? "bg-[#F0EFEA] text-[#111111] dark:bg-zinc-800 dark:text-white"
+                  : "text-[#6E6D68] hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800/50"
+              }`}
+            >
+              <Download className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>Infyn DL</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800">
+                App
+              </span>
+            </Link>
+
             {/* Minimal Docs Link */}
             <Link
               href="/docs"
@@ -728,8 +745,37 @@ export function Navbar() {
                 </div>
               )}
 
+              {/* Infyn DL Mobile Spotlight */}
+              <div className="pt-2 border-t border-[#F5F4EE] dark:border-zinc-800/80">
+                <Link
+                  href="/dl"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between p-3 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/60 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100/60 transition-colors"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-8 w-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                      <Download className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-[#111111] dark:text-white flex items-center gap-1.5">
+                        <span>Infyn DL</span>
+                        <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-emerald-600 text-white">
+                          NEW APP
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-[#6E6D68] dark:text-zinc-400">
+                        Media Downloader for Android & Windows
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                    Get →
+                  </span>
+                </Link>
+              </div>
+
               {/* Quick Links, 3-Mode Theme & GitHub Footer */}
-              <div className="pt-3 border-t border-[#F5F4EE] dark:border-zinc-800/80 space-y-3">
+              <div className="pt-2 border-t border-[#F5F4EE] dark:border-zinc-800/80 space-y-3">
                 <div className="flex items-center justify-between gap-2 px-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E9D98] dark:text-zinc-500">
                     Appearance

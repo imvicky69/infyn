@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { NpmShowcase } from "@/components/npm-showcase";
+import { InfynDlShowcase } from "@/components/infyn-dl-showcase";
 import SplitText from "@/components/SplitText";
 import { AnimatedLogo } from "@/components/animatedLogo";
 import {
@@ -505,6 +506,9 @@ export default function HomePage() {
                 </div>
               </section>
         </div>
+
+        {/* ── Infyn DL Project Spotlight ────────────────────────────── */}
+        <InfynDlShowcase />
 
         {/* ── NPM Package & Developer SDK Showcase ──────────────────── */}
         <NpmShowcase />

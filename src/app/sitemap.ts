@@ -22,7 +22,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/pdf/splitter",
     "/pdf/unlocker",
     "/pdf/pdf-to-image",
-    "/docs"
+    "/docs",
+    "/dl"
   ];
 
 

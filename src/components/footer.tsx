@@ -21,10 +21,12 @@ const PDF_LINKS = [
 ];
 
 const DEV_LINKS = [
+  { href: "/dl", label: "Infyn DL (App)", external: false },
   { href: "/docs", label: "Documentation & SDK", external: false },
   { href: "/contributing", label: "Contributing Guide", external: false },
   { href: "https://www.npmjs.com/package/infyn", label: "NPM Package ↗", external: true },
-  { href: "https://github.com/imvicky69/infyn", label: "GitHub Repository ↗", external: true },
+  { href: "https://github.com/imvicky69/infyn-dl", label: "Infyn DL GitHub ↗", external: true },
+  { href: "https://github.com/imvicky69/infyn", label: "GitHub Suite ↗", external: true },
   { href: "https://github.com/imvicky69/infyn/issues", label: "Suggest a Tool ↗", external: true },
 ];
 
