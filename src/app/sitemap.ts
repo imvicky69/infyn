@@ -2,14 +2,13 @@ import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://infyn.software";
-  
+
   const routes = [
     "",
     "/image",
     "/image/qr-code",
     "/image/bg-remover",
     "/image/compressor",
-
     "/image/converter",
     "/image/exif-remover",
     "/image/heic-to-jpg",
@@ -23,9 +22,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/pdf/unlocker",
     "/pdf/pdf-to-image",
     "/docs",
-    "/dl"
+    "/dl",
+    "/home-tab"
   ];
-
 
   return routes.map((route) => ({
     url: `${baseUrl}${route}`,

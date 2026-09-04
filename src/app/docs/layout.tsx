@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Documentation & SDK Guide — Infyn",
+  title: "Ecosystem Documentation & Developer Guide — Infyn",
   description:
-    "Complete developer documentation and API reference for the Infyn Headless SDK and NPM package. Process PDFs and images client-side with zero cloud uploads.",
+    "Complete developer documentation, architecture guides, and extension recipes for all three Infyn projects: Web Suite & Headless SDK, Infyn DL (Android & Windows), and Infyn Home Tab (Chromium Extension). 100% free and open source.",
   keywords: [
-    "infyn npm",
+    "infyn docs",
     "infyn sdk",
+    "infyn npm",
+    "infyn dl documentation",
+    "infyn home tab developer guide",
     "client side pdf sdk",
     "in browser image compression npm",
-    "pdf merger react library",
-    "decrypt pdf javascript",
-    "heic to jpg npm",
+    "cross platform media downloader",
+    "chromium new tab extension development",
+    "open source software ecosystem",
+    "zero cloud uploads architecture",
   ],
   alternates: {
     canonical: "https://infyn.software/docs",
@@ -21,9 +25,9 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  headline: "Infyn Developer SDK & NPM Package Documentation",
+  headline: "Infyn Open-Source Ecosystem & Developer Guide",
   description:
-    "Comprehensive guide and API reference for integrating Infyn's in-browser image and PDF processing library into React, Next.js, Vue, and Node apps.",
+    "Comprehensive guide and architecture reference for Infyn Web Suite & Headless SDK, Infyn DL for Android & Windows, and Infyn Home Tab for Chromium browsers.",
   url: "https://infyn.software/docs",
   author: {
     "@type": "Organization",

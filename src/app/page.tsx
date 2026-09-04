@@ -9,6 +9,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { NpmShowcase } from "@/components/npm-showcase";
 import { InfynDlShowcase } from "@/components/infyn-dl-showcase";
+import { InfynHomeTabShowcase } from "@/components/infyn-home-tab-showcase";
 import SplitText from "@/components/SplitText";
 import { AnimatedLogo } from "@/components/animatedLogo";
 import {
@@ -32,7 +33,9 @@ import {
   Combine,
   Unlock,
   Scissors,
-  QrCode
+  QrCode,
+  LayoutDashboard,
+  Download
 } from "lucide-react";
 
 interface ToolItem {
@@ -43,6 +46,7 @@ interface ToolItem {
   description: string;
   formats: string[];
   icon: React.ElementType;
+  keywords?: string[];
 }
 
 const TOOLS: ToolItem[] = [
@@ -167,6 +171,26 @@ const TOOLS: ToolItem[] = [
     description: "Extract specific pages or split a PDF.",
     formats: ["PDF"],
     icon: Scissors,
+  },
+  {
+    href: "/dl",
+    title: "Infyn DL",
+    category: "developer",
+    badge: "App",
+    description: "High-speed media, audio & playlist downloader for Android and Windows. Zero ads, 320kbps MP3.",
+    formats: ["Android", "Windows", "MP3", "MP4"],
+    icon: Download,
+    keywords: ["app", "apps", "dl", "infyn dl", "downloader", "youtube", "music", "playlist", "video", "mp3", "audio", "android", "windows", "yt-dlp", "offline", "media", "desktop app", "mobile app"],
+  },
+  {
+    href: "/home-tab",
+    title: "Infyn Home Tab",
+    category: "developer",
+    badge: "Extension",
+    description: "Sleek, privacy-first developer new tab dashboard with GitHub, Firebase, and Pomodoro timer.",
+    formats: ["Chrome", "Brave", "Arc", "Edge"],
+    icon: LayoutDashboard,
+    keywords: ["extension", "extensions", "home tab", "new tab", "dashboard", "developer", "pomodoro", "github", "firebase", "chrome", "brave", "arc", "edge", "chromium", "shaders", "todos", "scratchpad", "startpage"],
   },
 ];
 
@@ -295,13 +319,16 @@ export default function HomePage() {
   }, []);
 
   const filteredTools = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase().trim();
     return TOOLS.filter((tool) => {
-      if (!searchQuery.trim()) return true;
-      const q = searchQuery.toLowerCase();
       return (
         tool.title.toLowerCase().includes(q) ||
         tool.description.toLowerCase().includes(q) ||
-        tool.formats.some((f) => f.toLowerCase().includes(q))
+        tool.formats.some((f) => f.toLowerCase().includes(q)) ||
+        (tool.badge && tool.badge.toLowerCase().includes(q)) ||
+        (tool.category && tool.category.toLowerCase().includes(q)) ||
+        (tool.keywords && tool.keywords.some((k) => k.toLowerCase().includes(q)))
       );
     });
   }, [searchQuery]);
@@ -342,7 +369,7 @@ export default function HomePage() {
               <input
                 id="search-input"
                 type="text"
-                placeholder="What do you need to do?"
+                placeholder="Search tools, apps, and extensions (e.g. PDF, DL, Home Tab)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-14 pr-16 py-4 rounded-2xl border border-[#EAEAE5] bg-white text-base text-[#111111] placeholder-[#9E9D98] focus:outline-none focus:border-[#111111] focus:ring-1 focus:ring-[#111111] shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all font-medium"
@@ -389,8 +416,8 @@ export default function HomePage() {
                         })
                       ) : (
                         <div className="p-6 text-center">
-                          <p className="text-sm font-medium text-[#111111]">No tools found</p>
-                          <p className="text-xs text-[#6E6D68] mt-1">Try searching for "PDF" or "Resize"</p>
+                          <p className="text-sm font-medium text-[#111111]">No tools, apps, or extensions found</p>
+                          <p className="text-xs text-[#6E6D68] mt-1">Try searching for &ldquo;PDF&rdquo;, &ldquo;DL&rdquo;, or &ldquo;Extension&rdquo;</p>
                         </div>
                       )}
                     </div>
@@ -411,6 +438,12 @@ export default function HomePage() {
               </Link>
               <Link href="/pdf/compressor" className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors">
                 Compress PDF
+              </Link>
+              <Link href="/dl" className="text-[13px] font-medium text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 transition-colors">
+                Infyn DL (App)
+              </Link>
+              <Link href="/home-tab" className="text-[13px] font-medium text-indigo-700 dark:text-indigo-400 hover:text-indigo-800 transition-colors">
+                Home Tab (Extension)
               </Link>
             </div>
 
@@ -466,6 +499,18 @@ export default function HomePage() {
                 </div>
               </section>
 
+              {/* Developer Tools */}
+              {TOOLS.some(t => t.category === "developer") && (
+                <section className="space-y-5">
+                  <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Developer Tools</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {TOOLS.filter(t => t.category === "developer").map(tool => (
+                      <ToolCard key={tool.href} tool={tool} />
+                    ))}
+                  </div>
+                </section>
+              )}
+
               {/* Coming Soon */}
               <section className="space-y-5">
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#EAEAE5] pb-4">
@@ -509,6 +554,9 @@ export default function HomePage() {
 
         {/* ── Infyn DL Project Spotlight ────────────────────────────── */}
         <InfynDlShowcase />
+
+        {/* ── Infyn Home Tab Extension Spotlight ────────────────────── */}
+        <InfynHomeTabShowcase />
 
         {/* ── NPM Package & Developer SDK Showcase ──────────────────── */}
         <NpmShowcase />
