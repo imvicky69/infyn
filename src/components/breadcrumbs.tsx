@@ -9,12 +9,20 @@ const PATH_LABELS: Record<string, string> = {
   pdf: "PDF Tools",
   image: "Image Tools",
   dev: "Developer Tools",
+  apps: "Apps & Extensions",
   merger: "PDF Merger",
   unlocker: "PDF Unlocker",
   protector: "PDF Protector",
   "pdf-to-image": "PDF to Image",
   "img-to-pdf": "Image to PDF",
   compressor: "Image Compressor",
+  sponsor: "Support Infyn",
+  base64: "Base64 & Data URI Studio",
+  "home-tab": "Infyn Home Tab",
+  dl: "Infyn DL",
+  "png-to-svg": "PNG to SVG Converter",
+  "qr-code": "QR Code Generator",
+  "svg-cleaner": "SVG Cleaner & Minifier",
 };
 
 export function Breadcrumbs() {

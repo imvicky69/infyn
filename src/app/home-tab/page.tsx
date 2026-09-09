@@ -104,12 +104,12 @@ export default function HomeTabPage() {
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-[-0.035em] text-[#111111] dark:text-white leading-[1.1]">
             Supercharge Your New Tab. <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Built for Developers.
+              Built for Focus & Productivity.
             </span>
           </h1>
 
           <p className="text-base sm:text-lg text-[#6E6D68] dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-            Turn every new tab into an instantaneous command center. Quick-launch your pinned GitHub repositories with 1-click clone, jump into Firebase consoles, stay in the zone with Pomodoro timer badge sync, and search with multi-engine omnisearch.
+            Turn every new tab into an aesthetic, distraction-free command center. Visual bookmark organizer, live weather & calendar, quick scratchpad, deep focus Pomodoro sprints, and daily goal tracking.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">

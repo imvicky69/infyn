@@ -24,6 +24,26 @@ interface ImageToolItem {
 
 const IMAGE_TOOLS: ImageToolItem[] = [
   {
+    href: "/image/png-to-svg",
+    title: "PNG → SVG Converter",
+    badge: "Vector Paths",
+    badgeColor: "bg-purple-50 text-purple-800 border-purple-200/80",
+    category: "conversion",
+    categoryLabel: "Vector & Tracing",
+    description:
+      "Transform raster PNGs into scalable SVG vectors. Dual-engine tracing powered by Potrace for monochrome/logos and ImageTracer.js for multi-color graphics.",
+    tags: ["Potrace Engine", "ImageTracer", "Live Preview", "Infinite Zoom"],
+    formats: ["PNG", "JPG", "WEBP", "SVG"],
+    icon: (
+      <div className="relative h-11 w-11 rounded-2xl bg-purple-50 border border-purple-200/80 flex items-center justify-center text-purple-700 shadow-2xs group-hover:scale-105 transition-transform">
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+        </svg>
+      </div>
+    ),
+  },
+  {
     href: "/image/qr-code",
     title: "QR Code Generator",
     badge: "Vector SVG",

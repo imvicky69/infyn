@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     "",
     "/image",
+    "/image/png-to-svg",
     "/image/qr-code",
     "/image/bg-remover",
     "/image/compressor",
@@ -22,8 +23,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/pdf/unlocker",
     "/pdf/pdf-to-image",
     "/docs",
+    "/apps",
     "/dl",
-    "/home-tab"
+    "/home-tab",
+    "/sponsor",
+    "/dev",
+    "/dev/base64",
+    "/dev/svg-cleaner",
   ];
 
   return routes.map((route) => ({

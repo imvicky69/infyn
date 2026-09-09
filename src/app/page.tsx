@@ -35,13 +35,14 @@ import {
   Scissors,
   QrCode,
   LayoutDashboard,
-  Download
+  Download,
+  Sparkles
 } from "lucide-react";
 
 interface ToolItem {
   href: string;
   title: string;
-  category: "image" | "pdf" | "developer" | "utilities";
+  category: "image" | "pdf" | "apps" | "developer" | "utilities";
   badge?: string;
   description: string;
   formats: string[];
@@ -51,11 +52,20 @@ interface ToolItem {
 
 const TOOLS: ToolItem[] = [
   {
+    href: "/image/png-to-svg",
+    title: "PNG → SVG Converter",
+    category: "image",
+    badge: "Vector",
+    description: "Vectorize PNGs and logos into crisp, infinitely scalable SVG paths.",
+    formats: ["PNG", "JPG", "WEBP", "SVG"],
+    icon: Sparkles,
+  },
+  {
     href: "/image/qr-code",
     title: "QR Code Generator",
     category: "image",
     badge: "Vector",
-    description: "Design custom QR codes with logos, colors, Wi-Fi presets & frames.",
+    description: "Design custom QR codes with logos,UPI, colors, Wi-Fi presets & frames.",
     formats: ["PNG", "SVG", "PDF"],
     icon: QrCode,
   },
@@ -175,7 +185,7 @@ const TOOLS: ToolItem[] = [
   {
     href: "/dl",
     title: "Infyn DL",
-    category: "developer",
+    category: "apps",
     badge: "App",
     description: "High-speed media, audio & playlist downloader for Android and Windows. Zero ads, 320kbps MP3.",
     formats: ["Android", "Windows", "MP3", "MP4"],
@@ -185,12 +195,32 @@ const TOOLS: ToolItem[] = [
   {
     href: "/home-tab",
     title: "Infyn Home Tab",
-    category: "developer",
+    category: "apps",
     badge: "Extension",
-    description: "Sleek, privacy-first developer new tab dashboard with GitHub, Firebase, and Pomodoro timer.",
+    description: "Clean bookmarks, weather & calendar, focus Pomodoro timer, and daily productivity board.",
     formats: ["Chrome", "Brave", "Arc", "Edge"],
     icon: LayoutDashboard,
-    keywords: ["extension", "extensions", "home tab", "new tab", "dashboard", "developer", "pomodoro", "github", "firebase", "chrome", "brave", "arc", "edge", "chromium", "shaders", "todos", "scratchpad", "startpage"],
+    keywords: ["extension", "extensions", "home tab", "new tab", "dashboard", "bookmarks", "weather", "pomodoro", "focus", "todos", "productivity", "chrome", "brave", "arc", "edge", "startpage"],
+  },
+  {
+    href: "/dev/base64",
+    title: "Base64 & Data URI Studio",
+    category: "developer",
+    badge: "New",
+    description: "Convert images, fonts, and assets into production-ready Base64 and CSS data URI strings.",
+    formats: ["PNG", "SVG", "WOFF2", "TTF", "PDF"],
+    icon: Binary,
+    keywords: ["base64", "data uri", "encode", "decode", "css background", "font base64", "svg data uri", "developer", "dev tools", "asset to base64", "image to base64"],
+  },
+  {
+    href: "/dev/svg-cleaner",
+    title: "SVG Cleaner & Minifier",
+    category: "developer",
+    badge: "New",
+    description: "Strip editor bloat, collapse paths, round precision, and export clean SVGs, React JSX & CSS URIs.",
+    formats: ["SVG", "React JSX", "Data URI"],
+    icon: Code2,
+    keywords: ["svg cleaner", "svg minifier", "svgo", "clean svg", "svg optimizer", "svg to react", "react icon", "css data uri", "vector cleaner", "developer", "dev"],
   },
 ];
 
@@ -202,17 +232,10 @@ const UPCOMING = [
     icon: Files,
   },
   {
-    title: "SVG Vector Minifier",
+    title: "JSON Formatter & Schema Diff",
     category: "developer",
-    desc: "Strip unnecessary SVG metadata and clean vector markup.",
+    desc: "Prettify, validate, sort keys, and compare JSON payloads in your browser.",
     icon: Code2,
-  },
-  {
-    title: "Base64 & Data URI Studio",
-
-    category: "developer",
-    desc: "Convert assets into production-ready Base64 and CSS data URI strings.",
-    icon: Binary,
   },
 ];
 
@@ -338,12 +361,12 @@ export default function HomePage() {
       <Navbar />
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-16 space-y-20">
-        
+
         {/* ── Hero Section ─────────────────────────────────────────── */}
         <section className="text-center space-y-7 max-w-3xl mx-auto pt-4 sm:pt-8">
           <div className="flex justify-center items-center gap-2.5 mb-6 sm:mb-8 text-[#111111] dark:text-white">
-             <AnimatedLogo width={42} className="text-[#111111] dark:text-white" />
-             <span className="font-extrabold tracking-[-0.03em] text-[22px] text-[#111111] dark:text-white">infyn</span>
+            <AnimatedLogo width={42} className="text-[#111111] dark:text-white" />
+            <span className="font-extrabold tracking-[-0.03em] text-[22px] text-[#111111] dark:text-white">infyn</span>
           </div>
 
           <SplitText
@@ -380,7 +403,7 @@ export default function HomePage() {
                   ⌘ K
                 </span>
               </div>
-              
+
               <AnimatePresence>
                 {searchQuery.trim() && (
                   <motion.div
@@ -471,85 +494,102 @@ export default function HomePage() {
         <div id="tools" className="space-y-16">
           {/* Popular Tools */}
           <section className="space-y-5">
-                <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Popular Tools</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {TOOLS.filter(t => POPULAR_TOOLS.includes(t.href)).map(tool => (
-                    <ToolCard key={tool.href} tool={tool} />
-                  ))}
-                </div>
-              </section>
+            <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Popular Tools</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {TOOLS.filter(t => POPULAR_TOOLS.includes(t.href)).map(tool => (
+                <ToolCard key={tool.href} tool={tool} />
+              ))}
+            </div>
+          </section>
 
-              {/* Image Tools */}
-              <section className="space-y-5">
-                <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Image Tools</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {TOOLS.filter(t => t.category === "image" && !POPULAR_TOOLS.includes(t.href)).map(tool => (
-                    <ToolCard key={tool.href} tool={tool} />
-                  ))}
-                </div>
-              </section>
+          {/* Image Tools */}
+          <section className="space-y-5">
+            <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Image Tools</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {TOOLS.filter(t => t.category === "image" && !POPULAR_TOOLS.includes(t.href)).map(tool => (
+                <ToolCard key={tool.href} tool={tool} />
+              ))}
+            </div>
+          </section>
 
-              {/* PDF Tools */}
-              <section className="space-y-5">
-                <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">PDF Tools</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {TOOLS.filter(t => t.category === "pdf").map(tool => (
-                    <ToolCard key={tool.href} tool={tool} />
-                  ))}
-                </div>
-              </section>
+          {/* PDF Tools */}
+          <section className="space-y-5">
+            <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">PDF Tools</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {TOOLS.filter(t => t.category === "pdf").map(tool => (
+                <ToolCard key={tool.href} tool={tool} />
+              ))}
+            </div>
+          </section>
 
-              {/* Developer Tools */}
-              {TOOLS.some(t => t.category === "developer") && (
-                <section className="space-y-5">
-                  <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Developer Tools</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {TOOLS.filter(t => t.category === "developer").map(tool => (
-                      <ToolCard key={tool.href} tool={tool} />
-                    ))}
-                  </div>
-                </section>
-              )}
+          {/* Apps & Extensions */}
+          {TOOLS.some(t => t.category === "apps") && (
+            <section className="space-y-5">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Apps & Extensions</h2>
+                <Link href="/apps" className="text-xs font-semibold text-[#111111] hover:underline">
+                  View All Apps →
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {TOOLS.filter(t => t.category === "apps").map(tool => (
+                  <ToolCard key={tool.href} tool={tool} />
+                ))}
+              </div>
+            </section>
+          )}
 
-              {/* Coming Soon */}
-              <section className="space-y-5">
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#EAEAE5] pb-4">
-                  <div>
-                    <h2 className="text-base font-bold text-[#111111]">More tools are on the way.</h2>
-                    <p className="text-[13px] text-[#6E6D68] mt-1">In active development for the open-source suite.</p>
-                  </div>
-                  <a
-                    href="https://github.com/imvicky69/infyn/issues"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#111111] hover:text-[#6E6D68] transition-colors mb-0.5"
-                  >
-                    Built in the open. Suggest a tool →
-                  </a>
-                </div>
+          {/* Developer Tools */}
+          {TOOLS.some(t => t.category === "developer") && (
+            <section className="space-y-5">
+              <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Developer Tools</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {TOOLS.filter(t => t.category === "developer").map(tool => (
+                  <ToolCard key={tool.href} tool={tool} />
+                ))}
+              </div>
+            </section>
+          )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {UPCOMING.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <div key={item.title} className="rounded-2xl border border-[#EAEAE5] bg-[#FBFBFA] p-5 space-y-3 opacity-60 hover:opacity-80 transition-opacity">
-                        <div className="flex items-center justify-between">
-                          <div className="h-10 w-10 rounded-xl bg-white border border-[#EAEAE5] flex items-center justify-center text-[#9E9D98]">
-                            <Icon className="h-5 w-5" />
-                          </div>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#9E9D98] border border-[#EAEAE5]">
-                            Coming Soon
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-bold text-[#111111] tracking-[-0.01em]">{item.title}</h4>
-                          <p className="text-[12px] text-[#6E6D68] leading-relaxed mt-1">{item.desc}</p>
-                        </div>
+          {/* Coming Soon */}
+          <section className="space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#EAEAE5] pb-4">
+              <div>
+                <h2 className="text-base font-bold text-[#111111]">More tools are on the way.</h2>
+                <p className="text-[13px] text-[#6E6D68] mt-1">In active development for the open-source suite.</p>
+              </div>
+              <a
+                href="https://github.com/imvicky69/infyn/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#111111] hover:text-[#6E6D68] transition-colors mb-0.5"
+              >
+                Built in the open. Suggest a tool →
+              </a>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {UPCOMING.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.title} className="rounded-2xl border border-[#EAEAE5] bg-[#FBFBFA] p-5 space-y-3 opacity-60 hover:opacity-80 transition-opacity">
+                    <div className="flex items-center justify-between">
+                      <div className="h-10 w-10 rounded-xl bg-white border border-[#EAEAE5] flex items-center justify-center text-[#9E9D98]">
+                        <Icon className="h-5 w-5" />
                       </div>
-                    );
-                  })}
-                </div>
-              </section>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#9E9D98] border border-[#EAEAE5]">
+                        Coming Soon
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-[#111111] tracking-[-0.01em]">{item.title}</h4>
+                      <p className="text-[12px] text-[#6E6D68] leading-relaxed mt-1">{item.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
         </div>
 
         {/* ── Infyn DL Project Spotlight ────────────────────────────── */}

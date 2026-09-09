@@ -8,6 +8,7 @@ Infyn is a modern, open-source web utility suite offering essential image and PD
 [![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-blue.svg)](CONTRIBUTING.md)
 [![Next.js](https://img.shields.io/badge/Next.js-15+-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Sponsor](https://img.shields.io/badge/Sponsor-Support%20Infyn-EA4AAA?logo=github-sponsors&logoColor=white)](https://infyn.software/sponsor)
 
 ---
 
@@ -162,6 +163,15 @@ Contributions from the open-source community are always welcome! Whether you are
 ## 🛡️ Security & Privacy
 
 Infyn processes all user data locally on the client machine. If you discover a security flaw or potential data leakage, please review our [Security Policy](SECURITY.md) for reporting guidelines.
+
+---
+
+## 💖 Support & Sponsorship
+
+Infyn is 100% free, client-side, and ad-free. If you find our tools and libraries valuable, you can support our continued development:
+
+- 🪙 **[Direct UPI & QR Code Support](https://infyn.software/sponsor)** — 100% peer-to-peer, zero platform fees
+- 💖 **[Sponsor on GitHub](https://github.com/sponsors/imvicky69)**
 
 ---
 

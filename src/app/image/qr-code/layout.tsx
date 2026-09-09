@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   description:
     "100% Free & Ad-Free QR Code Generator with custom shapes, linear gradients, logos, Wi-Fi, vCard, and frames. Export high-res PNG, vector SVG, and PDF with zero server tracking.",
   keywords: [
+    "upi qr generator with amount",
+    
+    "free instagram qr code generator",
     "free qr code generator",
     "custom qr code with logo",
     "qr code generator online free",
