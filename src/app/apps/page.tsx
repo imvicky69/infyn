@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   ExternalLink,
 } from "lucide-react";
+import { triggerPWAInstall } from "@/components/pwa/pwa-installer";
 
 export default function AppsHubPage() {
   return (
@@ -54,8 +55,74 @@ export default function AppsHubPage() {
         </div>
 
         {/* Core Products Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* 1. Infyn DL */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* 1. Infyn Web App (PWA) */}
+          <div className="group flex flex-col justify-between p-6 sm:p-8 rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] hover:border-[#BEBDB9] dark:hover:border-zinc-700 transition-all shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.08)]">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="h-14 w-14 rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200/80 dark:border-blue-800/60 flex items-center justify-center text-blue-700 dark:text-blue-400 shadow-2xs group-hover:scale-105 transition-transform">
+                  <Smartphone className="h-7 w-7" />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/60 flex items-center gap-1">
+                    <Smartphone className="h-3 w-3" />
+                    <span>iOS & Android</span>
+                  </span>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center gap-1">
+                    <span>PWA</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="text-2xl font-extrabold text-[#111111] dark:text-white">
+                  Infyn Web App
+                </h2>
+                <p className="text-sm font-semibold text-blue-700 dark:text-blue-400">
+                  Installable Progressive Web App (PWA)
+                </p>
+                <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400 leading-relaxed pt-1">
+                  Install directly on your iPhone, Android, or PC without app store downloads. Full offline support, instant launches, and zero cloud uploads.
+                </p>
+              </div>
+
+              {/* Feature Tags */}
+              <div className="grid grid-cols-2 gap-2 pt-2 text-xs font-medium text-[#6E6D68] dark:text-zinc-300">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                  <span>Works Offline</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                  <span>Add to Home Screen</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                  <span>Zero Storage Bloat</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                  <span>100% Free & Private</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-5 border-t border-[#F5F4EE] dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <span className="text-xs font-mono text-[#9E9D98]">
+                Web Standard · Instant
+              </span>
+              <button
+                type="button"
+                onClick={() => triggerPWAInstall()}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#111111] text-white hover:bg-black dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 transition-all cursor-pointer shadow-2xs"
+              >
+                <span>Install Web App</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* 2. Infyn DL */}
           <div className="group flex flex-col justify-between p-6 sm:p-8 rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] hover:border-[#BEBDB9] dark:hover:border-zinc-700 transition-all shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.08)]">
             <div className="space-y-6">
               <div className="flex items-center justify-between">

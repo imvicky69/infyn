@@ -27,9 +27,11 @@ import {
   LayoutDashboard,
   Sparkles,
   Code2,
+  Smartphone,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AnimatedLogo } from "@/components/animatedLogo";
+import { triggerPWAInstall } from "@/components/pwa/pwa-installer";
 
 function GithubIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -183,6 +185,13 @@ const DEV_TOOLS_NAV: NavTool[] = [
 ];
 
 const APPS_NAV: NavTool[] = [
+  {
+    name: "Infyn Web App (PWA)",
+    href: "/apps",
+    badge: "PWA",
+    desc: "Install on phone & desktop with offline support",
+    icon: <Smartphone className="h-4 w-4" />,
+  },
   {
     name: "Infyn DL",
     href: "/dl",
@@ -1113,6 +1122,38 @@ export function Navbar() {
                   </div>
                 </div>
               )}
+
+              {/* Install PWA Mobile Action */}
+              <div className="pt-2 border-t border-[#F5F4EE] dark:border-zinc-800/80">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    triggerPWAInstall();
+                  }}
+                  className="w-full flex items-center justify-between p-3 rounded-2xl border border-blue-200/80 dark:border-blue-800/60 bg-blue-50/70 dark:bg-blue-950/40 hover:bg-blue-100/60 dark:hover:bg-blue-900/40 transition-colors text-left cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-8 w-8 rounded-xl bg-blue-600 text-white flex items-center justify-center">
+                      <Smartphone className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-[#111111] dark:text-white flex items-center gap-1.5">
+                        <span>Install Web App</span>
+                        <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-blue-600 text-white">
+                          PWA
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-[#6E6D68] dark:text-zinc-400">
+                        Add to Home Screen · 100% Free & Offline
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
+                    Install →
+                  </span>
+                </button>
+              </div>
 
               {/* Infyn DL Mobile Spotlight */}
               <div className="pt-2 border-t border-[#F5F4EE] dark:border-zinc-800/80">
