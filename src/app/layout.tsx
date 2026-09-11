@@ -193,7 +193,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans antialiased min-h-screen w-full max-w-full overflow-x-clip text-[#111111] dark:text-[#EDEDEC] bg-[#FBFBFA] dark:bg-[#0C0C0E] selection:bg-[#E8E6DE] dark:selection:bg-zinc-800 selection:text-black dark:selection:text-white relative">
+      <body suppressHydrationWarning className="font-sans antialiased min-h-screen w-full max-w-full overflow-x-clip text-[#111111] dark:text-[#EDEDEC] bg-[#FBFBFA] dark:bg-[#0C0C0E] selection:bg-[#E8E6DE] dark:selection:bg-zinc-800 selection:text-black dark:selection:text-white relative">
         <ThemeProvider>
           {/* Google Analytics */}
           <Script
