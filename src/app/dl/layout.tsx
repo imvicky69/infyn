@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Infyn DL — Free Music Streaming App & YouTube Downloader (Android & Windows)",
+  title: "Infyn DL — Free Offline Music Player & Downloader (Android APK)",
   description:
-    "100% Free & Ad-Free music streaming and downloader app for Android and Windows. Stream and download unlimited songs from YouTube and YouTube Music at 320kbps. Features built-in Sleep Timer with gentle audio fade, pure pitch-black OLED dark mode, background playback with screen locked, and full playlist cherry-picking.",
+    "100% Free & Ad-Free music player and downloader for Android. Download songs and full playlists directly to your phone at 320kbps for offline listening. Features background playback, beautiful player view, sleep timer with gentle audio fade, and battery-saving OLED pitch-black mode.",
   keywords: [
     "infyn dl",
-    "free music streaming app",
+    "offline music player android",
     "free music downloader app",
     "download songs from youtube music",
     "youtube music downloader apk",
@@ -24,16 +24,15 @@ export const metadata: Metadata = {
     "download music with album art and lyrics",
     "offline music player android apk",
     "yt dlp gui android",
-    "media downloader windows 11",
     "batch song downloader apk"
   ],
   alternates: {
     canonical: "https://infyn.software/dl",
   },
   openGraph: {
-    title: "Infyn DL — Free Music Streaming App & YouTube Music Downloader",
+    title: "Infyn DL — Free Offline Music Player & Downloader (Android)",
     description:
-      "Stream and download unlimited free songs from YouTube & YouTube Music. 320kbps MP3, built-in Sleep Timer, pure pitch-black OLED mode, background playback, and batch playlist downloads. 100% Free & Ad-Free.",
+      "Download songs and playlists directly to your phone in 320kbps MP3. Beautiful player view, background screen-off playback, sleep timer, and pure OLED black. 100% Free & Ad-Free.",
     url: "https://infyn.software/dl",
     siteName: "Infyn",
     type: "website",
@@ -42,15 +41,15 @@ export const metadata: Metadata = {
         url: "/logo-clear.png",
         width: 800,
         height: 800,
-        alt: "Infyn DL — Free Music Streaming App & YouTube Downloader",
+        alt: "Infyn DL — Free Offline Music Player & Downloader for Android",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Infyn DL — Free Music Streaming App & YouTube Downloader",
+    title: "Infyn DL — Free Offline Music Player & Downloader (Android)",
     description:
-      "Stream & download unlimited songs from YouTube Music in 320kbps. Built-in Sleep Timer, true OLED black dark mode, and background playback with screen locked.",
+      "Download songs and playlists directly to your phone at 320kbps. Beautiful player view, background playback, and sleep timer.",
     images: ["/logo-clear.png"],
   },
 };
@@ -59,7 +58,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "Infyn DL",
-  operatingSystem: "Android 8.0+, Windows 10, Windows 11",
+  operatingSystem: "Android 8.0+",
   applicationCategory: "MultimediaApplication",
   downloadUrl: "https://github.com/imvicky69/infyn-dl/releases",
   offers: {
@@ -68,10 +67,11 @@ const jsonLd = {
     priceCurrency: "USD",
   },
   description:
-    "Free, ad-free, open-source music streaming and media downloader for Android and Windows. Stream and download unlimited songs from YouTube and YouTube Music with 320kbps MP3 extraction, built-in Sleep Timer with gentle audio fade, pure pitch-black OLED dark mode battery saver, background playback, and full playlist track selection.",
+    "Free, ad-free, open-source offline music player and media downloader for Android. Download unlimited songs and playlists directly to phone storage at 320kbps MP3, with built-in sleep timer, pure pitch-black OLED dark mode, background playback with screen locked, and granular track selection.",
   featureList: [
-    "Unlimited free music streaming and downloading from YouTube & YouTube Music",
+    "Download songs and playlists directly to phone storage for offline playback",
     "High-resolution 320kbps MP3, AAC, and Opus audio downloads",
+    "Stunning now-playing view with album art and controls",
     "Built-in Sleep Timer with gradual volume fade-out and auto-stop",
     "Pure Pitch-Black OLED Dark Mode (#000000) for AMOLED battery savings",
     "Background screen-off audio playback with zero ads",
