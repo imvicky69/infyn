@@ -49,6 +49,7 @@ export function GoogleAdDownloadModal({
   const [secondsLeft, setSecondsLeft] = useState<number>(COUNTDOWN_SECONDS);
   const [isCopied, setIsCopied] = useState(false);
   const [adStatus, setAdStatus] = useState<"loading" | "filled" | "unfilled">("loading");
+  const [isAdBlocked, setIsAdBlocked] = useState(false);
   const [verifiedUrl, setVerifiedUrl] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
@@ -73,6 +74,7 @@ export function GoogleAdDownloadModal({
       setSecondsLeft(COUNTDOWN_SECONDS);
       setIsCopied(false);
       setAdStatus("loading");
+      setIsAdBlocked(false);
       setVerifiedUrl(null);
       setIsVerifying(false);
       setVerificationError(null);
@@ -84,6 +86,7 @@ export function GoogleAdDownloadModal({
     setSecondsLeft(COUNTDOWN_SECONDS);
     setIsCopied(false);
     setAdStatus("loading");
+    setIsAdBlocked(false);
     setVerifiedUrl(null);
     setIsVerifying(false);
     setVerificationError(null);
@@ -121,7 +124,7 @@ export function GoogleAdDownloadModal({
       }
     }, 200);
 
-    // Monitor the ad status attribute that Google AdSense sets
+    // Monitor the ad status attribute and detect if adblocker blocked adsbygoogle.js
     const checkInterval = setInterval(() => {
       if (adContainerRef.current) {
         const ins = adContainerRef.current.querySelector("ins.adsbygoogle");
@@ -129,6 +132,7 @@ export function GoogleAdDownloadModal({
           const status = ins.getAttribute("data-ad-status");
           if (status === "filled") {
             setAdStatus("filled");
+            setIsAdBlocked(false);
             clearInterval(checkInterval);
           } else if (status === "unfilled") {
             setAdStatus("unfilled");
@@ -138,8 +142,22 @@ export function GoogleAdDownloadModal({
       }
     }, 500);
 
+    // AdBlock detector: If adsbygoogle was blocked by client extension (net::ERR_BLOCKED_BY_CLIENT)
+    const adBlockTimer = setTimeout(() => {
+      const isGoogleLoaded =
+        typeof window !== "undefined" &&
+        Boolean((window as unknown as { adsbygoogle?: { loaded?: boolean } }).adsbygoogle?.loaded);
+      const ins = adContainerRef.current?.querySelector("ins.adsbygoogle");
+      const hasIframe = ins && ins.querySelector("iframe");
+
+      if (!isGoogleLoaded && !hasIframe) {
+        setIsAdBlocked(true);
+      }
+    }, 1500);
+
     return () => {
       clearTimeout(timer);
+      clearTimeout(adBlockTimer);
       clearInterval(checkInterval);
     };
   }, [isOpen, downloadData]);
@@ -336,8 +354,22 @@ export function GoogleAdDownloadModal({
                 />
               </div>
 
+              {/* AdBlocker Detected Banner */}
+              {isAdBlocked && (
+                <div className="w-full py-3.5 px-3 mt-2 rounded-xl bg-rose-50/80 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-center space-y-1">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-300">
+                    <AlertCircle className="h-4 w-4 shrink-0" />
+                    <span>Ad Blocker Active (ERR_BLOCKED_BY_CLIENT)</span>
+                  </div>
+                  <p className="text-[11px] text-rose-600 dark:text-rose-400 leading-relaxed max-w-sm mx-auto">
+                    Your browser extension (AdBlock / uBlock Origin / Brave Shield) is blocking Google Ads from loading.
+                    Please pause your ad blocker for <strong>infyn.software</strong> to see the ad.
+                  </p>
+                </div>
+              )}
+
               {/* Status information when running locally or awaiting fill */}
-              {adStatus === "unfilled" && (
+              {!isAdBlocked && adStatus === "unfilled" && (
                 <div className="w-full py-3 px-3 mt-2 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/40 text-center space-y-1">
                   <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 dark:text-amber-300">
                     <AlertCircle className="h-3.5 w-3.5 shrink-0" />

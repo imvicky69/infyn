@@ -192,19 +192,18 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* Google AdSense Native Tag */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1570682624410987"
+          crossOrigin="anonymous"
+        />
       </head>
       <body suppressHydrationWarning className="font-sans antialiased min-h-screen w-full max-w-full overflow-x-clip text-[#111111] dark:text-[#EDEDEC] bg-[#FBFBFA] dark:bg-[#0C0C0E] selection:bg-[#E8E6DE] dark:selection:bg-zinc-800 selection:text-black dark:selection:text-white relative">
         <ThemeProvider>
           {/* Google Analytics */}
           <Script
             src="https://www.googletagmanager.com/gtag/js?id=G-FSW6CGT3R5"
-            strategy="afterInteractive"
-          />
-          {/* Google AdSense */}
-          <Script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1570682624410987"
-            crossOrigin="anonymous"
             strategy="afterInteractive"
           />
           <Script id="google-analytics" strategy="afterInteractive">
