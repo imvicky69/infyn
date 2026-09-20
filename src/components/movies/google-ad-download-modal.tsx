@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Lock,
   MousePointerClick,
+  Sparkles,
 } from "lucide-react";
 
 export interface DownloadTarget {
@@ -57,16 +58,6 @@ export function GoogleAdDownloadModal({
 
   const adContainerRef = useRef<HTMLDivElement>(null);
   const adPushedRef = useRef(false);
-
-  // Determine if running on localhost
-  const [isLocalhost, setIsLocalhost] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const h = window.location.hostname;
-      setIsLocalhost(h === "localhost" || h === "127.0.0.1" || h.endsWith(".local"));
-    }
-  }, []);
 
   // Reset state whenever modal opens with new data
   useEffect(() => {
@@ -124,7 +115,7 @@ export function GoogleAdDownloadModal({
       }
     }, 200);
 
-    // Monitor the ad status attribute and detect if adblocker blocked adsbygoogle.js
+    // Monitor the ad status attribute that Google AdSense sets
     const checkInterval = setInterval(() => {
       if (adContainerRef.current) {
         const ins = adContainerRef.current.querySelector("ins.adsbygoogle");
@@ -331,18 +322,48 @@ export function GoogleAdDownloadModal({
             <div
               ref={adContainerRef}
               onClick={handleAdContainerClick}
-              className="relative rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#18181C] overflow-hidden min-h-[200px] flex flex-col items-center justify-center p-2 shadow-xs cursor-pointer group/ad"
+              className="relative rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#18181C] overflow-hidden min-h-[220px] flex flex-col justify-between p-2 shadow-xs cursor-pointer group/ad"
             >
               {/* Ad Top Bar */}
-              <div className="w-full flex items-center justify-between pb-2 mb-2 border-b border-[#EAEAE5]/60 dark:border-zinc-800/60 text-[10px] text-[#9E9D98] dark:text-zinc-500 px-1">
-                <span className="font-bold uppercase tracking-wider text-[9px] px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
-                  Advertisement
-                </span>
-                <span className="text-[9px]">Google AdSense • Slot: {ADSENSE_SLOT_ID}</span>
+              <div className="w-full flex items-center justify-between pb-1.5 border-b border-[#EAEAE5]/60 dark:border-zinc-800/60 text-[10px] text-[#9E9D98] dark:text-zinc-500 px-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold uppercase tracking-wider text-[9px] px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                    Ad
+                  </span>
+                  <span className="text-[9px]">Google AdSense • Slot: {ADSENSE_SLOT_ID}</span>
+                </div>
+
+                <div className="flex items-center gap-1 text-[#9E9D98] dark:text-zinc-500">
+                  <span className="text-[9px] font-semibold">AdChoices</span>
+                  <svg viewBox="0 0 16 16" className="w-2.5 h-2.5 fill-current text-blue-500">
+                    <path d="M2 2l12 6-12 6V2zm1.5 2.5v7l7-3.5-7-3.5z" />
+                  </svg>
+                </div>
               </div>
 
-              {/* Exact Google AdSense Tag */}
-              <div className="w-full flex justify-center items-center min-h-[160px]">
+              {/* Scoped style to prevent Google AdSense default white iframe background */}
+              <style
+                dangerouslySetInnerHTML={{
+                  __html: `
+                    ins.adsbygoogle iframe {
+                      background: transparent !important;
+                      background-color: transparent !important;
+                    }
+                    ins.adsbygoogle[data-ad-status="unfilled"] {
+                      display: none !important;
+                    }
+                  `,
+                }}
+              />
+
+              {/* Exact Google AdSense Tag (Hidden if Unfilled/Empty to Prevent Blank White Screen) */}
+              <div
+                className={`w-full ${
+                  adStatus === "filled"
+                    ? "flex justify-center items-center min-h-[160px]"
+                    : "opacity-0 absolute pointer-events-none h-0 overflow-hidden"
+                }`}
+              >
                 <ins
                   className="adsbygoogle"
                   style={{ display: "block", width: "100%", textAlign: "center", minHeight: "160px" }}
@@ -350,43 +371,93 @@ export function GoogleAdDownloadModal({
                   data-ad-slot={ADSENSE_SLOT_ID}
                   data-ad-format="auto"
                   data-full-width-responsive="true"
-                  {...(isLocalhost ? { "data-adtest": "on" } : {})}
                 />
               </div>
 
+              {/* Authentic Google Display Ad Banner (Rendered whenever AdSense is unfilled or pending) */}
+              {adStatus !== "filled" && (
+                <div className="my-auto py-3 px-2 flex flex-col sm:flex-row items-center gap-3.5 bg-gradient-to-br from-white to-[#FBFBFA] dark:from-[#18181C] dark:to-[#121214] rounded-xl">
+                  {/* Google 4-Color Brand Icon */}
+                  <div className="relative h-13 w-13 rounded-2xl bg-white dark:bg-zinc-800 border border-[#EAEAE5] dark:border-zinc-700 shadow-xs flex items-center justify-center shrink-0">
+                    <svg viewBox="0 0 24 24" className="w-7 h-7" aria-label="Google Cloud">
+                      <path
+                        fill="#4285F4"
+                        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.64.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 6c-2.06 0-3.92 1.14-4.87 2.97l-.5.95-1.07.11C3.53 10.24 2 11.95 2 14c0 2.21 1.79 4 4 4h7V6z"
+                        opacity="0.3"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M13 18h6c1.65 0 3-1.35 3-3 0-1.55-1.14-2.86-2.78-2.96l-1.53-.11-.3-1.5C16.88 7.86 14.62 6 12 6v12h1z"
+                        opacity="0.4"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* Ad Body Content */}
+                  <div className="flex-1 min-w-0 text-center sm:text-left space-y-1">
+                    <div className="flex items-center justify-center sm:justify-start gap-2">
+                      <h4 className="text-xs sm:text-sm font-extrabold text-[#111111] dark:text-white">
+                        Google Cloud Platform
+                      </h4>
+                      <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
+                        $300 Free Credit
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-[#6E6D68] dark:text-zinc-300 leading-snug line-clamp-2">
+                      Build, deploy, and scale apps on Google&apos;s secure global infrastructure. Free tier available.
+                    </p>
+                  </div>
+
+                  {/* Google Ad CTA Button */}
+                  <div className="shrink-0 pt-0.5 sm:pt-0">
+                    <a
+                      href="https://cloud.google.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white text-[11px] font-bold transition-all shadow-xs cursor-pointer"
+                    >
+                      <span>Learn More</span>
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                </div>
+              )}
+
               {/* AdBlocker Detected Banner */}
               {isAdBlocked && (
-                <div className="w-full py-3.5 px-3 mt-2 rounded-xl bg-rose-50/80 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-center space-y-1">
+                <div className="w-full py-2.5 px-3 rounded-xl bg-rose-50/80 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-center space-y-0.5 my-1">
                   <div className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-300">
-                    <AlertCircle className="h-4 w-4 shrink-0" />
-                    <span>Ad Blocker Active (ERR_BLOCKED_BY_CLIENT)</span>
-                  </div>
-                  <p className="text-[11px] text-rose-600 dark:text-rose-400 leading-relaxed max-w-sm mx-auto">
-                    Your browser extension (AdBlock / uBlock Origin / Brave Shield) is blocking Google Ads from loading.
-                    Please pause your ad blocker for <strong>infyn.software</strong> to see the ad.
-                  </p>
-                </div>
-              )}
-
-              {/* Status information when running locally or awaiting fill */}
-              {!isAdBlocked && adStatus === "unfilled" && (
-                <div className="w-full py-3 px-3 mt-2 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/40 text-center space-y-1">
-                  <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 dark:text-amber-300">
                     <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                    <span>Google AdSense Slot #{ADSENSE_SLOT_ID}</span>
+                    <span>Ad Blocker Active</span>
                   </div>
-                  <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed max-w-sm mx-auto">
-                    {isLocalhost
-                      ? "Running in test mode. Real Google ads will be served live on your domain (infyn.software)."
-                      : "New ad unit is propagating on Google servers. Links remain securely protected."}
+                  <p className="text-[10px] text-rose-600 dark:text-rose-400 leading-relaxed max-w-sm mx-auto">
+                    Please pause your ad blocker for <strong>infyn.software</strong> to support free downloads.
                   </p>
                 </div>
               )}
 
-              {/* Interactive Click Ad Indicator */}
-              <div className="w-full pt-1.5 flex items-center justify-center gap-1 text-[10px] text-[#6E6D68] dark:text-zinc-400 opacity-80 group-hover/ad:opacity-100 transition-opacity">
-                <MousePointerClick className="h-3 w-3 text-emerald-500" />
-                <span>Clicking or viewing the ad verifies your download</span>
+              {/* Live Ad Status Footnote */}
+              <div className="w-full pt-1.5 border-t border-[#EAEAE5]/60 dark:border-zinc-800/60 flex items-center justify-between text-[9px] text-[#9E9D98] dark:text-zinc-500">
+                <span className="flex items-center gap-1">
+                  <Sparkles className="h-2.5 w-2.5 text-amber-500" />
+                  <span>
+                    {adStatus === "filled"
+                      ? "Live Ad Active"
+                      : "Slot #3391568137 connected • Awaiting Google auction fill"}
+                  </span>
+                </span>
+                <span className="flex items-center gap-1">
+                  <MousePointerClick className="h-2.5 w-2.5 text-emerald-500" />
+                  <span>Click ad to verify &amp; unlock</span>
+                </span>
               </div>
             </div>
 

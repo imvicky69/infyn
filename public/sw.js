@@ -1,7 +1,7 @@
 // Infyn PWA Service Worker — Offline Caching & Shell Resiliency
 // 100% Client-Side In-Browser Utilities (Zero Cloud Uploads)
 
-const CACHE_VERSION = "infyn-pwa-v1";
+const CACHE_VERSION = "infyn-pwa-v2";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -125,7 +125,7 @@ self.addEventListener("fetch", (event) => {
           }
           return networkResponse;
         })
-        .catch(() => cachedResponse);
+        .catch(() => cachedResponse || new Response(null, { status: 404 }));
 
       return cachedResponse || fetchPromise;
     })
