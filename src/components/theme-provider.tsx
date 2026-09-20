@@ -16,26 +16,34 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const STORAGE_KEY = "infyn-theme";
 
-function getSystemTheme(): ResolvedTheme {
-  if (typeof window === "undefined") return "light";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("system");
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>("light");
   const [mounted, setMounted] = useState(false);
 
-  // Initialize theme from storage or system on mount
+  // Initialize theme from storage, DOM, or system on mount
   useEffect(() => {
+    let initialResolved: ResolvedTheme = "light";
     try {
       const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
       if (stored === "light" || stored === "dark" || stored === "system") {
         setThemeState(stored);
       }
+
+      const isDocDark = document.documentElement.classList.contains("dark");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+      if (stored === "dark" || (!stored && (isDocDark || prefersDark))) {
+        initialResolved = "dark";
+      } else if (stored === "light") {
+        initialResolved = "light";
+      } else if (stored === "system") {
+        initialResolved = prefersDark ? "dark" : "light";
+      }
     } catch {
       // Storage unavailable
     }
+    setResolvedTheme(initialResolved);
     setMounted(true);
   }, []);
 
@@ -60,7 +68,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         root.style.colorScheme = "light";
       }
 
-      // Update mobile browser status bar theme color
       const metaThemeColor = document.querySelector('meta[name="theme-color"]');
       if (metaThemeColor) {
         metaThemeColor.setAttribute("content", currentResolved === "dark" ? "#0C0C0E" : "#FBFBFA");
@@ -102,9 +109,35 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Direct, instant, bulletproof 1-click toggle
   const toggleTheme = useCallback(() => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
-  }, [resolvedTheme, setTheme]);
+    const isCurrentlyDark = document.documentElement.classList.contains("dark");
+    const nextTheme: ResolvedTheme = isCurrentlyDark ? "light" : "dark";
+
+    // 1. Immediately update DOM (0ms latency)
+    const root = document.documentElement;
+    if (nextTheme === "dark") {
+      root.classList.add("dark");
+      root.style.colorScheme = "dark";
+    } else {
+      root.classList.remove("dark");
+      root.style.colorScheme = "light";
+    }
+
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute("content", nextTheme === "dark" ? "#0C0C0E" : "#FBFBFA");
+    }
+
+    // 2. Immediately update state and storage
+    setThemeState(nextTheme);
+    setResolvedTheme(nextTheme);
+    try {
+      localStorage.setItem(STORAGE_KEY, nextTheme);
+    } catch {
+      // Storage unavailable
+    }
+  }, []);
 
   const value = useMemo(
     () => ({

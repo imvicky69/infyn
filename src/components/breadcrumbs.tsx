@@ -23,6 +23,7 @@ const PATH_LABELS: Record<string, string> = {
   "png-to-svg": "PNG to SVG Converter",
   "qr-code": "QR Code Generator",
   "svg-cleaner": "SVG Cleaner & Minifier",
+  movies: "Movies",
 };
 
 export function Breadcrumbs() {

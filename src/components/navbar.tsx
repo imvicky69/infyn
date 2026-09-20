@@ -28,6 +28,7 @@ import {
   Sparkles,
   Code2,
   Smartphone,
+  Film,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AnimatedLogo } from "@/components/animatedLogo";
@@ -705,6 +706,22 @@ export function Navbar() {
               </AnimatePresence>
             </div>
 
+            {/* Movies Link */}
+            <Link
+              href="/movies"
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[13px] font-medium transition-colors ${
+                pathname.startsWith("/movies")
+                  ? "text-[#111111] dark:text-white font-semibold bg-[#F5F4EE] dark:bg-zinc-800/80"
+                  : "text-[#6E6D68] hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800/50"
+              }`}
+            >
+              <Film className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>Movies</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                1080p
+              </span>
+            </Link>
+
             {/* Sponsor Link */}
             <Link
               href="/sponsor"
@@ -1153,6 +1170,35 @@ export function Navbar() {
                     Install →
                   </span>
                 </button>
+              </div>
+
+              {/* Movies Mobile Spotlight */}
+              <div className="pt-2 border-t border-[#F5F4EE] dark:border-zinc-800/80">
+                <Link
+                  href="/movies"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between p-3 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/60 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100/60 transition-colors"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-8 w-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                      <Film className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-[#111111] dark:text-white flex items-center gap-1.5">
+                        <span>Movies & Downloads</span>
+                        <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-emerald-600 text-white">
+                          1080p FHD
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-[#6E6D68] dark:text-zinc-400">
+                        Hindi 5.1 Original Direct Downloads
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                    Browse →
+                  </span>
+                </Link>
               </div>
 
               {/* Infyn DL Mobile Spotlight */}
