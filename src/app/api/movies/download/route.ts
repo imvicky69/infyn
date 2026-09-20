@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import secretMovies from "@/data/server-movies-secret.json";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -41,12 +40,21 @@ export async function POST(req: NextRequest) {
         const data = movieDoc.data()!;
         const isSingleMovie = !data.episodes || data.episodes.length <= 1;
 
-        if (target === "season" || target === "movie") {
-          downloadUrl = data.seasonDownloadUrl || data.episodes?.[0]?.downloadUrl || null;
+        if (target === "movie") {
+          // Priority to episodes[0] for standalone movies/specials
+          downloadUrl = data.episodes?.[0]?.downloadUrl || data.seasonDownloadUrl || null;
+          size = data.episodes?.[0]?.size || data.seasonSize || "";
+          title = `${data.title} (1080p Full Movie)`;
+        } else if (target === "season") {
+          downloadUrl = isSingleMovie
+            ? (data.episodes?.[0]?.downloadUrl || data.seasonDownloadUrl || null)
+            : (data.seasonDownloadUrl || data.episodes?.[0]?.downloadUrl || null);
+          size = isSingleMovie
+            ? (data.episodes?.[0]?.size || data.seasonSize || "")
+            : (data.seasonSize || data.episodes?.[0]?.size || "");
           title = isSingleMovie
             ? `${data.title} (1080p Full Movie)`
             : `${data.title} - Season 1 Complete Pack`;
-          size = data.seasonSize || data.episodes?.[0]?.size || "";
         } else if (target === "episode" && episodeNumber) {
           const ep = data.episodes?.find(
             (e: { episodeNumber: number }) => e.episodeNumber === Number(episodeNumber)
@@ -60,30 +68,6 @@ export async function POST(req: NextRequest) {
       }
     } catch (firestoreError) {
       console.warn("Firestore query warning in download route:", firestoreError);
-    }
-
-    // 2. Fallback only if Firestore document had no link
-    if (!downloadUrl) {
-      const fallbackMovie = secretMovies.find((m) => m.slug === slug);
-      if (fallbackMovie) {
-        const isSingleMovie = !fallbackMovie.episodes || fallbackMovie.episodes.length <= 1;
-        if (target === "season" || target === "movie") {
-          downloadUrl = fallbackMovie.seasonDownloadUrl || fallbackMovie.episodes?.[0]?.downloadUrl || null;
-          title = isSingleMovie
-            ? `${fallbackMovie.title} (1080p Full Movie)`
-            : `${fallbackMovie.title} - Season 1 Complete Pack`;
-          size = fallbackMovie.seasonSize || fallbackMovie.episodes?.[0]?.size || "";
-        } else if (target === "episode" && episodeNumber) {
-          const ep = fallbackMovie.episodes?.find(
-            (e) => e.episodeNumber === Number(episodeNumber)
-          );
-          if (ep) {
-            downloadUrl = ep.downloadUrl || null;
-            title = `${fallbackMovie.title} - Episode ${ep.episodeNumber}: ${ep.title}`;
-            size = ep.size || "";
-          }
-        }
-      }
     }
 
     if (!downloadUrl) {

@@ -8,8 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/navbar";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
-import moviesData from "@/data/movies.json";
-import { Movie, Episode } from "@/types/movie";
+import { Movie } from "@/types/movie";
+import { getLiveMovieBySlug } from "@/lib/movies-firestore";
 import {
   GoogleAdDownloadModal,
   DownloadTarget,
@@ -32,6 +32,7 @@ import {
   Radio,
   FileVideo,
   Monitor,
+  Loader2,
 } from "lucide-react";
 
 interface PageProps {
@@ -41,35 +42,33 @@ interface PageProps {
 export default function MovieDetailPage({ params }: PageProps) {
   const { slug } = use(params);
 
-  // Initial movie from bundled catalog for instant render with zero layout shift
-  const [movie, setMovie] = useState<Movie | null>(() => {
-    return (moviesData as Movie[]).find((m) => m.slug === slug) || null;
-  });
-
+  // 100% live Firestore state
+  const [movie, setMovie] = useState<Movie | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isLiveSynced, setIsLiveSynced] = useState(false);
 
-  // Always fetch live directly from Firestore via /api/movies?slug=${slug}
+  // Fetch live directly from Firestore using public keys
   useEffect(() => {
     let isMounted = true;
-    async function fetchLiveFromFirestore() {
-      try {
-        const res = await fetch(`/api/movies?slug=${slug}`, {
-          cache: "no-store",
-          headers: { "Cache-Control": "no-cache" },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && data.movie && isMounted) {
-            setMovie(data.movie);
+    setIsLoading(true);
+
+    getLiveMovieBySlug(slug)
+      .then((liveMovie) => {
+        if (isMounted) {
+          setMovie(liveMovie);
+          setIsLoading(false);
+          if (liveMovie) {
             setIsLiveSynced(true);
           }
         }
-      } catch (err) {
-        console.warn("Live Firestore sync error, using cached movie:", err);
-      }
-    }
+      })
+      .catch((err) => {
+        console.error("Failed to load movie from Firestore:", err);
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
 
-    fetchLiveFromFirestore();
     return () => {
       isMounted = false;
     };
@@ -112,6 +111,23 @@ export default function MovieDetailPage({ params }: PageProps) {
     }
   };
 
+  // Sleek Skeleton / Loading state while querying Firestore
+  if (isLoading) {
+    return (
+      <div className="min-h-screen text-[#111111] dark:text-[#EDEDEC] flex flex-col font-sans bg-[#FBFBFA] dark:bg-[#0C0C0E]">
+        <Navbar />
+        <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4">
+          <Loader2 className="h-10 w-10 animate-spin text-emerald-600" />
+          <h2 className="text-xl font-bold">Loading Title from Firestore...</h2>
+          <p className="text-zinc-500 text-xs">
+            Connecting directly to Cloud Firestore database
+          </p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   if (!movie) {
     return (
       <div className="min-h-screen text-[#111111] dark:text-[#EDEDEC] flex flex-col font-sans bg-[#FBFBFA] dark:bg-[#0C0C0E]">
@@ -120,7 +136,7 @@ export default function MovieDetailPage({ params }: PageProps) {
           <Film className="h-12 w-12 text-zinc-400" />
           <h1 className="text-2xl font-bold">Title Not Found</h1>
           <p className="text-zinc-500 text-sm max-w-md">
-            The title you requested could not be found or has been moved in Firestore.
+            The title you requested could not be found in the Firestore database.
           </p>
           <Link
             href="/movies"
@@ -136,7 +152,10 @@ export default function MovieDetailPage({ params }: PageProps) {
 
   // Detect content type: Single feature film / Stand-up Special vs Multi-Episode Series
   const isSingleMovie = !movie.episodes || movie.episodes.length <= 1;
-  const movieDownloadSize = movie.seasonSize || movie.episodes?.[0]?.size || "1080p FHD";
+  // Always prioritize episode[0].size for single movies so updates to episodes in Firestore reflect immediately
+  const movieDownloadSize = isSingleMovie
+    ? (movie.episodes?.[0]?.size || movie.seasonSize || "1080p FHD")
+    : (movie.seasonSize || movie.episodes?.[0]?.size || "1080p FHD");
   const movieEpisodeCount = movie.episodes?.length || 1;
 
   return (

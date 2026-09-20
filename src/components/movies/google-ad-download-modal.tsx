@@ -18,6 +18,7 @@ import {
   MousePointerClick,
   Sparkles,
 } from "lucide-react";
+import { getLiveDownloadLink } from "@/lib/movies-firestore";
 
 export interface DownloadTarget {
   slug: string;
@@ -153,7 +154,7 @@ export function GoogleAdDownloadModal({
     };
   }, [isOpen, downloadData]);
 
-  // Securely request download link from Node.js server once ad requirement is satisfied
+  // Request verified download link directly from Firestore once ad requirement is satisfied
   const requestDownloadLink = React.useCallback(async (adClicked = false) => {
     if (!downloadData || isVerifying || verifiedUrl) return;
 
@@ -161,22 +162,17 @@ export function GoogleAdDownloadModal({
     setVerificationError(null);
 
     try {
-      const response = await fetch("/api/movies/download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug: downloadData.slug,
-          target: downloadData.target,
-          episodeNumber: downloadData.episodeNumber,
-          adViewDurationMs: adClicked ? 5000 : 4800,
-          verificationToken: `token_verified_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
-        }),
+      const data = await getLiveDownloadLink({
+        slug: downloadData.slug,
+        target: downloadData.target,
+        episodeNumber: downloadData.episodeNumber,
       });
-
-      const data = await response.json();
 
       if (data.success && data.downloadUrl) {
         setVerifiedUrl(data.downloadUrl);
+        if (data.size) {
+          downloadData.size = data.size;
+        }
         setSecondsLeft(0);
       } else {
         setVerificationError(data.error || "Ad verification check failed. Please view the ad.");
@@ -264,7 +260,7 @@ export function GoogleAdDownloadModal({
                   Direct Download Link
                 </h3>
                 <p className="text-[10px] text-[#6E6D68] dark:text-zinc-400">
-                  Secured with Node.js &amp; Firestore
+                  Direct Firestore Verified
                 </p>
               </div>
             </div>
@@ -485,7 +481,7 @@ export function GoogleAdDownloadModal({
                   {isVerifying ? (
                     <>
                       <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-600" />
-                      <span>Node.js server verifying ad &amp; querying Firestore...</span>
+                      <span>Querying Firestore &amp; verifying ad...</span>
                     </>
                   ) : !isReady ? (
                     <>

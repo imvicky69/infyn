@@ -1,8 +1,19 @@
 import type { Metadata } from "next";
-import moviesData from "@/data/movies.json";
+import { getAdminFirestore } from "@/lib/firebase-admin";
 import { Movie } from "@/types/movie";
 
-const movies = moviesData as Movie[];
+async function getMovieForLayout(slug: string): Promise<Movie | null> {
+  try {
+    const db = getAdminFirestore();
+    const doc = await db.collection("movies").doc(slug).get();
+    if (doc.exists) {
+      return { ...doc.data(), slug: doc.id } as Movie;
+    }
+  } catch (err) {
+    console.warn("Firestore query error in MovieDetailLayout:", err);
+  }
+  return null;
+}
 
 export async function generateMetadata({
   params,
@@ -10,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const movie = movies.find((m) => m.slug === slug);
+  const movie = await getMovieForLayout(slug);
 
   if (!movie) {
     return {
@@ -19,22 +30,19 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${movie.title} (${movie.year}) Web Series — Download All Episodes (1080p Web-DL) | Infyn`;
-  const description = `Watch official trailer and download all episodes of ${movie.title} starring ${movie.cast.slice(0, 3).join(", ")}. Direct high-speed downloads in 1080p Full HD with Hindi Original Audio & English subtitles. Free & Ad-Free.`;
+  const isSingle = !movie.episodes || movie.episodes.length <= 1;
+  const title = isSingle
+    ? `${movie.title} (${movie.year}) — Download Full Movie (1080p FHD) | Infyn`
+    : `${movie.title} (${movie.year}) Web Series — Download All Episodes (1080p Web-DL) | Infyn`;
+  const description = `Watch official trailer and download ${movie.title} starring ${Array.isArray(movie.cast) ? movie.cast.slice(0, 3).join(", ") : movie.cast}. Direct high-speed downloads in 1080p Full HD with ${movie.language}. Free & Ad-Free.`;
 
   return {
     title,
     description,
     keywords: [
       `${movie.title} download`,
-      `${movie.title} web series download`,
-      `${movie.title} all episodes download`,
       `${movie.title} 1080p download`,
-      `${movie.title} 720p download`,
-      `${movie.title} divyenndu`,
-      `${movie.title} bhuvan arora`,
-      "waiting hai tatkal irctc series",
-      "free hindi web series download",
+      "free hindi movie download",
       "infyn movies",
     ],
     alternates: {
@@ -53,7 +61,7 @@ export async function generateMetadata({
           alt: `${movie.title} Poster`,
         },
       ],
-      type: "video.tv_show",
+      type: isSingle ? "video.movie" : "video.tv_show",
     },
     twitter: {
       card: "summary_large_image",
@@ -72,7 +80,7 @@ export default async function MovieDetailLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const movie = movies.find((m) => m.slug === slug);
+  const movie = await getMovieForLayout(slug);
 
   const jsonLd = movie
     ? {

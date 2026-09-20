@@ -8,8 +8,8 @@ import { motion } from "framer-motion";
 import { Navbar } from "@/components/navbar";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
-import moviesData from "@/data/movies.json";
 import { Movie } from "@/types/movie";
+import { getLiveMovies } from "@/lib/movies-firestore";
 import {
   Search,
   Star,
@@ -25,9 +25,8 @@ import {
   ChevronDown,
   Info,
   Tv,
+  Loader2,
 } from "lucide-react";
-
-const MOVIES: Movie[] = moviesData as Movie[];
 
 const ALL_GENRES = [
   "All",
@@ -41,31 +40,31 @@ const ALL_GENRES = [
 type SortOption = "trending" | "rating" | "latest" | "title";
 
 export default function MoviesPage() {
-  const [moviesList, setMoviesList] = useState<Movie[]>(moviesData as Movie[]);
+  const [moviesList, setMoviesList] = useState<Movie[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("All");
   const [sortBy, setSortBy] = useState<SortOption>("trending");
 
-  // Fetch live movies directly from Firestore
+  // Fetch live movies directly from Firestore using public keys
   useEffect(() => {
     let isMounted = true;
-    async function loadLiveMovies() {
-      try {
-        const res = await fetch("/api/movies", {
-          cache: "no-store",
-          headers: { "Cache-Control": "no-cache" },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && Array.isArray(data.movies) && isMounted) {
-            setMoviesList(data.movies);
-          }
+    setIsLoading(true);
+
+    getLiveMovies()
+      .then((movies) => {
+        if (isMounted) {
+          setMoviesList(movies);
+          setIsLoading(false);
         }
-      } catch (err) {
-        console.warn("Live movies query failed, using static catalog:", err);
-      }
-    }
-    loadLiveMovies();
+      })
+      .catch((err) => {
+        console.error("Failed to load movies from Firestore:", err);
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
+
     return () => {
       isMounted = false;
     };
@@ -107,6 +106,23 @@ export default function MoviesPage() {
         return (b.trending ? 1 : 0) - (a.trending ? 1 : 0);
       });
   }, [moviesList, searchQuery, selectedGenre, sortBy]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen text-[#111111] dark:text-[#EDEDEC] flex flex-col font-sans bg-[#FBFBFA] dark:bg-[#0C0C0E]">
+        <Navbar />
+        <Breadcrumbs />
+        <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20 flex flex-col items-center justify-center text-center space-y-4">
+          <Loader2 className="h-10 w-10 animate-spin text-emerald-600" />
+          <h2 className="text-xl font-bold">Loading Movies from Firestore...</h2>
+          <p className="text-zinc-500 text-xs">
+            Querying Cloud Firestore database in real-time
+          </p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-[#111111] dark:text-[#EDEDEC] flex flex-col font-sans bg-[#FBFBFA] dark:bg-[#0C0C0E]">

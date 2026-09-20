@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import localMovies from "@/data/movies.json";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -8,7 +7,7 @@ export const revalidate = 0;
 /**
  * GET /api/movies
  * Optional query param: ?slug=xyz to fetch a single movie
- * Always queries live Firestore database first to reflect real-time updates.
+ * 100% dependent on live Firestore. Zero local JSON fallbacks.
  * Strips secret download URLs for client-side security.
  */
 export async function GET(req: NextRequest) {
@@ -42,25 +41,17 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      // Fallback to local catalog if doc not found
-      const local = localMovies.find((m) => m.slug === slug);
-      if (local) {
-        return NextResponse.json(
-          { success: true, movie: local },
-          { headers: { "Cache-Control": "no-store" } }
-        );
-      }
-
       return NextResponse.json(
-        { success: false, error: "Movie not found" },
+        { success: false, error: "Movie not found in Firestore" },
         { status: 404 }
       );
     }
 
     // 2. Fetch all movies from Firestore
     const snapshot = await db.collection("movies").get();
+    const movies: Record<string, unknown>[] = [];
+
     if (!snapshot.empty) {
-      const movies: Record<string, unknown>[] = [];
       snapshot.forEach((doc) => {
         const data = doc.data();
         delete data.seasonDownloadUrl;
@@ -79,29 +70,23 @@ export async function GET(req: NextRequest) {
         if (!a.featured && b.featured) return 1;
         return ((b.year as number) || 0) - ((a.year as number) || 0);
       });
-
-      return NextResponse.json(
-        { success: true, count: movies.length, movies },
-        {
-          headers: {
-            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-            Pragma: "no-cache",
-            Expires: "0",
-          },
-        }
-      );
     }
+
+    return NextResponse.json(
+      { success: true, count: movies.length, movies },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
   } catch (err) {
-    console.warn("Live Firestore query error in /api/movies, using local backup:", err);
+    console.error("Firestore query error in /api/movies:", err);
+    return NextResponse.json(
+      { success: false, error: "Database query error", movies: [] },
+      { status: 500 }
+    );
   }
-
-  // Backup fallback
-  return NextResponse.json(
-    { success: true, count: localMovies.length, movies: localMovies },
-    {
-      headers: {
-        "Cache-Control": "no-store, no-cache, must-revalidate",
-      },
-    }
-  );
 }
