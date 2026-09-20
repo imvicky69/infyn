@@ -1,0 +1,20 @@
+{
+  "name": "infyn-movies-admin",
+  "version": "1.0.0",
+  "description": "Standalone Admin Panel for managing Infyn Firestore Movies & Protected Links",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": ["infyn", "admin", "firestore", "movies", "crud"],
+  "author": "Indivio",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "firebase-admin": "^13.1.0"
+  }
+}

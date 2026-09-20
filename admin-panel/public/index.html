@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infyn — Movies Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="brand-logo">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M19.82 2H4.18C2.97 2 2 2.97 2 4.18v15.64C2 21.03 2.97 22 4.18 22h15.64c1.21 0 2.18-.97 2.18-2.18V4.18C22 2.97 21.03 2 19.82 2z"/>
+              <path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 17h5M17 7h5"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">Infyn Movies Admin</h1>
+            <p class="brand-subtitle">Firestore Protected Catalog &amp; Secret Links Manager</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Status Indicator -->
+        <div id="connection-status" class="status-pill status-loading">
+          <span class="status-dot"></span>
+          <span class="status-text">Connecting...</span>
+        </div>
+
+        <!-- Admin Key Button -->
+        <button id="btn-admin-key" class="btn btn-secondary" title="Configure Admin Key">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+          </svg>
+          <span id="key-status-label">Admin Key</span>
+        </button>
+
+        <!-- Add Movie Primary Action -->
+        <button id="btn-add-movie" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>Add New Movie</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+      <!-- Stats Bar -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Total Titles</span>
+          <span id="stat-total-movies" class="stat-value">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Total Episodes</span>
+          <span id="stat-total-episodes" class="stat-value">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Featured Showcase</span>
+          <span id="stat-featured-title" class="stat-value text-accent">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Storage Backend</span>
+          <span class="stat-value">Google Firestore</span>
+        </div>
+      </section>
+
+      <!-- Controls: Search & Filters -->
+      <section class="controls-bar">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search by title, genre, cast, director, or slug..."
+          />
+          <button id="search-clear" class="btn-clear" style="display: none;">&times;</button>
+        </div>
+
+        <div class="filter-group">
+          <select id="genre-filter" class="select-input">
+            <option value="ALL">All Genres</option>
+          </select>
+          <button id="btn-refresh" class="btn btn-secondary" title="Refresh List">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 4v6h-6M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Movies Grid -->
+      <section id="movies-container" class="movies-grid">
+        <!-- Rendered dynamically by app.js -->
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal: Movie Form (Create / Edit) -->
+  <div id="movie-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 id="modal-title" class="modal-heading">Add New Movie</h2>
+          <p class="modal-subheading">Fill in metadata, poster assets, and protected download links.</p>
+        </div>
+        <button id="modal-close" class="modal-close-btn">&times;</button>
+      </div>
+
+      <form id="movie-form" class="modal-body">
+        <!-- Section 1: Basic Information -->
+        <div class="form-section">
+          <h3 class="section-heading">1. Basic Information</h3>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label for="f-title">Movie / Series Title <span class="req">*</span></label>
+              <input type="text" id="f-title" required placeholder="e.g. Waiting Hai" />
+            </div>
+
+            <div class="form-group">
+              <label for="f-slug">
+                URL Slug <span class="req">*</span>
+                <button type="button" id="btn-gen-slug" class="btn-text">Auto-generate</button>
+              </label>
+              <input type="text" id="f-slug" required placeholder="e.g. waiting-hai" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="f-tagline">Tagline</label>
+            <input type="text" id="f-tagline" placeholder="e.g. Tatkal ka master, system ka disaster." />
+          </div>
+
+          <div class="form-grid-4">
+            <div class="form-group">
+              <label for="f-year">Release Year</label>
+              <input type="number" id="f-year" value="2026" />
+            </div>
+            <div class="form-group">
+              <label for="f-releaseDate">Release Date</label>
+              <input type="date" id="f-releaseDate" />
+            </div>
+            <div class="form-group">
+              <label for="f-rating">IMDb / Rating (0-10)</label>
+              <input type="number" step="0.1" id="f-rating" value="8.2" />
+            </div>
+            <div class="form-group">
+              <label for="f-votes">Votes / Review Count</label>
+              <input type="text" id="f-votes" placeholder="e.g. 18.4K" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Media, Formats & Badges -->
+        <div class="form-section">
+          <h3 class="section-heading">2. Media &amp; Formats</h3>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label for="f-poster">Poster Image URL or Path</label>
+              <input type="text" id="f-poster" placeholder="/movieData/waitingHai-poster.jpg or https://..." />
+            </div>
+            <div class="form-group">
+              <label for="f-trailer">Trailer Video URL or Path</label>
+              <input type="text" id="f-trailer" placeholder="/movieData/waitingHai-trailer.mp4 or https://..." />
+            </div>
+          </div>
+
+          <div class="form-grid-4">
+            <div class="form-group">
+              <label for="f-quality">Quality</label>
+              <input type="text" id="f-quality" value="1080p FHD" />
+            </div>
+            <div class="form-group">
+              <label for="f-language">Audio Language</label>
+              <input type="text" id="f-language" value="Hindi (Original 5.1)" />
+            </div>
+            <div class="form-group">
+              <label for="f-contentRating">Content Rating</label>
+              <input type="text" id="f-contentRating" value="U/A 16+" />
+            </div>
+            <div class="form-group">
+              <label for="f-duration">Duration / Seasons</label>
+              <input type="text" id="f-duration" placeholder="e.g. 1 Season (7 Episodes)" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Cast, Crew & Genres -->
+        <div class="form-section">
+          <h3 class="section-heading">3. Cast, Crew &amp; Genres</h3>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label for="f-director">Director</label>
+              <input type="text" id="f-director" placeholder="e.g. Sameer Vidwans" />
+            </div>
+            <div class="form-group">
+              <label for="f-genres">Genres (comma separated)</label>
+              <input type="text" id="f-genres" placeholder="Crime, Drama, Comedy, Thriller" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="f-cast">Cast Members (comma separated)</label>
+            <input type="text" id="f-cast" placeholder="Divyenndu, Bhuvan Arora, Kumud Mishra, Harshita Gaur" />
+          </div>
+
+          <div class="form-group">
+            <label for="f-synopsis">Synopsis / Story Overview</label>
+            <textarea id="f-synopsis" rows="3" placeholder="Brief storyline overview..."></textarea>
+          </div>
+        </div>
+
+        <!-- Section 4: Full Season / Pack Download Link -->
+        <div class="form-section">
+          <h3 class="section-heading">4. Full Season / Movie Direct Download</h3>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label for="f-seasonDownloadUrl">Protected Google Drive Download URL</label>
+              <input type="url" id="f-seasonDownloadUrl" placeholder="https://drive.google.com/file/d/.../view" />
+            </div>
+            <div class="form-group">
+              <label for="f-seasonSize">Pack Size</label>
+              <input type="text" id="f-seasonSize" placeholder="e.g. 5.4 GB" />
+            </div>
+          </div>
+
+          <div class="form-checkbox">
+            <input type="checkbox" id="f-featured" />
+            <label for="f-featured">Feature this title in the homepage spotlight banner</label>
+          </div>
+        </div>
+
+        <!-- Section 5: Episodes Manager -->
+        <div class="form-section">
+          <div class="episodes-header">
+            <div>
+              <h3 class="section-heading">5. Individual Episodes</h3>
+              <p class="section-subtext">Add downloadable episodes with protected Google Drive links.</p>
+            </div>
+            <button type="button" id="btn-add-episode" class="btn btn-secondary btn-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              <span>Add Episode</span>
+            </button>
+          </div>
+
+          <div id="episodes-container" class="episodes-list">
+            <!-- Dynamic episode items -->
+          </div>
+        </div>
+
+        <!-- Modal Actions Footer -->
+        <div class="modal-footer">
+          <button type="button" id="btn-modal-cancel" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="btn-modal-save" class="btn btn-primary">
+            <span class="btn-text">Save to Firestore</span>
+            <span class="btn-spinner" style="display: none;"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Admin Key Settings -->
+  <div id="key-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h2 class="modal-heading">Admin Authentication</h2>
+        <button id="key-modal-close" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted mb-4">
+          Enter the Admin Secret Key configured on your backend (<code class="code-inline">ADMIN_SECRET</code>).
+          This key is stored locally in your browser and used to authenticate all Firestore operations.
+        </p>
+        <div class="form-group">
+          <label for="f-admin-key">Admin Secret Key</label>
+          <input type="password" id="f-admin-key" placeholder="Enter key (default: admin123)" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-save-key" class="btn btn-primary">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Delete Confirmation -->
+  <div id="delete-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h2 class="modal-heading text-danger">Delete Movie?</h2>
+        <button id="delete-modal-close" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to permanently delete <strong id="delete-movie-name"></strong>?</p>
+        <p class="text-muted text-sm mt-2">
+          This will permanently remove the document and all associated protected download links from Firestore. This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-cancel-delete" class="btn btn-secondary">Cancel</button>
+        <button id="btn-confirm-delete" class="btn btn-danger">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notifications Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
