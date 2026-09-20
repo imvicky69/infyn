@@ -19,6 +19,16 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "media.zakirkhanlive.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.zakirkhanlive.com",
+        pathname: "/**",
+      },
     ],
   },
 };

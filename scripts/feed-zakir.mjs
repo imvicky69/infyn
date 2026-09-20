@@ -28,7 +28,7 @@ const zakirMovieData = {
   genres: ["Comedy", "Stand-up"],
   director: "Karan Asnani",
   cast: ["Zakir Khan (as Self)"],
-  poster: "https://media.zakirkhanlive.com/uploads/Papayrr01_1_7bf6857745.png",
+  poster: "/movieData/zakirPapaYaar-poster.png",
   localTrailerUrl: "",
   language: "Hindi (Original 5.1)",
   quality: "1080p FHD",
