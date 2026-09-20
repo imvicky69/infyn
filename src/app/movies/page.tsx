@@ -41,38 +41,72 @@ const ALL_GENRES = [
 type SortOption = "trending" | "rating" | "latest" | "title";
 
 export default function MoviesPage() {
+  const [moviesList, setMoviesList] = useState<Movie[]>(moviesData as Movie[]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("All");
   const [sortBy, setSortBy] = useState<SortOption>("trending");
 
+  // Fetch live movies directly from Firestore
+  useEffect(() => {
+    let isMounted = true;
+    async function loadLiveMovies() {
+      try {
+        const res = await fetch("/api/movies", {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.movies) && isMounted) {
+            setMoviesList(data.movies);
+          }
+        }
+      } catch (err) {
+        console.warn("Live movies query failed, using static catalog:", err);
+      }
+    }
+    loadLiveMovies();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Featured Spotlight Movie
   const featuredMovie = useMemo(() => {
-    return MOVIES.find((m) => m.featured) || MOVIES[0];
-  }, []);
+    return moviesList.find((m) => m.featured) || moviesList[0];
+  }, [moviesList]);
+
+  const isFeaturedSingleMovie =
+    !featuredMovie?.episodes || featuredMovie.episodes.length <= 1;
 
   // Filter and sort movies
   const filteredMovies = useMemo(() => {
-    return MOVIES.filter((movie) => {
-      const query = searchQuery.trim().toLowerCase();
-      const matchesSearch =
-        !query ||
-        movie.title.toLowerCase().includes(query) ||
-        movie.director.toLowerCase().includes(query) ||
-        movie.cast.some((actor) => actor.toLowerCase().includes(query)) ||
-        movie.genres.some((g) => g.toLowerCase().includes(query)) ||
-        movie.synopsis.toLowerCase().includes(query);
+    return moviesList
+      .filter((movie) => {
+        const query = searchQuery.trim().toLowerCase();
+        const matchesSearch =
+          !query ||
+          movie.title.toLowerCase().includes(query) ||
+          movie.director?.toLowerCase().includes(query) ||
+          (Array.isArray(movie.cast) &&
+            movie.cast.some((actor) => actor.toLowerCase().includes(query))) ||
+          (Array.isArray(movie.genres) &&
+            movie.genres.some((g) => g.toLowerCase().includes(query))) ||
+          movie.synopsis?.toLowerCase().includes(query);
 
-      const matchesGenre =
-        selectedGenre === "All" || movie.genres.includes(selectedGenre);
+        const matchesGenre =
+          selectedGenre === "All" ||
+          (Array.isArray(movie.genres) && movie.genres.includes(selectedGenre));
 
-      return matchesSearch && matchesGenre;
-    }).sort((a, b) => {
-      if (sortBy === "rating") return b.rating - a.rating;
-      if (sortBy === "latest") return b.year - a.year;
-      if (sortBy === "title") return a.title.localeCompare(b.title);
-      return (b.trending ? 1 : 0) - (a.trending ? 1 : 0);
-    });
-  }, [searchQuery, selectedGenre, sortBy]);
+        return matchesSearch && matchesGenre;
+      })
+      .sort((a, b) => {
+        if (sortBy === "rating") return b.rating - a.rating;
+        if (sortBy === "latest") return b.year - a.year;
+        if (sortBy === "title") return a.title.localeCompare(b.title);
+        return (b.trending ? 1 : 0) - (a.trending ? 1 : 0);
+      });
+  }, [moviesList, searchQuery, selectedGenre, sortBy]);
 
   return (
     <div className="min-h-screen text-[#111111] dark:text-[#EDEDEC] flex flex-col font-sans bg-[#FBFBFA] dark:bg-[#0C0C0E]">
@@ -98,7 +132,11 @@ export default function MoviesPage() {
                   </span>
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold">
                     <Sparkles className="h-3 w-3" />
-                    <span>Season 1 Complete</span>
+                    <span>
+                      {isFeaturedSingleMovie
+                        ? "Movie / Stand-up Special"
+                        : "Season 1 Complete"}
+                    </span>
                   </span>
                   <span className="px-2.5 py-1 rounded-full bg-[#F5F4EE] dark:bg-zinc-800 text-[#6E6D68] dark:text-zinc-300 text-xs font-semibold">
                     {featuredMovie.year}
@@ -107,7 +145,7 @@ export default function MoviesPage() {
                     {featuredMovie.duration}
                   </span>
                   <span className="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 text-indigo-800 dark:text-indigo-300 text-xs font-bold">
-                    Hindi 5.1 Original
+                    {featuredMovie.language}
                   </span>
                 </div>
 
@@ -116,9 +154,11 @@ export default function MoviesPage() {
                   <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#111111] dark:text-white">
                     {featuredMovie.title}
                   </h1>
-                  <p className="text-sm sm:text-base italic text-amber-600 dark:text-amber-400 font-semibold">
-                    &ldquo;{featuredMovie.tagline}&rdquo;
-                  </p>
+                  {featuredMovie.tagline && (
+                    <p className="text-sm sm:text-base italic text-amber-600 dark:text-amber-400 font-semibold">
+                      &ldquo;{featuredMovie.tagline}&rdquo;
+                    </p>
+                  )}
                 </div>
 
                 {/* Synopsis */}
@@ -129,28 +169,35 @@ export default function MoviesPage() {
                 {/* Cast & Director details */}
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#6E6D68] dark:text-zinc-400 pt-1">
                   <span>
-                    <strong className="text-[#111111] dark:text-zinc-200">Director:</strong> {featuredMovie.director}
+                    <strong className="text-[#111111] dark:text-zinc-200">Director:</strong> {featuredMovie.director || "Production Director"}
                   </span>
                   <span>•</span>
                   <span>
-                    <strong className="text-[#111111] dark:text-zinc-200">Starring:</strong> Divyenndu, Bhuvan Arora, Kumud Mishra
+                    <strong className="text-[#111111] dark:text-zinc-200">Starring:</strong>{" "}
+                    {Array.isArray(featuredMovie.cast)
+                      ? featuredMovie.cast.slice(0, 3).join(", ")
+                      : featuredMovie.cast}
                   </span>
                 </div>
 
-                {/* Action CTA (No Download Button on Movie Screen) */}
+                {/* Action CTA */}
                 <div className="pt-3">
                   <Link
                     href={`/movies/${featuredMovie.slug}`}
                     className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-[#111111] hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-black font-extrabold text-sm active:scale-95 transition-all shadow-md group/btn"
                   >
                     <Play className="h-4 w-4 fill-current" />
-                    <span>Watch Trailer & View Episodes</span>
+                    <span>
+                      {isFeaturedSingleMovie
+                        ? "View Movie & Download"
+                        : "Watch Trailer & View Episodes"}
+                    </span>
                     <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
 
-              {/* Right Column: Pristine Portrait Poster (Keeps True Aspect Ratio) */}
+              {/* Right Column: Pristine Portrait Poster */}
               <div className="lg:col-span-4 flex justify-center lg:justify-end order-1 lg:order-2">
                 <Link
                   href={`/movies/${featuredMovie.slug}`}
@@ -173,7 +220,9 @@ export default function MoviesPage() {
                       <span>{featuredMovie.rating}</span>
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-extrabold uppercase tracking-wider">
-                      7 EPISODES
+                      {isFeaturedSingleMovie
+                        ? "FULL MOVIE"
+                        : `${featuredMovie.episodes?.length || 7} EPISODES`}
                     </span>
                   </div>
 
@@ -316,7 +365,9 @@ export default function MoviesPage() {
                     </div>
 
                     <span className="px-2 py-1 rounded-full bg-emerald-500/90 backdrop-blur-md text-white text-[10px] font-extrabold uppercase tracking-wider shadow-xs">
-                      {movie.episodes ? `${movie.episodes.length} Episodes` : "Movie"}
+                      {!movie.episodes || movie.episodes.length <= 1
+                        ? "Movie"
+                        : `${movie.episodes.length} Episodes`}
                     </span>
                   </div>
 
@@ -340,8 +391,12 @@ export default function MoviesPage() {
                       <Calendar className="h-3 w-3" />
                       <span>{movie.year}</span>
                       <span>•</span>
-                      <Tv className="h-3 w-3" />
-                      <span>{movie.episodes?.length || 1} Ep</span>
+                      <Film className="h-3 w-3" />
+                      <span>
+                        {!movie.episodes || movie.episodes.length <= 1
+                          ? movie.duration || "Feature Film"
+                          : `${movie.episodes.length} Episodes`}
+                      </span>
                     </div>
                     <span className="text-[11px] px-1.5 py-0.5 rounded bg-[#F5F4EE] dark:bg-zinc-800 font-bold text-[#111111] dark:text-zinc-300">
                       {movie.contentRating}
