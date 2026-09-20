@@ -21,7 +21,7 @@ import {
 
 export interface DownloadTarget {
   slug: string;
-  target: "season" | "episode";
+  target: "season" | "episode" | "movie";
   episodeNumber?: number;
   title: string;
   size?: string;
