@@ -5,6 +5,7 @@ export interface Episode {
   size: string;
   downloadUrl?: string;
   synopsis: string;
+  thumbnail?: string;
 }
 
 export interface Movie {

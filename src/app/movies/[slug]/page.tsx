@@ -546,58 +546,144 @@ export default function MovieDetailPage({ params }: PageProps) {
 
               {/* Episode Cards */}
               <div className="space-y-4">
-                {movie.episodes?.map((ep) => (
-                  <div
-                    key={ep.episodeNumber}
-                    className="p-5 sm:p-6 rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] hover:border-[#BEBDB9] dark:hover:border-zinc-700 shadow-2xs transition-all space-y-4"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#F5F4EE] dark:border-zinc-800/80 pb-3">
-                      <div className="flex items-center gap-3">
-                        <span className="h-9 w-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-800 dark:text-emerald-300 font-black text-xs flex items-center justify-center shrink-0">
-                          EP {ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}
-                        </span>
-                        <div>
-                          <h3 className="text-base sm:text-lg font-extrabold text-[#111111] dark:text-white">
-                            {ep.title}
-                          </h3>
-                          <div className="flex items-center gap-2 text-xs text-[#6E6D68] dark:text-zinc-400">
-                            <Clock className="h-3 w-3" />
-                            <span>{ep.duration}</span>
-                            <span>•</span>
-                            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                              1080p FHD ({ep.size})
-                            </span>
+                {movie.episodes?.map((ep) => {
+                  const hasThumbnail = Boolean(ep.thumbnail);
+                  return (
+                    <div
+                      key={ep.episodeNumber}
+                      className="group p-5 sm:p-6 rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] hover:border-[#BEBDB9] dark:hover:border-zinc-700 shadow-2xs hover:shadow-md transition-all duration-200"
+                    >
+                      {hasThumbnail ? (
+                        <div className="flex flex-col sm:flex-row gap-5">
+                          {/* Landscaped Thumbnail (16:9 Aspect Ratio) */}
+                          <div className="relative w-full sm:w-56 md:w-64 aspect-video shrink-0 rounded-2xl overflow-hidden bg-zinc-950 border border-[#EAEAE5] dark:border-zinc-800 shadow-xs">
+                            <Image
+                              src={ep.thumbnail!}
+                              alt={ep.title}
+                              fill
+                              unoptimized={ep.thumbnail!.startsWith("http") && !ep.thumbnail!.includes("firebasestorage")}
+                              sizes="(max-width: 640px) 100vw, 256px"
+                              className="object-cover object-center group-hover:scale-104 transition-transform duration-300 ease-out"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none" />
+
+                            {/* Badges on Thumbnail */}
+                            <div className="absolute top-2.5 left-2.5 pointer-events-none">
+                              <span className="px-2 py-0.5 rounded-lg bg-black/75 backdrop-blur-md border border-white/15 text-emerald-400 font-extrabold text-[11px] tracking-wide">
+                                EP {ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}
+                              </span>
+                            </div>
+
+                            <div className="absolute bottom-2.5 right-2.5 pointer-events-none">
+                              <span className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md border border-white/15 text-white/90 text-[10px] font-semibold">
+                                <Clock className="h-2.5 w-2.5 text-zinc-300" />
+                                <span>{ep.duration}</span>
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Episode Details */}
+                          <div className="flex-1 flex flex-col justify-between gap-3">
+                            <div className="space-y-2">
+                              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                                <div>
+                                  <h3 className="text-base sm:text-lg font-extrabold text-[#111111] dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                    {ep.title}
+                                  </h3>
+                                  <div className="flex items-center gap-2 text-xs text-[#6E6D68] dark:text-zinc-400 mt-0.5">
+                                    <span>{ep.duration}</span>
+                                    <span>•</span>
+                                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                                      1080p FHD ({ep.size})
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="shrink-0 pt-1 sm:pt-0">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      triggerDownloadFlow({
+                                        slug: movie.slug,
+                                        target: "episode",
+                                        episodeNumber: ep.episodeNumber,
+                                        title: `${movie.title} - Episode ${ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}: ${ep.title}`,
+                                        size: ep.size,
+                                        poster: ep.thumbnail || movie.poster,
+                                        quality: "1080p FHD",
+                                      })
+                                    }
+                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer"
+                                  >
+                                    <Download className="h-3.5 w-3.5" />
+                                    <span>Download 1080p ({ep.size})</span>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {ep.synopsis && (
+                                <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-300 leading-relaxed line-clamp-3">
+                                  {ep.synopsis}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      ) : (
+                        /* Standard layout when no thumbnail is set */
+                        <div className="space-y-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#F5F4EE] dark:border-zinc-800/80 pb-3">
+                            <div className="flex items-center gap-3">
+                              <span className="h-9 w-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-800 dark:text-emerald-300 font-black text-xs flex items-center justify-center shrink-0">
+                                EP {ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}
+                              </span>
+                              <div>
+                                <h3 className="text-base sm:text-lg font-extrabold text-[#111111] dark:text-white">
+                                  {ep.title}
+                                </h3>
+                                <div className="flex items-center gap-2 text-xs text-[#6E6D68] dark:text-zinc-400">
+                                  <Clock className="h-3 w-3" />
+                                  <span>{ep.duration}</span>
+                                  <span>•</span>
+                                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                                    1080p FHD ({ep.size})
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
 
-                      <div className="flex items-center gap-2 self-end sm:self-auto">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            triggerDownloadFlow({
-                              slug: movie.slug,
-                              target: "episode",
-                              episodeNumber: ep.episodeNumber,
-                              title: `${movie.title} - Episode ${ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}: ${ep.title}`,
-                              size: ep.size,
-                              poster: movie.poster,
-                              quality: "1080p FHD",
-                            })
-                          }
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer"
-                        >
-                          <Download className="h-3.5 w-3.5" />
-                          <span>Download 1080p ({ep.size})</span>
-                        </button>
-                      </div>
+                            <div className="flex items-center gap-2 self-end sm:self-auto">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  triggerDownloadFlow({
+                                    slug: movie.slug,
+                                    target: "episode",
+                                    episodeNumber: ep.episodeNumber,
+                                    title: `${movie.title} - Episode ${ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}: ${ep.title}`,
+                                    size: ep.size,
+                                    poster: movie.poster,
+                                    quality: "1080p FHD",
+                                  })
+                                }
+                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer"
+                              >
+                                <Download className="h-3.5 w-3.5" />
+                                <span>Download 1080p ({ep.size})</span>
+                              </button>
+                            </div>
+                          </div>
+
+                          {ep.synopsis && (
+                            <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-300 leading-relaxed">
+                              {ep.synopsis}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
-
-                    <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-300 leading-relaxed">
-                      {ep.synopsis}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           </div>

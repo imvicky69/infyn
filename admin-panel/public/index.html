@@ -172,22 +172,68 @@
         <!-- Section 2: Media, Formats & Badges -->
         <div class="form-section">
           <h3 class="section-heading">2. Media &amp; Formats</h3>
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label for="f-poster">Poster Image URL or Path</label>
-              <input type="text" id="f-poster" placeholder="/movieData/waitingHai-poster.jpg or https://..." />
+          
+          <div class="form-group mb-3">
+            <label>
+              <span>Movie Poster (Portrait 2:3 / 3:4)</span>
+              <span class="text-muted text-xs">Upload portrait image or enter URL</span>
+            </label>
+            
+            <div class="media-upload-container portrait-upload-layout">
+              <!-- Portrait Live Preview -->
+              <div class="portrait-preview-box">
+                <div class="portrait-preview-ratio" id="poster-preview-wrapper">
+                  <img id="poster-preview-img" src="" alt="Poster preview" style="display: none;" />
+                  <div id="poster-placeholder" class="preview-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    <span>Portrait 2:3</span>
+                  </div>
+                </div>
+                <button type="button" id="btn-clear-poster" class="btn-clear-media" style="display: none;" title="Remove poster">&times; Clear Poster</button>
+              </div>
+
+              <!-- Poster Controls & Input -->
+              <div class="upload-controls-col">
+                <div class="upload-dropzone" id="poster-dropzone">
+                  <input type="file" id="f-poster-file" accept="image/png,image/jpeg,image/webp,image/avif" style="display: none;" />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  <div class="dropzone-text">
+                    <button type="button" id="btn-browse-poster" class="btn btn-secondary btn-sm">
+                      Browse Poster Image
+                    </button>
+                    <span class="dropzone-hint">or drag &amp; drop portrait image (JPG, PNG, WEBP)</span>
+                  </div>
+                  <span id="poster-upload-spinner" class="upload-spinner" style="display: none;"></span>
+                </div>
+
+                <div class="form-group mt-2">
+                  <label for="f-poster" class="text-xs">Or Poster URL / Local Path</label>
+                  <input type="text" id="f-poster" placeholder="/movieData/waitingHai-poster.jpg or https://..." />
+                </div>
+              </div>
             </div>
+          </div>
+
+          <div class="form-grid-2">
             <div class="form-group">
               <label for="f-trailer">Trailer Video URL or Path</label>
               <input type="text" id="f-trailer" placeholder="/movieData/waitingHai-trailer.mp4 or https://..." />
             </div>
-          </div>
-
-          <div class="form-grid-4">
             <div class="form-group">
               <label for="f-quality">Quality</label>
               <input type="text" id="f-quality" value="1080p FHD" />
             </div>
+          </div>
+
+          <div class="form-grid-3">
             <div class="form-group">
               <label for="f-language">Audio Language</label>
               <input type="text" id="f-language" value="Hindi (Original 5.1)" />

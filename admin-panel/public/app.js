@@ -30,6 +30,16 @@ const btnModalSave = document.getElementById("btn-modal-save");
 const btnAddMovie = document.getElementById("btn-add-movie");
 const btnGenSlug = document.getElementById("btn-gen-slug");
 
+// Poster Upload & Preview
+const fPoster = document.getElementById("f-poster");
+const fPosterFile = document.getElementById("f-poster-file");
+const posterPreviewImg = document.getElementById("poster-preview-img");
+const posterPlaceholder = document.getElementById("poster-placeholder");
+const btnClearPoster = document.getElementById("btn-clear-poster");
+const btnBrowsePoster = document.getElementById("btn-browse-poster");
+const posterDropzone = document.getElementById("poster-dropzone");
+const posterSpinner = document.getElementById("poster-upload-spinner");
+
 // Episodes
 const btnAddEpisode = document.getElementById("btn-add-episode");
 const episodesContainer = document.getElementById("episodes-container");
@@ -93,6 +103,91 @@ function setupEventListeners() {
   modalClose.addEventListener("click", closeMovieModal);
   btnModalCancel.addEventListener("click", closeMovieModal);
   movieForm.addEventListener("submit", handleMovieSubmit);
+
+  // Poster Upload & Live Preview
+  if (fPoster) {
+    fPoster.addEventListener("input", () => {
+      updatePosterPreview(fPoster.value);
+    });
+  }
+
+  if (btnBrowsePoster && fPosterFile) {
+    btnBrowsePoster.addEventListener("click", () => fPosterFile.click());
+
+    fPosterFile.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      try {
+        if (posterSpinner) posterSpinner.style.display = "inline-block";
+        btnBrowsePoster.disabled = true;
+        showToast("Uploading portrait poster...", "info");
+
+        const uploadedUrl = await uploadImageFile(file, "poster");
+        fPoster.value = uploadedUrl;
+        updatePosterPreview(uploadedUrl);
+        showToast("Portrait poster uploaded successfully!", "success");
+      } catch (err) {
+        console.error("Poster upload failed:", err);
+        showToast("Poster upload failed: " + err.message, "error");
+      } finally {
+        if (posterSpinner) posterSpinner.style.display = "none";
+        btnBrowsePoster.disabled = false;
+        fPosterFile.value = "";
+      }
+    });
+  }
+
+  if (btnClearPoster && fPoster) {
+    btnClearPoster.addEventListener("click", () => {
+      fPoster.value = "";
+      if (fPosterFile) fPosterFile.value = "";
+      updatePosterPreview("");
+    });
+  }
+
+  if (posterDropzone && fPoster) {
+    ["dragenter", "dragover"].forEach((eventName) => {
+      posterDropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        posterDropzone.classList.add("drag-active");
+      });
+    });
+
+    ["dragleave", "drop"].forEach((eventName) => {
+      posterDropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        posterDropzone.classList.remove("drag-active");
+      });
+    });
+
+    posterDropzone.addEventListener("drop", async (e) => {
+      const file = e.dataTransfer?.files?.[0];
+      if (!file || !file.type.startsWith("image/")) {
+        showToast("Please drop an image file (JPG, PNG, WEBP).", "error");
+        return;
+      }
+
+      try {
+        if (posterSpinner) posterSpinner.style.display = "inline-block";
+        btnBrowsePoster.disabled = true;
+        showToast("Uploading portrait poster...", "info");
+
+        const uploadedUrl = await uploadImageFile(file, "poster");
+        fPoster.value = uploadedUrl;
+        updatePosterPreview(uploadedUrl);
+        showToast("Portrait poster uploaded successfully!", "success");
+      } catch (err) {
+        console.error("Poster upload failed:", err);
+        showToast("Poster upload failed: " + err.message, "error");
+      } finally {
+        if (posterSpinner) posterSpinner.style.display = "none";
+        btnBrowsePoster.disabled = false;
+      }
+    });
+  }
 
   // Auto-generate slug
   btnGenSlug.addEventListener("click", () => {
@@ -351,12 +446,64 @@ function escapeHtml(str) {
 }
 
 // ----------------------------------------------------
+// IMAGE UPLOAD & PREVIEW HELPERS
+// ----------------------------------------------------
+
+async function uploadImageFile(file, type = "media") {
+  if (!file) return null;
+
+  const base64Data = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-admin-key": adminKey,
+    },
+    body: JSON.stringify({
+      filename: file.name,
+      data: base64Data,
+      type: type,
+    }),
+  });
+
+  const json = await res.json();
+  if (!json.success) {
+    throw new Error(json.error || "Image upload failed");
+  }
+
+  return json.url || json.localUrl;
+}
+
+function updatePosterPreview(url) {
+  if (!posterPreviewImg || !posterPlaceholder || !btnClearPoster) return;
+  if (url && url.trim()) {
+    posterPreviewImg.src = url.trim();
+    posterPreviewImg.style.display = "block";
+    posterPlaceholder.style.display = "none";
+    btnClearPoster.style.display = "inline-block";
+  } else {
+    posterPreviewImg.src = "";
+    posterPreviewImg.style.display = "none";
+    posterPlaceholder.style.display = "flex";
+    btnClearPoster.style.display = "none";
+  }
+}
+
+// ----------------------------------------------------
 // EPISODE MANAGER
 // ----------------------------------------------------
 
 function addEpisodeRow(ep = {}) {
   const div = document.createElement("div");
   div.className = "episode-item";
+
+  const thumbnailVal = ep.thumbnail || "";
 
   div.innerHTML = `
     <div class="episode-top-bar">
@@ -367,30 +514,178 @@ function addEpisodeRow(ep = {}) {
     <div class="form-grid-2">
       <div class="form-group">
         <label>Episode Title</label>
-        <input type="text" class="ep-title" value="${ep.title || ""}" placeholder="e.g. Confirmed Ya RAC" />
+        <input type="text" class="ep-title" value="${escapeHtml(ep.title || "")}" placeholder="e.g. Confirmed Ya RAC" />
       </div>
       <div class="form-group">
         <label>Google Drive Direct Download Link</label>
-        <input type="url" class="ep-downloadUrl" value="${ep.downloadUrl || ""}" placeholder="https://drive.google.com/file/d/.../view" />
+        <input type="url" class="ep-downloadUrl" value="${escapeHtml(ep.downloadUrl || "")}" placeholder="https://drive.google.com/file/d/.../view" />
       </div>
     </div>
 
     <div class="form-grid-2">
       <div class="form-group">
         <label>Duration</label>
-        <input type="text" class="ep-duration" value="${ep.duration || "40 min"}" placeholder="e.g. 41 min" />
+        <input type="text" class="ep-duration" value="${escapeHtml(ep.duration || "40 min")}" placeholder="e.g. 41 min" />
       </div>
       <div class="form-group">
         <label>File Size</label>
-        <input type="text" class="ep-size" value="${ep.size || "750 MB"}" placeholder="e.g. 774 MB" />
+        <input type="text" class="ep-size" value="${escapeHtml(ep.size || "750 MB")}" placeholder="e.g. 774 MB" />
+      </div>
+    </div>
+
+    <!-- Episode Thumbnail (Landscaped 16:9) -->
+    <div class="form-group">
+      <label>
+        <span>Episode Thumbnail (Landscape 16:9)</span>
+        <span class="text-muted text-xs">Optional thumbnail for episode card</span>
+      </label>
+
+      <div class="media-upload-container landscape-upload-layout">
+        <!-- Landscape Live Preview -->
+        <div class="landscape-preview-box">
+          <div class="landscape-preview-ratio">
+            <img class="ep-thumb-preview-img" src="${thumbnailVal}" alt="Episode thumbnail" style="${thumbnailVal ? "display: block;" : "display: none;"}" />
+            <div class="ep-thumb-placeholder preview-placeholder" style="${thumbnailVal ? "display: none;" : "display: flex;"}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" ry="2"/>
+                <circle cx="8" cy="10" r="1.5"/>
+                <polyline points="22 16 16 11 12 15 8 11 2 17"/>
+              </svg>
+              <span>Landscape 16:9</span>
+            </div>
+          </div>
+          <button type="button" class="btn-clear-media btn-clear-ep-thumb" style="${thumbnailVal ? "display: inline-block;" : "display: none;"}" title="Remove thumbnail">&times; Clear</button>
+        </div>
+
+        <!-- Upload & URL Controls -->
+        <div class="upload-controls-col">
+          <div class="upload-dropzone ep-thumb-dropzone">
+            <input type="file" class="ep-thumb-file" accept="image/png,image/jpeg,image/webp,image/avif" style="display: none;" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <div class="dropzone-text">
+              <button type="button" class="btn btn-secondary btn-sm btn-browse-ep-thumb">
+                Upload Landscape Thumbnail
+              </button>
+              <span class="dropzone-hint">or drag &amp; drop 16:9 image here</span>
+            </div>
+            <span class="upload-spinner ep-thumb-spinner" style="display: none;"></span>
+          </div>
+
+          <div class="form-group mt-1">
+            <input type="text" class="ep-thumbnail" value="${escapeHtml(thumbnailVal)}" placeholder="Optional: /movieData/ep1-thumb.jpg or https://..." />
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="form-group">
       <label>Synopsis (Optional)</label>
-      <input type="text" class="ep-synopsis" value="${ep.synopsis || ""}" placeholder="Brief storyline snippet..." />
+      <input type="text" class="ep-synopsis" value="${escapeHtml(ep.synopsis || "")}" placeholder="Brief storyline snippet..." />
     </div>
   `;
+
+  // Connect row events
+  const thumbInput = div.querySelector(".ep-thumbnail");
+  const thumbFileInput = div.querySelector(".ep-thumb-file");
+  const thumbPreviewImg = div.querySelector(".ep-thumb-preview-img");
+  const thumbPlaceholder = div.querySelector(".ep-thumb-placeholder");
+  const btnClearThumb = div.querySelector(".btn-clear-ep-thumb");
+  const btnBrowseThumb = div.querySelector(".btn-browse-ep-thumb");
+  const thumbDropzone = div.querySelector(".ep-thumb-dropzone");
+  const thumbSpinner = div.querySelector(".ep-thumb-spinner");
+
+  const updateThumbPreview = (url) => {
+    if (url && url.trim()) {
+      thumbPreviewImg.src = url.trim();
+      thumbPreviewImg.style.display = "block";
+      thumbPlaceholder.style.display = "none";
+      btnClearThumb.style.display = "inline-block";
+    } else {
+      thumbPreviewImg.src = "";
+      thumbPreviewImg.style.display = "none";
+      thumbPlaceholder.style.display = "flex";
+      btnClearThumb.style.display = "none";
+    }
+  };
+
+  thumbInput.addEventListener("input", () => updateThumbPreview(thumbInput.value));
+
+  btnBrowseThumb.addEventListener("click", () => thumbFileInput.click());
+
+  btnClearThumb.addEventListener("click", () => {
+    thumbInput.value = "";
+    thumbFileInput.value = "";
+    updateThumbPreview("");
+  });
+
+  thumbFileInput.addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      thumbSpinner.style.display = "inline-block";
+      btnBrowseThumb.disabled = true;
+      showToast("Uploading landscape thumbnail...", "info");
+
+      const uploadedUrl = await uploadImageFile(file, "thumbnail");
+      thumbInput.value = uploadedUrl;
+      updateThumbPreview(uploadedUrl);
+      showToast("Landscape thumbnail uploaded!", "success");
+    } catch (err) {
+      console.error("Episode thumbnail upload failed:", err);
+      showToast("Thumbnail upload failed: " + err.message, "error");
+    } finally {
+      thumbSpinner.style.display = "none";
+      btnBrowseThumb.disabled = false;
+      thumbFileInput.value = "";
+    }
+  });
+
+  // Drag and drop for episode thumbnail
+  ["dragenter", "dragover"].forEach((name) => {
+    thumbDropzone.addEventListener(name, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      thumbDropzone.classList.add("drag-active");
+    });
+  });
+
+  ["dragleave", "drop"].forEach((name) => {
+    thumbDropzone.addEventListener(name, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      thumbDropzone.classList.remove("drag-active");
+    });
+  });
+
+  thumbDropzone.addEventListener("drop", async (e) => {
+    const file = e.dataTransfer?.files?.[0];
+    if (!file || !file.type.startsWith("image/")) {
+      showToast("Please drop an image file (JPG, PNG, WEBP).", "error");
+      return;
+    }
+
+    try {
+      thumbSpinner.style.display = "inline-block";
+      btnBrowseThumb.disabled = true;
+      showToast("Uploading landscape thumbnail...", "info");
+
+      const uploadedUrl = await uploadImageFile(file, "thumbnail");
+      thumbInput.value = uploadedUrl;
+      updateThumbPreview(uploadedUrl);
+      showToast("Landscape thumbnail uploaded!", "success");
+    } catch (err) {
+      console.error("Episode thumbnail upload failed:", err);
+      showToast("Thumbnail upload failed: " + err.message, "error");
+    } finally {
+      thumbSpinner.style.display = "none";
+      btnBrowseThumb.disabled = false;
+    }
+  });
 
   episodesContainer.appendChild(div);
 }
@@ -406,6 +701,7 @@ function getEpisodesFromDOM() {
     const duration = row.querySelector(".ep-duration")?.value || "40 min";
     const size = row.querySelector(".ep-size")?.value || "750 MB";
     const synopsis = row.querySelector(".ep-synopsis")?.value || "";
+    const thumbnail = row.querySelector(".ep-thumbnail")?.value.trim() || "";
 
     episodes.push({
       episodeNumber: num,
@@ -414,6 +710,7 @@ function getEpisodesFromDOM() {
       size,
       downloadUrl,
       synopsis,
+      thumbnail,
     });
   });
 
@@ -445,6 +742,8 @@ function openMovieModal(movie = null) {
     document.getElementById("f-duration").value = movie.duration || "";
 
     document.getElementById("f-poster").value = movie.poster || "";
+    updatePosterPreview(movie.poster || "");
+
     document.getElementById("f-trailer").value = movie.localTrailerUrl || "";
     document.getElementById("f-quality").value = movie.quality || "1080p FHD";
     document.getElementById("f-language").value = movie.language || "Hindi (Original 5.1)";
@@ -466,6 +765,7 @@ function openMovieModal(movie = null) {
     document.getElementById("f-slug").disabled = false;
     document.getElementById("f-year").value = new Date().getFullYear();
     document.getElementById("f-releaseDate").value = new Date().toISOString().split("T")[0];
+    updatePosterPreview("");
   }
 
   movieModal.style.display = "flex";
