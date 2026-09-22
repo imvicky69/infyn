@@ -29,10 +29,11 @@ import {
   Code2,
   Smartphone,
   Film,
+  ChevronDown,
+  ArrowRight,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AnimatedLogo } from "@/components/animatedLogo";
-import { triggerPWAInstall } from "@/components/pwa/pwa-installer";
 
 function GithubIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -177,22 +178,9 @@ const DEV_TOOLS_NAV: NavTool[] = [
     desc: "Clean & minify SVG vector markup",
     icon: <Code2 className="h-4 w-4" />,
   },
-  {
-    name: "Documentation & SDK",
-    href: "/docs",
-    desc: "In-browser WASM media package & API",
-    icon: <BookOpen className="h-4 w-4" />,
-  },
 ];
 
 const APPS_NAV: NavTool[] = [
-  {
-    name: "Infyn Web App (PWA)",
-    href: "/apps",
-    badge: "PWA",
-    desc: "Install on phone & desktop with offline support",
-    icon: <Smartphone className="h-4 w-4" />,
-  },
   {
     name: "Infyn DL",
     href: "/dl",
@@ -209,6 +197,484 @@ const APPS_NAV: NavTool[] = [
   },
 ];
 
+interface MobileNavItem {
+  id: string;
+  name: string;
+  href: string;
+  subtitle: string;
+  icon: React.ReactNode;
+  iconBoxClass: string;
+  badge?: string;
+  badgeClass?: string;
+  tools?: NavTool[];
+}
+
+const MOBILE_NAV_ITEMS: MobileNavItem[] = [
+  {
+    id: "image",
+    name: "Image Tools",
+    href: "/image",
+    subtitle: "8 tools · Compress, convert, resize & AI",
+    icon: <Sparkles className="h-4 w-4" />,
+    iconBoxClass:
+      "bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200/70 dark:border-indigo-800/50 text-indigo-600 dark:text-indigo-400",
+    badge: "Suite",
+    badgeClass:
+      "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200/80 dark:border-indigo-800/60",
+    tools: IMAGE_TOOLS,
+  },
+  {
+    id: "pdf",
+    name: "PDF Tools",
+    href: "/pdf",
+    subtitle: "7 tools · Compress, merge, split & protect",
+    icon: <FileOutput className="h-4 w-4" />,
+    iconBoxClass:
+      "bg-rose-50 dark:bg-rose-950/50 border border-rose-200/70 dark:border-rose-800/50 text-rose-600 dark:text-rose-400",
+    badge: "Suite",
+    badgeClass:
+      "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60",
+    tools: PDF_TOOLS_NAV,
+  },
+  {
+    id: "dev",
+    name: "Developer Tools",
+    href: "/dev",
+    subtitle: "3 tools · Base64, SVG cleaner & API docs",
+    icon: <Code2 className="h-4 w-4" />,
+    iconBoxClass:
+      "bg-amber-50 dark:bg-amber-950/50 border border-amber-200/70 dark:border-amber-800/50 text-amber-600 dark:text-amber-400",
+    badge: "Suite",
+    badgeClass:
+      "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/60",
+    tools: DEV_TOOLS_NAV,
+  },
+  {
+    id: "apps",
+    name: "Apps & Extensions",
+    href: "/apps",
+    subtitle: "Infyn DL & Home Tab",
+    icon: <Smartphone className="h-4 w-4" />,
+    iconBoxClass:
+      "bg-sky-50 dark:bg-sky-950/50 border border-sky-200/70 dark:border-sky-800/50 text-sky-600 dark:text-sky-400",
+    badge: "Apps",
+    badgeClass:
+      "bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 border-sky-200/80 dark:border-sky-800/60",
+    tools: APPS_NAV,
+  },
+  {
+    id: "movies",
+    name: "Movies & Shows",
+    href: "/movies",
+    subtitle: "Direct 1080p FHD downloads & streaming",
+    icon: <Film className="h-4 w-4" />,
+    iconBoxClass:
+      "bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/70 dark:border-emerald-800/50 text-emerald-600 dark:text-emerald-400",
+    badge: "1080p FHD",
+    badgeClass:
+      "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-300/80 dark:border-emerald-700/60",
+  },
+  {
+    id: "sponsor",
+    name: "Sponsor & Donate",
+    href: "/sponsor",
+    subtitle: "Keep Infyn 100% free, private & open",
+    icon: <Heart className="h-4 w-4 fill-rose-500/20 text-rose-500" />,
+    iconBoxClass:
+      "bg-rose-50 dark:bg-rose-950/50 border border-rose-200/70 dark:border-rose-800/50 text-rose-600 dark:text-rose-400",
+    badge: "100% Free",
+    badgeClass:
+      "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-300/80 dark:border-rose-700/60",
+  },
+];
+
+function MoviePopcornIcon() {
+  return (
+    <motion.div
+      key="route-icon-movies"
+      initial={{ scale: 0.6, opacity: 0, x: -4 }}
+      animate={{ scale: 1, opacity: 1, x: 0 }}
+      exit={{ scale: 0.6, opacity: 0, x: -4 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-400/10 border border-amber-500/25 text-amber-600 dark:text-amber-400 shadow-2xs select-none"
+      title="Movies & Entertainment"
+    >
+      {/* Popcorn SVG with animated popping kernels */}
+      <div className="relative h-4 w-4 flex items-center justify-center shrink-0">
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none">
+          {/* Popcorn box / bucket */}
+          <path
+            d="M6 10L7.5 21H16.5L18 10H6Z"
+            fill="#EF4444"
+            stroke="#DC2626"
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
+          {/* White stripes on bucket */}
+          <path d="M9 10.5L10 20.5" stroke="#FFFFFF" strokeWidth="1.2" strokeLinecap="round" />
+          <path d="M15 10.5L14 20.5" stroke="#FFFFFF" strokeWidth="1.2" strokeLinecap="round" />
+          {/* Popcorn puffs */}
+          <circle cx="8" cy="9" r="2.2" fill="#FDE047" stroke="#EAB308" strokeWidth="0.8" />
+          <circle cx="12" cy="7.5" r="2.6" fill="#FEF08A" stroke="#EAB308" strokeWidth="0.8" />
+          <circle cx="16" cy="9" r="2.2" fill="#FDE047" stroke="#EAB308" strokeWidth="0.8" />
+          <circle cx="10" cy="8.5" r="1.8" fill="#FACC15" />
+          <circle cx="14" cy="8.5" r="1.8" fill="#FACC15" />
+        </svg>
+
+        {/* Popping micro kernel 1 */}
+        <motion.span
+          animate={{
+            y: [0, -3.5, 0],
+            x: [0, -1, 0],
+            scale: [1, 1.2, 1],
+            opacity: [0.8, 1, 0.8],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 1.4,
+            ease: "easeInOut",
+          }}
+          className="absolute -top-0.5 left-0.5 h-1 w-1 rounded-full bg-amber-400 pointer-events-none"
+        />
+        {/* Popping micro kernel 2 */}
+        <motion.span
+          animate={{
+            y: [0, -4, 0],
+            x: [0, 1.2, 0],
+            scale: [0.9, 1.25, 0.9],
+            opacity: [0.7, 1, 0.7],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 1.6,
+            delay: 0.5,
+            ease: "easeInOut",
+          }}
+          className="absolute -top-1 right-0.5 h-1 w-1 rounded-full bg-yellow-300 pointer-events-none"
+        />
+      </div>
+
+      {/* Clapperboard SVG with animated clapping top */}
+      <div className="relative h-4 w-4 flex items-center justify-center shrink-0">
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none">
+          {/* Base of clapper */}
+          <rect
+            x="4"
+            y="9"
+            width="16"
+            height="11"
+            rx="1.5"
+            fill="#18181B"
+            stroke="#27272A"
+            strokeWidth="1.2"
+          />
+          {/* White stripes on base */}
+          <path d="M8 9V20" stroke="#FFFFFF" strokeWidth="1" strokeOpacity="0.4" />
+          <path d="M12 9V20" stroke="#FFFFFF" strokeWidth="1" strokeOpacity="0.4" />
+          <path d="M16 9V20" stroke="#FFFFFF" strokeWidth="1" strokeOpacity="0.4" />
+        </svg>
+
+        {/* Clapper Top arm that snaps open and shut */}
+        <motion.svg
+          viewBox="0 0 24 24"
+          className="absolute inset-0 h-4 w-4 origin-bottom-left"
+          animate={{
+            rotate: [0, -18, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            repeatDelay: 2.2,
+            duration: 0.45,
+            ease: "easeInOut",
+          }}
+          fill="none"
+        >
+          <rect
+            x="4"
+            y="4"
+            width="16"
+            height="4"
+            rx="1"
+            fill="#18181B"
+            stroke="#27272A"
+            strokeWidth="1"
+          />
+          <path d="M7 4L5.5 8" stroke="#FFFFFF" strokeWidth="1.4" strokeLinecap="round" />
+          <path d="M11 4L9.5 8" stroke="#FFFFFF" strokeWidth="1.4" strokeLinecap="round" />
+          <path d="M15 4L13.5 8" stroke="#FFFFFF" strokeWidth="1.4" strokeLinecap="round" />
+          <path d="M19 4L17.5 8" stroke="#FFFFFF" strokeWidth="1.4" strokeLinecap="round" />
+        </motion.svg>
+      </div>
+    </motion.div>
+  );
+}
+
+function PdfDocIcon() {
+  return (
+    <motion.div
+      key="route-icon-pdf"
+      initial={{ scale: 0.6, opacity: 0, x: -4 }}
+      animate={{ scale: 1, opacity: 1, x: 0 }}
+      exit={{ scale: 0.6, opacity: 0, x: -4 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rose-500/10 dark:bg-rose-400/10 border border-rose-500/25 text-rose-600 dark:text-rose-400 shadow-2xs select-none"
+      title="PDF Tools"
+    >
+      <div className="relative h-4 w-4 flex items-center justify-center shrink-0">
+        <motion.svg
+          viewBox="0 0 24 24"
+          className="h-4 w-4"
+          animate={{ y: [0, -1.5, 0] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          fill="none"
+        >
+          <path
+            d="M6 3H14L19 8V20C19 20.5523 18.5523 21 18 21H6C5.44772 21 5 20.5523 5 20V4C5 3.44772 5.44772 3 6 3Z"
+            fill="#FFF1F2"
+            stroke="#E11D48"
+            strokeWidth="1.4"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M14 3V8H19"
+            fill="#FECDD3"
+            stroke="#E11D48"
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
+          <path d="M8 12H16" stroke="#E11D48" strokeWidth="1.6" strokeLinecap="round" />
+          <path d="M8 15H14" stroke="#FB7185" strokeWidth="1.4" strokeLinecap="round" />
+          <path d="M8 18H11" stroke="#FDA4AF" strokeWidth="1.2" strokeLinecap="round" />
+        </motion.svg>
+        <motion.span
+          animate={{ scale: [0.8, 1.3, 0.8], opacity: [0.4, 1, 0.4] }}
+          transition={{ repeat: Infinity, duration: 1.8 }}
+          className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-rose-400 pointer-events-none"
+        />
+      </div>
+      <span className="text-[10px] font-bold tracking-wider">PDF</span>
+    </motion.div>
+  );
+}
+
+function ImageToolsIcon() {
+  return (
+    <motion.div
+      key="route-icon-image"
+      initial={{ scale: 0.6, opacity: 0, x: -4 }}
+      animate={{ scale: 1, opacity: 1, x: 0 }}
+      exit={{ scale: 0.6, opacity: 0, x: -4 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-500/10 dark:bg-indigo-400/10 border border-indigo-500/25 text-indigo-600 dark:text-indigo-400 shadow-2xs select-none"
+      title="Image Suite"
+    >
+      <div className="relative h-4 w-4 flex items-center justify-center shrink-0">
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none">
+          <rect
+            x="3"
+            y="4"
+            width="18"
+            height="16"
+            rx="3"
+            fill="#EEF2FF"
+            stroke="#4F46E5"
+            strokeWidth="1.4"
+          />
+          <circle cx="8" cy="8.5" r="1.8" fill="#FBBF24" />
+          <path
+            d="M3 17L8.5 11.5L14 17L17.5 13.5L21 17V18C21 19.1046 20.1046 20 19 20H5C3.89543 20 3 19.1046 3 18V17Z"
+            fill="#818CF8"
+            fillOpacity="0.5"
+          />
+        </svg>
+        <motion.div
+          animate={{ rotate: [0, 90, 180, 270, 360], scale: [0.9, 1.3, 0.9] }}
+          transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+          className="absolute -top-1 -right-1 text-indigo-500 pointer-events-none"
+        >
+          <Sparkles className="h-2.5 w-2.5 fill-indigo-400" />
+        </motion.div>
+      </div>
+      <span className="text-[10px] font-bold tracking-wider">IMG</span>
+    </motion.div>
+  );
+}
+
+function AppsNavIcon() {
+  return (
+    <motion.div
+      key="route-icon-apps"
+      initial={{ scale: 0.6, opacity: 0, x: -4 }}
+      animate={{ scale: 1, opacity: 1, x: 0 }}
+      exit={{ scale: 0.6, opacity: 0, x: -4 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-sky-500/10 dark:bg-sky-400/10 border border-sky-500/25 text-sky-600 dark:text-sky-400 shadow-2xs select-none"
+      title="Apps & Extensions"
+    >
+      <div className="relative h-4 w-4 flex items-center justify-center shrink-0">
+        <motion.svg
+          viewBox="0 0 24 24"
+          className="h-4 w-4"
+          animate={{ rotate: [-3, 3, -3] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          fill="none"
+        >
+          <rect
+            x="6"
+            y="2"
+            width="12"
+            height="20"
+            rx="3"
+            fill="#F0F9FF"
+            stroke="#0284C7"
+            strokeWidth="1.4"
+          />
+          <path d="M10 5H14" stroke="#0284C7" strokeWidth="1.2" strokeLinecap="round" />
+          <circle cx="12" cy="18.5" r="1" fill="#0284C7" />
+          <rect x="8.5" y="8" width="2.5" height="2.5" rx="0.5" fill="#38BDF8" />
+          <rect x="13" y="8" width="2.5" height="2.5" rx="0.5" fill="#0284C7" />
+          <rect x="8.5" y="12.5" width="2.5" height="2.5" rx="0.5" fill="#0284C7" />
+          <rect x="13" y="12.5" width="2.5" height="2.5" rx="0.5" fill="#38BDF8" />
+        </motion.svg>
+        <motion.span
+          animate={{ scale: [1, 1.8, 1], opacity: [0.8, 0, 0.8] }}
+          transition={{ repeat: Infinity, duration: 1.6 }}
+          className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-sky-400 pointer-events-none"
+        />
+      </div>
+      <span className="text-[10px] font-bold tracking-wider">APP</span>
+    </motion.div>
+  );
+}
+
+function DevToolsIcon() {
+  return (
+    <motion.div
+      key="route-icon-dev"
+      initial={{ scale: 0.6, opacity: 0, x: -4 }}
+      animate={{ scale: 1, opacity: 1, x: 0 }}
+      exit={{ scale: 0.6, opacity: 0, x: -4 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 dark:bg-emerald-400/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 shadow-2xs select-none"
+      title="Developer Tools"
+    >
+      <div className="relative h-4 w-4 flex items-center justify-center shrink-0">
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none">
+          <rect
+            x="3"
+            y="4"
+            width="18"
+            height="16"
+            rx="3"
+            fill="#ECFDF5"
+            stroke="#059669"
+            strokeWidth="1.4"
+          />
+          <path
+            d="M8 9L5 12L8 15"
+            stroke="#059669"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M16 9L19 12L16 15"
+            stroke="#059669"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M13 8L11 16"
+            stroke="#10B981"
+            strokeWidth="1.3"
+            strokeLinecap="round"
+          />
+        </svg>
+        <motion.span
+          animate={{ opacity: [1, 0, 1] }}
+          transition={{ repeat: Infinity, duration: 0.8 }}
+          className="absolute bottom-1.5 right-2 h-1.5 w-0.8 bg-emerald-500 rounded-xs pointer-events-none"
+        />
+      </div>
+      <span className="text-[10px] font-bold tracking-wider">DEV</span>
+    </motion.div>
+  );
+}
+
+function SponsorNavIcon() {
+  return (
+    <motion.div
+      key="route-icon-sponsor"
+      initial={{ scale: 0.6, opacity: 0, x: -4 }}
+      animate={{ scale: 1, opacity: 1, x: 0 }}
+      exit={{ scale: 0.6, opacity: 0, x: -4 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rose-500/10 dark:bg-rose-400/10 border border-rose-500/25 text-rose-500 shadow-2xs select-none"
+      title="Sponsor & Donate"
+    >
+      <motion.div
+        animate={{ scale: [1, 1.25, 1, 1.15, 1] }}
+        transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+        className="h-4 w-4 flex items-center justify-center text-rose-500 shrink-0"
+      >
+        <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" />
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function ContributingNavIcon() {
+  return (
+    <motion.div
+      key="route-icon-contribute"
+      initial={{ scale: 0.6, opacity: 0, x: -4 }}
+      animate={{ scale: 1, opacity: 1, x: 0 }}
+      exit={{ scale: 0.6, opacity: 0, x: -4 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-violet-500/10 dark:bg-violet-400/10 border border-violet-500/25 text-violet-600 dark:text-violet-400 shadow-2xs select-none"
+      title="Contributing"
+    >
+      <motion.div
+        animate={{ rotate: [-10, 10, -10] }}
+        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+        className="h-4 w-4 flex items-center justify-center shrink-0"
+      >
+        <Sparkles className="h-3.5 w-3.5" />
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function DynamicRouteIcon({ pathname }: { pathname: string }) {
+  if (pathname.startsWith("/movies")) {
+    return <MoviePopcornIcon />;
+  }
+  if (pathname.startsWith("/pdf")) {
+    return <PdfDocIcon />;
+  }
+  if (pathname.startsWith("/image")) {
+    return <ImageToolsIcon />;
+  }
+  if (
+    pathname.startsWith("/apps") ||
+    pathname.startsWith("/dl") ||
+    pathname.startsWith("/home-tab")
+  ) {
+    return <AppsNavIcon />;
+  }
+  if (pathname.startsWith("/dev")) {
+    return <DevToolsIcon />;
+  }
+  if (pathname.startsWith("/sponsor")) {
+    return <SponsorNavIcon />;
+  }
+  if (pathname.startsWith("/contributing")) {
+    return <ContributingNavIcon />;
+  }
+
+  return null;
+}
 
 export function Navbar() {
   const pathname = usePathname();
@@ -217,7 +683,7 @@ export function Navbar() {
   const [devDropdownOpen, setDevDropdownOpen] = useState(false);
   const [appsDropdownOpen, setAppsDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeMobileTab, setActiveMobileTab] = useState<"all" | "image" | "pdf" | "apps" | "dev">("all");
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -226,21 +692,7 @@ export function Navbar() {
     setPdfDropdownOpen(false);
     setDevDropdownOpen(false);
     setAppsDropdownOpen(false);
-  }, [pathname]);
-
-  // Sync category tab with current pathname
-  useEffect(() => {
-    if (pathname.startsWith("/pdf")) {
-      setActiveMobileTab("pdf");
-    } else if (pathname.startsWith("/image")) {
-      setActiveMobileTab("image");
-    } else if (pathname.startsWith("/apps") || pathname.startsWith("/dl") || pathname.startsWith("/home-tab")) {
-      setActiveMobileTab("apps");
-    } else if (pathname.startsWith("/dev")) {
-      setActiveMobileTab("dev");
-    } else {
-      setActiveMobileTab("all");
-    }
+    setExpandedCategory(null);
   }, [pathname]);
 
   useEffect(() => {
@@ -340,10 +792,13 @@ export function Navbar() {
                 className="text-[#111111] dark:text-white group-hover:scale-105 transition-transform duration-200"
               />
             </div>
-            <div className="flex flex-col leading-none">
+            <div className="flex items-center gap-2 leading-none">
               <span className="font-bold text-[#111111] dark:text-white text-lg tracking-tight">
                 infyn
               </span>
+              <AnimatePresence mode="wait">
+                <DynamicRouteIcon key={pathname} pathname={pathname} />
+              </AnimatePresence>
             </div>
           </Link>
 
@@ -741,29 +1196,16 @@ export function Navbar() {
             {/* Theme toggle */}
             <ThemeToggle />
 
-            {/* GitHub - Distinct button on docs page */}
-            {pathname.startsWith("/docs") ? (
-              <a
-                href="https://github.com/imvicky69/infyn"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs font-bold text-[#111111] dark:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 active:scale-[0.97] transition-all shadow-2xs"
-                aria-label="GitHub Repository"
-              >
-                <GithubIcon className="h-3.5 w-3.5" />
-                <span>GitHub</span>
-              </a>
-            ) : (
-              <a
-                href="https://github.com/imvicky69/infyn"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-xl text-[#9E9D98] hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 transition-colors"
-                aria-label="GitHub"
-              >
-                <GithubIcon className="h-4 w-4" />
-              </a>
-            )}
+            {/* GitHub */}
+            <a
+              href="https://github.com/imvicky69/infyn"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-xl text-[#9E9D98] hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 transition-colors"
+              aria-label="GitHub"
+            >
+              <GithubIcon className="h-4 w-4" />
+            </a>
           </nav>
 
           {/* Mobile right controls */}
@@ -775,7 +1217,7 @@ export function Navbar() {
               onClick={() => setMobileMenuOpen((p) => !p)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileMenuOpen}
-              className="p-2 rounded-xl border border-[#EAEAE5] bg-white text-[#111111] hover:bg-[#F5F4EE] active:scale-95 transition-all cursor-pointer"
+              className="p-2 rounded-xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-zinc-900 text-[#111111] dark:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer"
             >
               <motion.div
                 animate={mobileMenuOpen ? "open" : "closed"}
@@ -825,413 +1267,147 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-50 max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain custom-scrollbar border-b border-[#EAEAE5] dark:border-zinc-800 bg-white/98 dark:bg-[#141417]/98 backdrop-blur-2xl md:hidden shadow-xl"
+            className="relative z-50 max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain custom-scrollbar border-b border-[#EAEAE5] dark:border-zinc-800 bg-[#FBFBFA]/98 dark:bg-[#0C0C0E]/98 backdrop-blur-2xl md:hidden shadow-xl"
             style={{ WebkitOverflowScrolling: "touch" }}
           >
-            <div className="max-w-xl mx-auto px-4 py-3.5 space-y-4 pb-8">
-              {/* Category Segmented Control */}
-              <div className="flex items-center p-1 rounded-xl bg-[#F5F4EE] border border-[#EAEAE5] gap-1">
-                <button
-                  type="button"
-                  onClick={() => setActiveMobileTab("all")}
-                  className={`flex-1 py-1.5 px-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                    activeMobileTab === "all"
-                      ? "bg-white text-[#111111] shadow-2xs"
-                      : "text-[#6E6D68] hover:text-[#111111]"
-                  }`}
-                >
-                  All ({IMAGE_TOOLS.length + PDF_TOOLS_NAV.length + APPS_NAV.length + DEV_TOOLS_NAV.length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveMobileTab("image")}
-                  className={`flex-1 py-1.5 px-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                    activeMobileTab === "image"
-                      ? "bg-white text-[#111111] shadow-2xs"
-                      : "text-[#6E6D68] hover:text-[#111111]"
-                  }`}
-                >
-                  Image ({IMAGE_TOOLS.length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveMobileTab("pdf")}
-                  className={`flex-1 py-1.5 px-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                    activeMobileTab === "pdf"
-                      ? "bg-white text-[#111111] shadow-2xs"
-                      : "text-[#6E6D68] hover:text-[#111111]"
-                  }`}
-                >
-                  PDF ({PDF_TOOLS_NAV.length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveMobileTab("apps")}
-                  className={`flex-1 py-1.5 px-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                    activeMobileTab === "apps"
-                      ? "bg-white text-[#111111] shadow-2xs"
-                      : "text-[#6E6D68] hover:text-[#111111]"
-                  }`}
-                >
-                  Apps ({APPS_NAV.length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveMobileTab("dev")}
-                  className={`flex-1 py-1.5 px-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                    activeMobileTab === "dev"
-                      ? "bg-white text-[#111111] shadow-2xs"
-                      : "text-[#6E6D68] hover:text-[#111111]"
-                  }`}
-                >
-                  Dev ({DEV_TOOLS_NAV.length})
-                </button>
-              </div>
+            <div className="max-w-xl mx-auto px-4 py-3.5 space-y-2.5 pb-6">
+              {/* Primary Navigation Items */}
+              <div className="space-y-1.5">
+                {MOBILE_NAV_ITEMS.map((item) => {
+                  const isExpanded = expandedCategory === item.id;
+                  const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
 
-              {/* Image Tools Section */}
-              {(activeMobileTab === "all" || activeMobileTab === "image") && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between px-1 pb-1 border-b border-[#F5F4EE]">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
-                      Image Suite
-                    </span>
-                    <Link
-                      href="/image"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="text-[11px] font-bold text-[#111111] hover:underline"
+                  return (
+                    <div
+                      key={item.id}
+                      className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                        isExpanded
+                          ? "bg-white dark:bg-zinc-900 border-[#BEBDB9] dark:border-zinc-700 shadow-xs"
+                          : isActive
+                          ? "bg-white dark:bg-zinc-900 border-[#BEBDB9] dark:border-zinc-700"
+                          : "bg-white/70 dark:bg-zinc-900/40 border-[#EAEAE5] dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-900 hover:border-[#BEBDB9]"
+                      }`}
                     >
-                      View All Image Tools →
-                    </Link>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    {IMAGE_TOOLS.map((tool) => {
-                      const isActive = pathname === tool.href;
-                      return (
+                      <div className="flex items-center justify-between p-2.5 sm:p-3 gap-2">
                         <Link
-                          key={tool.href}
-                          href={tool.href}
+                          href={item.href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`group flex flex-col justify-between p-2.5 rounded-xl border transition-all ${
-                            isActive
-                              ? "bg-[#F0EFEA] border-[#BEBDB9]"
-                              : "bg-[#FBFBFA]/70 border-[#EAEAE5] hover:bg-white hover:border-[#BEBDB9] active:scale-[0.98]"
-                          }`}
+                          className="flex items-center gap-3 flex-1 min-w-0"
                         >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="h-7 w-7 rounded-lg bg-white border border-[#EAEAE5] flex items-center justify-center text-[#111111] shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
-                              {tool.icon}
-                            </div>
-                            {tool.badge && (
-                              <span
-                                className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 ${
-                                  tool.badge === "AI"
-                                    ? "bg-purple-50 text-purple-700 border-purple-200/80"
-                                    : tool.badge === "New"
-                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200/80"
-                                    : tool.badge === "Batch"
-                                    ? "bg-blue-50 text-blue-700 border-blue-200/80"
-                                    : tool.badge === "Vector"
-                                    ? "bg-indigo-50 text-indigo-700 border-indigo-200/80"
-                                    : "bg-[#F5F4EE] text-[#6E6D68] border-[#EAEAE5]"
-                                }`}
-                              >
-                                {tool.badge}
-                              </span>
-                            )}
+                          <div
+                            className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 shadow-2xs ${item.iconBoxClass}`}
+                          >
+                            {item.icon}
                           </div>
-                          <div className="min-w-0">
-                            <p className="font-bold text-[12px] text-[#111111] leading-tight truncate">
-                              {tool.name}
-                            </p>
-                            <p className="text-[10px] text-[#9E9D98] leading-tight truncate mt-0.5">
-                              {tool.desc}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-[13px] text-[#111111] dark:text-white truncate">
+                                {item.name}
+                              </span>
+                              {item.badge && (
+                                <span
+                                  className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full border shrink-0 ${item.badgeClass}`}
+                                >
+                                  {item.badge}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-[#6E6D68] dark:text-zinc-400 truncate mt-0.5">
+                              {item.subtitle}
                             </p>
                           </div>
                         </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
 
-              {/* PDF Tools Section */}
-              {(activeMobileTab === "all" || activeMobileTab === "pdf") && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between px-1 pb-1 border-b border-[#F5F4EE]">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
-                      PDF Utilities
-                    </span>
-                    <Link
-                      href="/pdf"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="text-[11px] font-bold text-[#111111] hover:underline"
-                    >
-                      View All PDF Tools →
-                    </Link>
-                  </div>
+                        {item.tools ? (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedCategory(isExpanded ? null : item.id);
+                            }}
+                            aria-label={isExpanded ? `Collapse ${item.name}` : `Expand ${item.name}`}
+                            className={`p-2 rounded-xl text-[#9E9D98] hover:text-[#111111] dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer ${
+                              isExpanded ? "bg-[#F5F4EE] dark:bg-zinc-800 text-[#111111] dark:text-white" : ""
+                            }`}
+                          >
+                            <ChevronDown
+                              className={`h-4 w-4 transition-transform duration-200 ${
+                                isExpanded ? "rotate-180" : ""
+                              }`}
+                            />
+                          </button>
+                        ) : (
+                          <Link
+                            href={item.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="p-2 rounded-xl text-[#9E9D98] hover:text-[#111111] dark:hover:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 transition-colors"
+                            aria-label={`Open ${item.name}`}
+                          >
+                            <ArrowRight className="h-4 w-4" />
+                          </Link>
+                        )}
+                      </div>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    {PDF_TOOLS_NAV.map((tool) => {
-                      const isActive = pathname === tool.href;
-                      return (
-                        <Link
-                          key={tool.href}
-                          href={tool.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={`group flex flex-col justify-between p-2.5 rounded-xl border transition-all ${
-                            isActive
-                              ? "bg-[#F0EFEA] border-[#BEBDB9]"
-                              : "bg-[#FBFBFA]/70 border-[#EAEAE5] hover:bg-white hover:border-[#BEBDB9] active:scale-[0.98]"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="h-7 w-7 rounded-lg bg-white border border-[#EAEAE5] flex items-center justify-center text-[#111111] shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
-                              {tool.icon}
+                      {/* Smooth Collapsible Sub-links */}
+                      <AnimatePresence>
+                        {isExpanded && item.tools && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                            className="overflow-hidden border-t border-[#F5F4EE] dark:border-zinc-800/80 bg-[#FBFBFA]/70 dark:bg-black/30"
+                          >
+                            <div className="p-2 space-y-1">
+                              {item.tools.map((tool) => {
+                                const isToolActive = pathname === tool.href;
+                                return (
+                                  <Link
+                                    key={tool.href}
+                                    href={tool.href}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-[12px] transition-all group ${
+                                      isToolActive
+                                        ? "bg-white dark:bg-zinc-800 text-[#111111] dark:text-white font-semibold shadow-2xs"
+                                        : "text-[#555550] dark:text-zinc-300 hover:text-[#111111] dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800/60"
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2.5 min-w-0">
+                                      <span className="text-[#6E6D68] dark:text-zinc-400 group-hover:text-[#111111] dark:group-hover:text-white transition-colors shrink-0">
+                                        {tool.icon}
+                                      </span>
+                                      <span className="truncate font-medium">{tool.name}</span>
+                                    </div>
+                                    {tool.badge && (
+                                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5F4EE] dark:bg-zinc-800 text-[#6E6D68] dark:text-zinc-400 border border-[#EAEAE5] dark:border-zinc-700 shrink-0">
+                                        {tool.badge}
+                                      </span>
+                                    )}
+                                  </Link>
+                                );
+                              })}
+
+                              <div className="pt-1 px-1">
+                                <Link
+                                  href={item.href}
+                                  onClick={() => setMobileMenuOpen(false)}
+                                  className="flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg text-[11px] font-bold text-[#111111] dark:text-white bg-[#F0EFEA] dark:bg-zinc-800/80 hover:bg-[#EAEAE5] dark:hover:bg-zinc-800 transition-colors"
+                                >
+                                  <span>View all {item.name}</span>
+                                  <ArrowRight className="h-3 w-3" />
+                                </Link>
+                              </div>
                             </div>
-                            {tool.badge && (
-                              <span
-                                className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 ${
-                                  tool.badge === "AI"
-                                    ? "bg-purple-50 text-purple-700 border-purple-200/80"
-                                    : tool.badge === "New"
-                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200/80"
-                                    : tool.badge === "Batch"
-                                    ? "bg-blue-50 text-blue-700 border-blue-200/80"
-                                    : tool.badge === "Vector"
-                                    ? "bg-indigo-50 text-indigo-700 border-indigo-200/80"
-                                    : "bg-[#F5F4EE] text-[#6E6D68] border-[#EAEAE5]"
-                                }`}
-                              >
-                                {tool.badge}
-                              </span>
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-bold text-[12px] text-[#111111] leading-tight truncate">
-                              {tool.name}
-                            </p>
-                            <p className="text-[10px] text-[#9E9D98] leading-tight truncate mt-0.5">
-                              {tool.desc}
-                            </p>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Apps & Extensions Section */}
-              {(activeMobileTab === "all" || activeMobileTab === "apps") && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between px-1 pb-1 border-b border-[#F5F4EE]">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
-                      Apps & Extensions
-                    </span>
-                    <Link
-                      href="/apps"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="text-[11px] font-bold text-[#111111] hover:underline"
-                    >
-                      View All Apps →
-                    </Link>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    {APPS_NAV.map((tool) => {
-                      const isActive = pathname === tool.href;
-                      return (
-                        <Link
-                          key={tool.href}
-                          href={tool.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={`group flex flex-col justify-between p-2.5 rounded-xl border transition-all ${
-                            isActive
-                              ? "bg-[#F0EFEA] border-[#BEBDB9]"
-                              : "bg-[#FBFBFA]/70 border-[#EAEAE5] hover:bg-white hover:border-[#BEBDB9] active:scale-[0.98]"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="h-7 w-7 rounded-lg bg-white border border-[#EAEAE5] flex items-center justify-center text-[#111111] shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
-                              {tool.icon}
-                            </div>
-                            {tool.badge && (
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 bg-blue-50 text-blue-700 border-blue-200/80">
-                                {tool.badge}
-                              </span>
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-bold text-[12px] text-[#111111] leading-tight truncate">
-                              {tool.name}
-                            </p>
-                            <p className="text-[10px] text-[#9E9D98] leading-tight truncate mt-0.5">
-                              {tool.desc}
-                            </p>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Developer Suite Section */}
-              {(activeMobileTab === "all" || activeMobileTab === "dev") && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between px-1 pb-1 border-b border-[#F5F4EE]">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
-                      Developer Suite
-                    </span>
-                    <Link
-                      href="/dev"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="text-[11px] font-bold text-[#111111] hover:underline"
-                    >
-                      View All Dev Tools →
-                    </Link>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    {DEV_TOOLS_NAV.map((tool) => {
-                      const isActive = pathname === tool.href;
-                      return (
-                        <Link
-                          key={tool.href}
-                          href={tool.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={`group flex flex-col justify-between p-2.5 rounded-xl border transition-all ${
-                            isActive
-                              ? "bg-[#F0EFEA] border-[#BEBDB9]"
-                              : "bg-[#FBFBFA]/70 border-[#EAEAE5] hover:bg-white hover:border-[#BEBDB9] active:scale-[0.98]"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="h-7 w-7 rounded-lg bg-white border border-[#EAEAE5] flex items-center justify-center text-[#111111] shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
-                              {tool.icon}
-                            </div>
-                            {tool.badge && (
-                              <span
-                                className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 ${
-                                  tool.badge === "New"
-                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200/80"
-                                    : tool.badge === "App"
-                                    ? "bg-blue-50 text-blue-700 border-blue-200/80"
-                                    : "bg-[#F5F4EE] text-[#6E6D68] border-[#EAEAE5]"
-                                }`}
-                              >
-                                {tool.badge}
-                              </span>
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-bold text-[12px] text-[#111111] leading-tight truncate">
-                              {tool.name}
-                            </p>
-                            <p className="text-[10px] text-[#9E9D98] leading-tight truncate mt-0.5">
-                              {tool.desc}
-                            </p>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Install PWA Mobile Action */}
-              <div className="pt-2 border-t border-[#F5F4EE] dark:border-zinc-800/80">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    triggerPWAInstall();
-                  }}
-                  className="w-full flex items-center justify-between p-3 rounded-2xl border border-blue-200/80 dark:border-blue-800/60 bg-blue-50/70 dark:bg-blue-950/40 hover:bg-blue-100/60 dark:hover:bg-blue-900/40 transition-colors text-left cursor-pointer"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="h-8 w-8 rounded-xl bg-blue-600 text-white flex items-center justify-center">
-                      <Smartphone className="h-4 w-4" />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                    <div>
-                      <div className="text-xs font-bold text-[#111111] dark:text-white flex items-center gap-1.5">
-                        <span>Install Web App</span>
-                        <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-blue-600 text-white">
-                          PWA
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-[#6E6D68] dark:text-zinc-400">
-                        Add to Home Screen · 100% Free & Offline
-                      </div>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
-                    Install →
-                  </span>
-                </button>
-              </div>
-
-              {/* Movies Mobile Spotlight */}
-              <div className="pt-2 border-t border-[#F5F4EE] dark:border-zinc-800/80">
-                <Link
-                  href="/movies"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between p-3 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/60 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100/60 transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="h-8 w-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
-                      <Film className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-[#111111] dark:text-white flex items-center gap-1.5">
-                        <span>Movies & Downloads</span>
-                        <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-emerald-600 text-white">
-                          1080p FHD
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-[#6E6D68] dark:text-zinc-400">
-                        Hindi 5.1 Original Direct Downloads
-                      </div>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                    Browse →
-                  </span>
-                </Link>
-              </div>
-
-              {/* Infyn DL Mobile Spotlight */}
-              <div className="pt-2 border-t border-[#F5F4EE] dark:border-zinc-800/80">
-                <Link
-                  href="/dl"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between p-3 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/60 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100/60 transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="h-8 w-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
-                      <Download className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-[#111111] dark:text-white flex items-center gap-1.5">
-                        <span>Infyn DL</span>
-                        <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-emerald-600 text-white">
-                          NEW APP
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-[#6E6D68] dark:text-zinc-400">
-                        Media Downloader for Android & Windows
-                      </div>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                    Get →
-                  </span>
-                </Link>
+                  );
+                })}
               </div>
 
               {/* Quick Links, 3-Mode Theme & GitHub Footer */}
-              <div className="pt-2 border-t border-[#F5F4EE] dark:border-zinc-800/80 space-y-3">
+              <div className="pt-2 border-t border-[#EAEAE5] dark:border-zinc-800/80 space-y-3">
                 <div className="flex items-center justify-between gap-2 px-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E9D98] dark:text-zinc-500">
                     Appearance
@@ -1240,14 +1416,6 @@ export function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-1.5">
-                  <Link
-                    href="/docs"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex-1 flex items-center justify-center gap-1 py-2 px-2 rounded-xl border border-[#EAEAE5] dark:border-zinc-800 bg-[#FBFBFA] dark:bg-zinc-900 text-[11px] font-semibold text-[#111111] dark:text-white hover:bg-[#F5F4EE] dark:hover:bg-zinc-800 active:scale-[0.98] transition-all shadow-2xs"
-                  >
-                    <span>Docs</span>
-                  </Link>
-
                   <Link
                     href="/contributing"
                     onClick={() => setMobileMenuOpen(false)}

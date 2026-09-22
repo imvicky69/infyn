@@ -34,10 +34,8 @@ const DEV_LINKS = [
   { href: "/dev/base64", label: "Base64 & Data URI", external: false },
   { href: "/dev/svg-cleaner", label: "SVG Cleaner & Minifier", external: false },
   { href: "/dev", label: "Developer Tools Hub", external: false },
-  { href: "/docs", label: "Documentation & SDK", external: false },
   { href: "/contributing", label: "Contributing Guide", external: false },
   { href: "/sponsor", label: "💖 Support Infyn", external: false },
-  { href: "https://www.npmjs.com/package/infyn", label: "NPM Package ↗", external: true },
   { href: "https://github.com/imvicky69/infyn", label: "GitHub Suite ↗", external: true },
   { href: "https://github.com/imvicky69/infyn/issues", label: "Suggest a Tool ↗", external: true },
 ];

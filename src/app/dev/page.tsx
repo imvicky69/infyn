@@ -12,7 +12,6 @@ import {
   Binary,
   Download,
   LayoutDashboard,
-  BookOpen,
   ArrowRight,
   Code2,
   Files,
@@ -25,7 +24,7 @@ interface DevToolItem {
   title: string;
   badge: string;
   badgeColor: string;
-  category: "all" | "utilities" | "sdk";
+  category: "all" | "utilities";
   categoryLabel: string;
   description: string;
   tags: string[];
@@ -69,29 +68,11 @@ const DEV_TOOLS: DevToolItem[] = [
       </div>
     ),
   },
-  {
-    href: "/docs",
-    title: "Documentation & SDK",
-    badge: "NPM Package",
-    badgeColor: "bg-purple-50 text-purple-800 border-purple-200/80 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800",
-    category: "sdk",
-    categoryLabel: "Libraries",
-    description:
-      "Zero-cloud in-browser media manipulation package. Integrate client-side PDF encryption, image compressors, and HEIC decoders into React and Next.js.",
-    tags: ["TypeScript", "WASM", "Zero Cloud Uploads"],
-    formats: ["npm i infyn", "React", "Node", "Vite"],
-    icon: (
-      <div className="relative h-11 w-11 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-800 flex items-center justify-center text-purple-700 dark:text-purple-400 shadow-2xs group-hover:scale-105 transition-transform">
-        <BookOpen className="h-5 w-5" />
-      </div>
-    ),
-  },
 ];
 
 const CATEGORIES = [
   { id: "all", label: "All Dev Tools" },
   { id: "utilities", label: "Utilities" },
-  { id: "sdk", label: "SDK & Libraries" },
 ] as const;
 
 export default function DevCategoryPage() {

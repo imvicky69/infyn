@@ -589,3 +589,25 @@ button:active:not(:disabled),
   transform: scale(0.972);
   transition: transform 0.08s cubic-bezier(0.2, 0, 0, 1);
 }
+
+/* Smooth infinite horizontal marquee animation */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-scroll {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 45s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-scroll:hover,
+.pause-hover:hover .animate-marquee-scroll {
+  animation-play-state: paused;
+}

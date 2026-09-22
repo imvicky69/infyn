@@ -101,8 +101,8 @@ export function PWAInstaller() {
       /android|iphone|ipad|ipod|mobile/.test(ua) || window.innerWidth < 768;
     setIsMobile(isMobileDevice);
 
-    // If already installed or running standalone, do not show install banners on general pages
-    if (standaloneCheck && !isDlPage) return;
+    // Do not show PWA install banners on general pages (only keep APK banner if on /dl page)
+    if (!isDlPage) return;
 
     // Check if user dismissed banner within the last 3 days (or 2 days for dl page)
     const storageKey = isDlPage ? "infyn_dl_banner_dismissed" : "infyn_pwa_banner_dismissed";

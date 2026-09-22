@@ -114,7 +114,7 @@ export function GoogleAdDownloadModal({
       } catch (err) {
         console.warn("AdSense push:", err);
       }
-    }, 200);
+    }, 350);
 
     // Monitor the ad status attribute that Google AdSense sets
     const checkInterval = setInterval(() => {
@@ -122,7 +122,8 @@ export function GoogleAdDownloadModal({
         const ins = adContainerRef.current.querySelector("ins.adsbygoogle");
         if (ins) {
           const status = ins.getAttribute("data-ad-status");
-          if (status === "filled") {
+          const hasIframe = ins.querySelector("iframe");
+          if (status === "filled" || hasIframe) {
             setAdStatus("filled");
             setIsAdBlocked(false);
             clearInterval(checkInterval);
@@ -132,7 +133,7 @@ export function GoogleAdDownloadModal({
           }
         }
       }
-    }, 500);
+    }, 400);
 
     // AdBlock detector: If adsbygoogle was blocked by client extension (net::ERR_BLOCKED_BY_CLIENT)
     const adBlockTimer = setTimeout(() => {
@@ -352,80 +353,83 @@ export function GoogleAdDownloadModal({
                 }}
               />
 
-              {/* Exact Google AdSense Tag (Hidden if Unfilled/Empty to Prevent Blank White Screen) */}
-              <div
-                className={`w-full ${
-                  adStatus === "filled"
-                    ? "flex justify-center items-center min-h-[160px]"
-                    : "opacity-0 absolute pointer-events-none h-0 overflow-hidden"
-                }`}
-              >
+              {/* Official Google AdSense Container */}
+              <div className="relative w-full min-h-[160px] flex items-center justify-center overflow-hidden rounded-xl">
+                {/* Real Google AdSense Tag (Always mounted with real width/height) */}
                 <ins
+                  key={`${downloadData.slug}-${downloadData.target}-${downloadData.episodeNumber || 0}`}
                   className="adsbygoogle"
-                  style={{ display: "block", width: "100%", textAlign: "center", minHeight: "160px" }}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    minHeight: "160px",
+                    textAlign: "center",
+                  }}
                   data-ad-client={ADSENSE_CLIENT_ID}
                   data-ad-slot={ADSENSE_SLOT_ID}
                   data-ad-format="auto"
                   data-full-width-responsive="true"
                 />
-              </div>
 
-              {/* Authentic Google Display Ad Banner (Rendered whenever AdSense is unfilled or pending) */}
-              {adStatus !== "filled" && (
-                <div className="my-auto py-3 px-2 flex flex-col sm:flex-row items-center gap-3.5 bg-gradient-to-br from-white to-[#FBFBFA] dark:from-[#18181C] dark:to-[#121214] rounded-xl">
-                  {/* Google 4-Color Brand Icon */}
-                  <div className="relative h-13 w-13 rounded-2xl bg-white dark:bg-zinc-800 border border-[#EAEAE5] dark:border-zinc-700 shadow-xs flex items-center justify-center shrink-0">
-                    <svg viewBox="0 0 24 24" className="w-7 h-7" aria-label="Google Cloud">
-                      <path
-                        fill="#4285F4"
-                        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
-                      />
-                      <path
-                        fill="#34A853"
-                        d="M19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.64.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"
-                      />
-                      <path
-                        fill="#EA4335"
-                        d="M12 6c-2.06 0-3.92 1.14-4.87 2.97l-.5.95-1.07.11C3.53 10.24 2 11.95 2 14c0 2.21 1.79 4 4 4h7V6z"
-                        opacity="0.3"
-                      />
-                      <path
-                        fill="#FBBC05"
-                        d="M13 18h6c1.65 0 3-1.35 3-3 0-1.55-1.14-2.86-2.78-2.96l-1.53-.11-.3-1.5C16.88 7.86 14.62 6 12 6v12h1z"
-                        opacity="0.4"
-                      />
-                    </svg>
-                  </div>
+                {/* Fallback Banner: Displayed when Google auction is pending, unfilled, or on localhost */}
+                {adStatus !== "filled" && (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center p-2 bg-gradient-to-br from-white to-[#FBFBFA] dark:from-[#18181C] dark:to-[#121214]">
+                    <div className="w-full flex flex-col sm:flex-row items-center gap-3.5">
+                      {/* Google 4-Color Brand Icon */}
+                      <div className="relative h-13 w-13 rounded-2xl bg-white dark:bg-zinc-800 border border-[#EAEAE5] dark:border-zinc-700 shadow-xs flex items-center justify-center shrink-0">
+                        <svg viewBox="0 0 24 24" className="w-7 h-7" aria-label="Google Cloud">
+                          <path
+                            fill="#4285F4"
+                            d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+                          />
+                          <path
+                            fill="#34A853"
+                            d="M19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.64.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"
+                          />
+                          <path
+                            fill="#EA4335"
+                            d="M12 6c-2.06 0-3.92 1.14-4.87 2.97l-.5.95-1.07.11C3.53 10.24 2 11.95 2 14c0 2.21 1.79 4 4 4h7V6z"
+                            opacity="0.3"
+                          />
+                          <path
+                            fill="#FBBC05"
+                            d="M13 18h6c1.65 0 3-1.35 3-3 0-1.55-1.14-2.86-2.78-2.96l-1.53-.11-.3-1.5C16.88 7.86 14.62 6 12 6v12h1z"
+                            opacity="0.4"
+                          />
+                        </svg>
+                      </div>
 
-                  {/* Ad Body Content */}
-                  <div className="flex-1 min-w-0 text-center sm:text-left space-y-1">
-                    <div className="flex items-center justify-center sm:justify-start gap-2">
-                      <h4 className="text-xs sm:text-sm font-extrabold text-[#111111] dark:text-white">
-                        Google Cloud Platform
-                      </h4>
-                      <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
-                        $300 Free Credit
-                      </span>
+                      {/* Ad Body Content */}
+                      <div className="flex-1 min-w-0 text-center sm:text-left space-y-1">
+                        <div className="flex items-center justify-center sm:justify-start gap-2">
+                          <h4 className="text-xs sm:text-sm font-extrabold text-[#111111] dark:text-white">
+                            Google Cloud Platform
+                          </h4>
+                          <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
+                            $300 Free Credit
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-[#6E6D68] dark:text-zinc-300 leading-snug line-clamp-2">
+                          Build, deploy, and scale apps on Google&apos;s secure global infrastructure. Free tier available.
+                        </p>
+                      </div>
+
+                      {/* Google Ad CTA Button */}
+                      <div className="shrink-0 pt-0.5 sm:pt-0">
+                        <a
+                          href="https://cloud.google.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white text-[11px] font-bold transition-all shadow-xs cursor-pointer"
+                        >
+                          <span>Learn More</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-[#6E6D68] dark:text-zinc-300 leading-snug line-clamp-2">
-                      Build, deploy, and scale apps on Google&apos;s secure global infrastructure. Free tier available.
-                    </p>
                   </div>
-
-                  {/* Google Ad CTA Button */}
-                  <div className="shrink-0 pt-0.5 sm:pt-0">
-                    <a
-                      href="https://cloud.google.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white text-[11px] font-bold transition-all shadow-xs cursor-pointer"
-                    >
-                      <span>Learn More</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
 
               {/* AdBlocker Detected Banner */}
               {isAdBlocked && (

@@ -7,9 +7,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { NpmShowcase } from "@/components/npm-showcase";
-import { InfynDlShowcase } from "@/components/infyn-dl-showcase";
-import { InfynHomeTabShowcase } from "@/components/infyn-home-tab-showcase";
+import { HomeAppsShowcase } from "@/components/home-apps-showcase";
+import { HomeMoviesFeed } from "@/components/home-movies-feed";
 import SplitText from "@/components/SplitText";
 import { AnimatedLogo } from "@/components/animatedLogo";
 import {
@@ -36,8 +35,16 @@ import {
   QrCode,
   LayoutDashboard,
   Download,
-  Sparkles
+  Sparkles,
+  Film,
+  Star,
+  Folder,
+  FolderOpen,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
+import { Movie } from "@/types/movie";
+import { getLiveMovies } from "@/lib/movies-firestore";
 
 interface ToolItem {
   href: string;
@@ -222,6 +229,16 @@ const TOOLS: ToolItem[] = [
     icon: Code2,
     keywords: ["svg cleaner", "svg minifier", "svgo", "clean svg", "svg optimizer", "svg to react", "react icon", "css data uri", "vector cleaner", "developer", "dev"],
   },
+  {
+    href: "/movies",
+    title: "Movies & Series",
+    category: "utilities",
+    badge: "1080p FHD",
+    description: "Browse Hindi 5.1 original direct downloads, trending titles & streaming links.",
+    formats: ["1080p", "FHD", "MKV", "Hindi 5.1"],
+    icon: Film,
+    keywords: ["movie", "movies", "film", "films", "cinema", "downloads", "1080p", "stream", "hindi", "episodes", "series"],
+  },
 ];
 
 const UPCOMING = [
@@ -240,10 +257,12 @@ const UPCOMING = [
 ];
 
 const POPULAR_TOOLS = [
-  "/image/qr-code",
-  "/image/bg-remover",
   "/image/compressor",
+  "/image/bg-remover",
+  "/image/qr-code",
   "/pdf/compressor",
+  "/pdf/merger",
+  "/dev/svg-cleaner",
 ];
 
 
@@ -328,6 +347,25 @@ function ToolCard({ tool }: { tool: ToolItem }) {
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [moviesList, setMoviesList] = useState<Movie[]>([]);
+  const [showAllTools, setShowAllTools] = useState<boolean>(false);
+
+  // Fetch movies for search
+  useEffect(() => {
+    let isMounted = true;
+    getLiveMovies()
+      .then((movies) => {
+        if (isMounted && Array.isArray(movies)) {
+          setMoviesList(movies);
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to load movies for search:", err);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Focus search input on ⌘K or Ctrl K
   useEffect(() => {
@@ -355,6 +393,22 @@ export default function HomePage() {
       );
     });
   }, [searchQuery]);
+
+  const filteredMovies = useMemo(() => {
+    if (!searchQuery.trim() || moviesList.length === 0) return [];
+    const q = searchQuery.toLowerCase().trim();
+    return moviesList.filter((movie) => {
+      return (
+        movie.title?.toLowerCase().includes(q) ||
+        movie.director?.toLowerCase().includes(q) ||
+        (Array.isArray(movie.cast) && movie.cast.some((c) => c.toLowerCase().includes(q))) ||
+        (Array.isArray(movie.genres) && movie.genres.some((g) => g.toLowerCase().includes(q))) ||
+        movie.synopsis?.toLowerCase().includes(q) ||
+        movie.year?.toString().includes(q) ||
+        movie.quality?.toLowerCase().includes(q)
+      );
+    });
+  }, [searchQuery, moviesList]);
 
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-[#E8E6DE] selection:text-black">
@@ -387,19 +441,19 @@ export default function HomePage() {
           <div className="pt-8 w-full max-w-2xl mx-auto">
             <div className="relative group z-40">
               <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-[#9E9D98] group-focus-within:text-[#111111] transition-colors" />
+                <Search className="h-5 w-5 text-[#9E9D98] group-focus-within:text-[#111111] dark:group-focus-within:text-white transition-colors" />
               </div>
               <input
                 id="search-input"
                 type="text"
-                placeholder="Search tools, apps, and extensions (e.g. PDF, DL, Home Tab)..."
+                placeholder="Search tools, apps, and movies (e.g. PDF, 1080p, DL, Stree)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-14 pr-16 py-4 rounded-2xl border border-[#EAEAE5] bg-white text-base text-[#111111] placeholder-[#9E9D98] focus:outline-none focus:border-[#111111] focus:ring-1 focus:ring-[#111111] shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all font-medium"
+                className="w-full pl-14 pr-16 py-4 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] text-base text-[#111111] dark:text-white placeholder-[#9E9D98] dark:placeholder-zinc-500 focus:outline-none focus:border-[#111111] dark:focus:border-white focus:ring-1 focus:ring-[#111111] dark:focus:ring-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all font-medium"
                 autoComplete="off"
               />
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                <span className="text-[11px] font-bold text-[#9E9D98] bg-[#F5F4EE] px-2 py-1 rounded border border-[#EAEAE5]">
+                <span className="text-[11px] font-bold text-[#9E9D98] dark:text-zinc-500 bg-[#F5F4EE] dark:bg-zinc-800 px-2 py-1 rounded border border-[#EAEAE5] dark:border-zinc-700">
                   ⌘ K
                 </span>
               </div>
@@ -411,36 +465,143 @@ export default function HomePage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 4 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-full left-0 w-full mt-2 bg-white rounded-2xl border border-[#EAEAE5] shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden z-50 text-left"
+                    className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-[#141417] rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden z-50 text-left"
                   >
-                    <div className="max-h-[300px] overflow-y-auto p-2">
-                      {filteredTools.length > 0 ? (
-                        filteredTools.map((tool) => {
-                          const Icon = tool.icon;
-                          return (
-                            <Link key={tool.href} href={tool.href} onClick={() => setSearchQuery("")} className="flex items-center gap-3 p-3 hover:bg-[#F5F4EE] rounded-xl transition-colors cursor-pointer">
-                              <div className="h-9 w-9 rounded-xl bg-[#FBFBFA] border border-[#EAEAE5] flex items-center justify-center text-[#111111] shrink-0">
-                                <Icon className="h-4 w-4" />
+                    <div className="max-h-[380px] overflow-y-auto p-2 space-y-2 custom-scrollbar">
+                      {filteredTools.length > 0 || filteredMovies.length > 0 ? (
+                        <>
+                          {/* Tools Section */}
+                          {filteredTools.length > 0 && (
+                            <div>
+                              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#9E9D98] dark:text-zinc-500">
+                                Tools & Apps ({filteredTools.length})
                               </div>
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-2">
-                                  <h4 className="text-[14px] font-bold text-[#111111] leading-tight truncate">{tool.title}</h4>
-                                  {tool.badge && (
-                                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5F4EE] text-[#6E6D68] border border-[#EAEAE5] shrink-0">
-                                      {tool.badge}
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="text-[12px] text-[#6E6D68] truncate mt-0.5">{tool.description}</p>
+                              <div className="space-y-1">
+                                {filteredTools.map((tool) => {
+                                  const Icon = tool.icon;
+                                  return (
+                                    <Link
+                                      key={tool.href}
+                                      href={tool.href}
+                                      onClick={() => setSearchQuery("")}
+                                      className="flex items-center gap-3 p-2.5 hover:bg-[#F5F4EE] dark:hover:bg-zinc-800/80 rounded-xl transition-colors cursor-pointer group"
+                                    >
+                                      <div className="h-8 w-8 rounded-lg bg-[#FBFBFA] dark:bg-zinc-800 border border-[#EAEAE5] dark:border-zinc-700 flex items-center justify-center text-[#111111] dark:text-white shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                                        <Icon className="h-4 w-4" />
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <div className="flex items-center gap-2">
+                                          <h4 className="text-[13px] font-bold text-[#111111] dark:text-white leading-tight truncate">
+                                            {tool.title}
+                                          </h4>
+                                          {tool.badge && (
+                                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5F4EE] dark:bg-zinc-800 text-[#6E6D68] dark:text-zinc-400 border border-[#EAEAE5] dark:border-zinc-700 shrink-0">
+                                              {tool.badge}
+                                            </span>
+                                          )}
+                                        </div>
+                                        <p className="text-[11px] text-[#6E6D68] dark:text-zinc-400 truncate mt-0.5">
+                                          {tool.description}
+                                        </p>
+                                      </div>
+                                      <ArrowRight className="h-4 w-4 text-[#9E9D98] dark:text-zinc-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                                    </Link>
+                                  );
+                                })}
                               </div>
-                              <ArrowRight className="h-4 w-4 text-[#9E9D98] shrink-0" />
-                            </Link>
-                          );
-                        })
+                            </div>
+                          )}
+
+                          {/* Movies Section */}
+                          {filteredMovies.length > 0 && (
+                            <div className="pt-1 border-t border-[#F5F4EE] dark:border-zinc-800/80">
+                              <div className="flex items-center justify-between px-3 py-1.5">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                  <Film className="h-3 w-3" />
+                                  <span>Movies & Series ({filteredMovies.length})</span>
+                                </span>
+                                <Link
+                                  href="/movies"
+                                  onClick={() => setSearchQuery("")}
+                                  className="text-[11px] font-bold text-[#111111] dark:text-white hover:underline"
+                                >
+                                  View All →
+                                </Link>
+                              </div>
+                              <div className="space-y-1">
+                                {filteredMovies.slice(0, 6).map((movie) => (
+                                  <Link
+                                    key={movie.id || movie.slug}
+                                    href={`/movies/${movie.slug || movie.id}`}
+                                    onClick={() => setSearchQuery("")}
+                                    className="flex items-center gap-3 p-2.5 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 rounded-xl transition-colors cursor-pointer group"
+                                  >
+                                    {movie.poster ? (
+                                      <div className="relative h-10 w-7 rounded-md overflow-hidden bg-zinc-200 dark:bg-zinc-800 shrink-0 shadow-2xs border border-[#EAEAE5] dark:border-zinc-700">
+                                        <Image
+                                          src={movie.poster}
+                                          alt={movie.title}
+                                          fill
+                                          sizes="28px"
+                                          className="object-cover group-hover:scale-105 transition-transform duration-200"
+                                          unoptimized
+                                        />
+                                      </div>
+                                    ) : (
+                                      <div className="h-9 w-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 shadow-2xs">
+                                        <Film className="h-4 w-4" />
+                                      </div>
+                                    )}
+                                    <div className="min-w-0 flex-1">
+                                      <div className="flex items-center gap-2">
+                                        <h4 className="text-[13px] font-bold text-[#111111] dark:text-white leading-tight truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                          {movie.title}
+                                        </h4>
+                                        {movie.year && (
+                                          <span className="text-[10px] text-[#9E9D98] dark:text-zinc-500 font-medium">
+                                            {movie.year}
+                                          </span>
+                                        )}
+                                        {movie.quality && (
+                                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 shrink-0">
+                                            {movie.quality}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="flex items-center gap-2 mt-0.5 text-[11px] text-[#6E6D68] dark:text-zinc-400 truncate">
+                                        {movie.rating && (
+                                          <span className="flex items-center gap-0.5 text-amber-600 dark:text-amber-400 font-semibold shrink-0">
+                                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                                            {movie.rating}
+                                          </span>
+                                        )}
+                                        {Array.isArray(movie.genres) && movie.genres.length > 0 && (
+                                          <span className="truncate">
+                                            {movie.genres.slice(0, 2).join(" · ")}
+                                          </span>
+                                        )}
+                                        {movie.language && (
+                                          <span className="text-[10px] text-[#9E9D98] shrink-0">
+                                            · {movie.language}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <ArrowRight className="h-4 w-4 text-[#9E9D98] dark:text-zinc-500 shrink-0 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </>
                       ) : (
                         <div className="p-6 text-center">
-                          <p className="text-sm font-medium text-[#111111]">No tools, apps, or extensions found</p>
-                          <p className="text-xs text-[#6E6D68] mt-1">Try searching for &ldquo;PDF&rdquo;, &ldquo;DL&rdquo;, or &ldquo;Extension&rdquo;</p>
+                          <p className="text-sm font-medium text-[#111111] dark:text-white">
+                            No tools or movies found
+                          </p>
+                          <p className="text-xs text-[#6E6D68] dark:text-zinc-400 mt-1">
+                            Try searching for &ldquo;PDF&rdquo;, &ldquo;Stree&rdquo;, &ldquo;1080p&rdquo;, or &ldquo;Compressor&rdquo;
+                          </p>
                         </div>
                       )}
                     </div>
@@ -490,116 +651,284 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* ── Dynamic Tool Sections ──────────────────────────────────── */}
-        <div id="tools" className="space-y-16">
-          {/* Popular Tools */}
-          <section className="space-y-5">
-            <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Popular Tools</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {TOOLS.filter(t => POPULAR_TOOLS.includes(t.href)).map(tool => (
-                <ToolCard key={tool.href} tool={tool} />
-              ))}
+        {/* ── Dynamic In-Browser Tools Section (Compact & Organized) ────────── */}
+        <div id="tools" className="space-y-10">
+          {/* Section Header */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#EAEAE5] dark:border-zinc-800 pb-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/50 border border-blue-200/80 dark:border-blue-800/60 text-blue-800 dark:text-blue-300 text-[11px] font-bold tracking-tight">
+                  <Sparkles className="h-3 w-3" />
+                  100% In-Browser
+                </span>
+                <span className="text-[11px] font-semibold text-[#9E9D98] dark:text-zinc-500">
+                  Zero Cloud Uploads · Free Forever
+                </span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-[#111111] dark:text-white tracking-[-0.02em]">
+                Popular Tools & Folder Hubs
+              </h2>
+              <p className="text-[13px] sm:text-[14px] text-[#6E6D68] dark:text-zinc-400">
+                Frequently used utilities ready with 1 click, or jump straight to designated category suites.
+              </p>
             </div>
-          </section>
 
-          {/* Image Tools */}
-          <section className="space-y-5">
-            <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Image Tools</h2>
+            <button
+              onClick={() => setShowAllTools((prev) => !prev)}
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#111111] dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors self-start sm:self-auto cursor-pointer"
+            >
+              <span>{showAllTools ? "Collapse Tools" : "Browse All 20+ Tools"}</span>
+              {showAllTools ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+
+          {/* Popular Tools Grid (Compact 6 cards) */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold tracking-widest text-[#9E9D98] dark:text-zinc-500 uppercase">
+                Frequently Used
+              </h3>
+              <span className="text-[11px] text-[#BEBDB9] dark:text-zinc-600">
+                Instant execution
+              </span>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {TOOLS.filter(t => t.category === "image" && !POPULAR_TOOLS.includes(t.href)).map(tool => (
+              {TOOLS.filter((t) => POPULAR_TOOLS.includes(t.href)).map((tool) => (
                 <ToolCard key={tool.href} tool={tool} />
               ))}
             </div>
-          </section>
+          </div>
 
-          {/* PDF Tools */}
-          <section className="space-y-5">
-            <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">PDF Tools</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {TOOLS.filter(t => t.category === "pdf").map(tool => (
-                <ToolCard key={tool.href} tool={tool} />
-              ))}
-            </div>
-          </section>
-
-          {/* Apps & Extensions */}
-          {TOOLS.some(t => t.category === "apps") && (
-            <section className="space-y-5">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Apps & Extensions</h2>
-                <Link href="/apps" className="text-xs font-semibold text-[#111111] hover:underline">
-                  View All Apps →
-                </Link>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {TOOLS.filter(t => t.category === "apps").map(tool => (
-                  <ToolCard key={tool.href} tool={tool} />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Developer Tools */}
-          {TOOLS.some(t => t.category === "developer") && (
-            <section className="space-y-5">
-              <h2 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Developer Tools</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {TOOLS.filter(t => t.category === "developer").map(tool => (
-                  <ToolCard key={tool.href} tool={tool} />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Coming Soon */}
-          <section className="space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#EAEAE5] pb-4">
-              <div>
-                <h2 className="text-base font-bold text-[#111111]">More tools are on the way.</h2>
-                <p className="text-[13px] text-[#6E6D68] mt-1">In active development for the open-source suite.</p>
-              </div>
-              <a
-                href="https://github.com/imvicky69/infyn/issues"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#111111] hover:text-[#6E6D68] transition-colors mb-0.5"
+          {/* Category Folders Hub (Designated Folder Redirects) */}
+          <div className="space-y-4 pt-2">
+            <h3 className="text-xs font-bold tracking-widest text-[#9E9D98] dark:text-zinc-500 uppercase">
+              Category Suites (Designated Folders)
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Image Suite Folder */}
+              <Link
+                href="/image"
+                className="group relative flex flex-col justify-between rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] p-5 hover:border-[#BEBDB9] dark:hover:border-zinc-700 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200"
               >
-                Built in the open. Suggest a tool →
-              </a>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {UPCOMING.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <div key={item.title} className="rounded-2xl border border-[#EAEAE5] bg-[#FBFBFA] p-5 space-y-3 opacity-60 hover:opacity-80 transition-opacity">
-                    <div className="flex items-center justify-between">
-                      <div className="h-10 w-10 rounded-xl bg-white border border-[#EAEAE5] flex items-center justify-center text-[#9E9D98]">
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#9E9D98] border border-[#EAEAE5]">
-                        Coming Soon
-                      </span>
+                <div>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-xs">
+                      <FileImage className="h-5 w-5" />
                     </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-[#111111] tracking-[-0.01em]">{item.title}</h4>
-                      <p className="text-[12px] text-[#6E6D68] leading-relaxed mt-1">{item.desc}</p>
-                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60">
+                      7 Tools
+                    </span>
                   </div>
-                );
-              })}
+                  <h4 className="text-[15px] font-bold text-[#111111] dark:text-white tracking-[-0.01em] group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                    Image Tools Suite
+                  </h4>
+                  <p className="text-[12px] text-[#6E6D68] dark:text-zinc-400 leading-relaxed mt-1 line-clamp-2">
+                    HEIC to JPG, WebP/AVIF converter, AI background remover, PNG to SVG, compressor & resizer.
+                  </p>
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    {["HEIC", "BG Remover", "PNG → SVG", "Resize"].map((f) => (
+                      <span
+                        key={f}
+                        className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#F5F4EE] dark:bg-zinc-800 text-[#6E6D68] dark:text-zinc-400 border border-[#EAEAE5] dark:border-zinc-700/60"
+                      >
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-4 pt-3 border-t border-[#F5F4EE] dark:border-zinc-800 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#111111] dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                    Open Image Tools Folder
+                  </span>
+                  <ArrowRight className="h-4 w-4 text-[#111111] dark:text-white group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </Link>
+
+              {/* PDF Suite Folder */}
+              <Link
+                href="/pdf"
+                className="group relative flex flex-col justify-between rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] p-5 hover:border-[#BEBDB9] dark:hover:border-zinc-700 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <div>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-xs">
+                      <Files className="h-5 w-5" />
+                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/60">
+                      6 Tools
+                    </span>
+                  </div>
+                  <h4 className="text-[15px] font-bold text-[#111111] dark:text-white tracking-[-0.01em] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    PDF Tools Suite
+                  </h4>
+                  <p className="text-[12px] text-[#6E6D68] dark:text-zinc-400 leading-relaxed mt-1 line-clamp-2">
+                    Client-side PDF compressor, multi-document merger, page splitter, AES-256 protection & unlocker.
+                  </p>
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    {["Compress", "Merge", "Split", "Protect"].map((f) => (
+                      <span
+                        key={f}
+                        className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#F5F4EE] dark:bg-zinc-800 text-[#6E6D68] dark:text-zinc-400 border border-[#EAEAE5] dark:border-zinc-700/60"
+                      >
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-4 pt-3 border-t border-[#F5F4EE] dark:border-zinc-800 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#111111] dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    Open PDF Tools Folder
+                  </span>
+                  <ArrowRight className="h-4 w-4 text-[#111111] dark:text-white group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </Link>
+
+              {/* Developer Utilities Folder */}
+              <Link
+                href="/dev"
+                className="group relative flex flex-col justify-between rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] p-5 hover:border-[#BEBDB9] dark:hover:border-zinc-700 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <div>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-xs">
+                      <Code2 className="h-5 w-5" />
+                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60">
+                      Offline
+                    </span>
+                  </div>
+                  <h4 className="text-[15px] font-bold text-[#111111] dark:text-white tracking-[-0.01em] group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                    Developer Utilities
+                  </h4>
+                  <p className="text-[12px] text-[#6E6D68] dark:text-zinc-400 leading-relaxed mt-1 line-clamp-2">
+                    Base64 & CSS Data URI encoder, production SVG optimizer & cleaner, and developer formatting tools.
+                  </p>
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    {["Base64", "SVG Cleaner", "Data URI", "Encoder"].map((f) => (
+                      <span
+                        key={f}
+                        className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#F5F4EE] dark:bg-zinc-800 text-[#6E6D68] dark:text-zinc-400 border border-[#EAEAE5] dark:border-zinc-700/60"
+                      >
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-4 pt-3 border-t border-[#F5F4EE] dark:border-zinc-800 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#111111] dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                    Open Dev Tools Folder
+                  </span>
+                  <ArrowRight className="h-4 w-4 text-[#111111] dark:text-white group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </Link>
             </div>
-          </section>
+          </div>
+
+          {/* Optional Expanded Full Catalog */}
+          <AnimatePresence>
+            {showAllTools && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-12 pt-4 border-t border-[#EAEAE5] dark:border-zinc-800"
+              >
+                {/* Image Tools Full List */}
+                <section className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">All Image Tools</h3>
+                    <Link href="/image" className="text-xs font-semibold text-[#111111] dark:text-white hover:underline">
+                      View Hub →
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {TOOLS.filter((t) => t.category === "image").map((tool) => (
+                      <ToolCard key={tool.href} tool={tool} />
+                    ))}
+                  </div>
+                </section>
+
+                {/* PDF Tools Full List */}
+                <section className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">All PDF Tools</h3>
+                    <Link href="/pdf" className="text-xs font-semibold text-[#111111] dark:text-white hover:underline">
+                      View Hub →
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {TOOLS.filter((t) => t.category === "pdf").map((tool) => (
+                      <ToolCard key={tool.href} tool={tool} />
+                    ))}
+                  </div>
+                </section>
+
+                {/* Developer Tools Full List */}
+                <section className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold tracking-widest text-[#9E9D98] uppercase">Developer Tools</h3>
+                    <Link href="/dev" className="text-xs font-semibold text-[#111111] dark:text-white hover:underline">
+                      View Hub →
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {TOOLS.filter((t) => t.category === "developer").map((tool) => (
+                      <ToolCard key={tool.href} tool={tool} />
+                    ))}
+                  </div>
+                </section>
+
+                {/* Coming Soon */}
+                <section className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#EAEAE5] dark:border-zinc-800 pb-3">
+                    <div>
+                      <h4 className="text-sm font-bold text-[#111111] dark:text-white">Upcoming Tools</h4>
+                      <p className="text-[12px] text-[#6E6D68] dark:text-zinc-400">In active client-side development.</p>
+                    </div>
+                    <a
+                      href="https://github.com/imvicky69/infyn/issues"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-semibold text-[#111111] dark:text-white hover:text-[#6E6D68] transition-colors"
+                    >
+                      Suggest a tool →
+                    </a>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {UPCOMING.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <div
+                          key={item.title}
+                          className="rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-[#FBFBFA] dark:bg-zinc-900/50 p-4 space-y-2 opacity-70"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="h-9 w-9 rounded-xl bg-white dark:bg-zinc-800 border border-[#EAEAE5] dark:border-zinc-700 flex items-center justify-center text-[#9E9D98]">
+                              <Icon className="h-4 w-4" />
+                            </div>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white dark:bg-zinc-800 text-[#9E9D98] border border-[#EAEAE5] dark:border-zinc-700">
+                              Coming Soon
+                            </span>
+                          </div>
+                          <h5 className="text-xs font-bold text-[#111111] dark:text-white">{item.title}</h5>
+                          <p className="text-[11px] text-[#6E6D68] dark:text-zinc-400">{item.desc}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* ── Infyn DL Project Spotlight ────────────────────────────── */}
-        <InfynDlShowcase />
+        {/* ── Native Apps & Extensions Showcase (Dedicated Apps Component) ── */}
+        <HomeAppsShowcase />
 
-        {/* ── Infyn Home Tab Extension Spotlight ────────────────────── */}
-        <InfynHomeTabShowcase />
-
-        {/* ── NPM Package & Developer SDK Showcase ──────────────────── */}
-        <NpmShowcase />
+        {/* ── Dynamic Movies & Series Marquee Stream (New Dynamic Component) ── */}
+        <HomeMoviesFeed />
 
         {/* ── Architecture Comparison ───────────────────────────────── */}
         <section className="rounded-3xl border border-[#EAEAE5] bg-white p-6 sm:p-8 space-y-5 shadow-sm">

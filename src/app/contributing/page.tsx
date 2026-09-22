@@ -21,7 +21,6 @@ import {
   Boxes,
   Compass,
   FileCode2,
-  BookOpen,
   ArrowRight,
   Zap,
 } from "lucide-react";
@@ -128,14 +127,6 @@ export default function ContributingPage() {
                 <span>Browse Issues</span>
                 <ExternalLink className="h-3.5 w-3.5 opacity-70" />
               </a>
-
-              <Link
-                href="/docs"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#F5F4EE] dark:bg-zinc-800/80 text-xs font-bold text-[#111111] dark:text-white hover:bg-[#EAEAE5] dark:hover:bg-zinc-700 active:scale-[0.98] transition-all"
-              >
-                <BookOpen className="h-3.5 w-3.5" />
-                <span>SDK Docs</span>
-              </Link>
             </div>
           </div>
         </div>
