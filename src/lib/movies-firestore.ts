@@ -91,6 +91,29 @@ export async function getLiveMovieBySlug(slug: string): Promise<Movie | null> {
 }
 
 /**
+ * Convert cloud storage links (Mega.nz, Google Drive) to embeddable stream player URLs
+ */
+export function getStreamUrl(url?: string | null): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  // Mega.nz: https://mega.nz/file/ID#KEY -> https://mega.nz/embed/ID#KEY
+  if (trimmed.includes("mega.nz/file/")) {
+    return trimmed.replace("mega.nz/file/", "mega.nz/embed/");
+  }
+  if (trimmed.includes("mega.nz/embed/")) {
+    return trimmed;
+  }
+  // Google Drive: https://drive.google.com/file/d/ID/view... -> https://drive.google.com/file/d/ID/preview
+  if (trimmed.includes("drive.google.com/file/d/")) {
+    const match = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://drive.google.com/file/d/${match[1]}/preview`;
+    }
+  }
+  return null;
+}
+
+/**
  * Fetch download URL and metadata directly from Firestore after ad view.
  * Handles movie vs season vs episode resolution with correct size and link priority.
  */
@@ -101,6 +124,7 @@ export async function getLiveDownloadLink(params: {
 }): Promise<{
   success: boolean;
   downloadUrl?: string;
+  streamUrl?: string;
   title?: string;
   size?: string;
   error?: string;
@@ -117,9 +141,11 @@ export async function getLiveDownloadLink(params: {
 
       if (target === "movie" || target === "season") {
         // Priority to episode[0] if single movie, else seasonDownloadUrl
-        const downloadUrl = isSingleMovie
+        const rawUrl = isSingleMovie
           ? (data.episodes?.[0]?.downloadUrl || data.seasonDownloadUrl || null)
           : (data.seasonDownloadUrl || data.episodes?.[0]?.downloadUrl || null);
+
+        const downloadUrl = rawUrl && rawUrl.trim().length > 0 ? rawUrl.trim() : null;
 
         const size = isSingleMovie
           ? (data.episodes?.[0]?.size || data.seasonSize || "")
@@ -130,17 +156,32 @@ export async function getLiveDownloadLink(params: {
           : `${data.title} - Season 1 Complete Pack`;
 
         if (downloadUrl) {
-          return { success: true, downloadUrl, title, size };
+          return {
+            success: true,
+            downloadUrl,
+            streamUrl: getStreamUrl(downloadUrl) || undefined,
+            title,
+            size,
+          };
         }
       } else if (target === "episode" && episodeNumber) {
         const ep = data.episodes?.find((e) => e.episodeNumber === Number(episodeNumber));
-        if (ep && ep.downloadUrl) {
-          return {
-            success: true,
-            downloadUrl: ep.downloadUrl,
-            title: `${data.title} - Episode ${ep.episodeNumber}: ${ep.title}`,
-            size: ep.size || "",
-          };
+        if (ep) {
+          const downloadUrl = ep.downloadUrl && ep.downloadUrl.trim().length > 0 ? ep.downloadUrl.trim() : null;
+          if (downloadUrl) {
+            return {
+              success: true,
+              downloadUrl,
+              streamUrl: getStreamUrl(downloadUrl) || undefined,
+              title: `${data.title} - Episode ${ep.episodeNumber}: ${ep.title}`,
+              size: ep.size || "",
+            };
+          } else {
+            return {
+              success: false,
+              error: `Download link for Episode ${ep.episodeNumber} has not been uploaded to Firestore yet.`,
+            };
+          }
         }
       }
     }
@@ -157,21 +198,23 @@ export async function getLiveDownloadLink(params: {
         slug,
         target,
         episodeNumber,
-        adViewDurationMs: 5000,
-        verificationToken: `client_unlocked_${Date.now()}`,
       }),
     });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && json.downloadUrl) {
-        return {
-          success: true,
-          downloadUrl: json.downloadUrl,
-          title: json.title,
-          size: json.size,
-        };
-      }
-      return { success: false, error: json.error || "Failed to retrieve download link" };
+
+    const json = await res.json().catch(() => null);
+
+    if (res.ok && json?.success && json.downloadUrl) {
+      return {
+        success: true,
+        downloadUrl: json.downloadUrl,
+        streamUrl: json.streamUrl || getStreamUrl(json.downloadUrl) || undefined,
+        title: json.title,
+        size: json.size,
+      };
+    }
+
+    if (json?.error) {
+      return { success: false, error: json.error };
     }
   } catch (err) {
     console.error("API route download fallback failed:", err);

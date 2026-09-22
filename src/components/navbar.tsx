@@ -19,7 +19,6 @@ import {
   Combine,
   Unlock,
   Scissors,
-  BookOpen,
   QrCode,
   Download,
   Heart,

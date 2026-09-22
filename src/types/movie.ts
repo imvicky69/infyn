@@ -4,6 +4,9 @@ export interface Episode {
   duration: string;
   size: string;
   downloadUrl?: string;
+  streamUrl?: string;
+  hasDownload?: boolean;
+  hasStream?: boolean;
   synopsis: string;
   thumbnail?: string;
 }
@@ -30,6 +33,7 @@ export interface Movie {
   languages?: string[];
   quality: string;
   seasonDownloadUrl?: string;
+  hasSeasonDownload?: boolean;
   seasonSize?: string;
   episodes: Episode[];
   featured?: boolean;

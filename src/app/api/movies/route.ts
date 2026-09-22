@@ -22,11 +22,17 @@ export async function GET(req: NextRequest) {
       const doc = await db.collection("movies").doc(slug).get();
       if (doc.exists) {
         const data = doc.data()!;
+        data.hasSeasonDownload = Boolean(data.seasonDownloadUrl && data.seasonDownloadUrl.trim().length > 0);
         delete data.seasonDownloadUrl;
         if (Array.isArray(data.episodes)) {
           data.episodes = data.episodes.map((ep: { downloadUrl?: string; [key: string]: unknown }) => {
             const { downloadUrl, ...rest } = ep;
-            return rest;
+            const valid = Boolean(downloadUrl && downloadUrl.trim().length > 0);
+            return {
+              ...rest,
+              hasDownload: valid,
+              hasStream: Boolean(valid && (downloadUrl?.includes("mega.nz") || downloadUrl?.includes("drive.google.com"))),
+            };
           });
         }
         return NextResponse.json(
@@ -54,11 +60,17 @@ export async function GET(req: NextRequest) {
     if (!snapshot.empty) {
       snapshot.forEach((doc) => {
         const data = doc.data();
+        data.hasSeasonDownload = Boolean(data.seasonDownloadUrl && data.seasonDownloadUrl.trim().length > 0);
         delete data.seasonDownloadUrl;
         if (Array.isArray(data.episodes)) {
           data.episodes = data.episodes.map((ep: { downloadUrl?: string; [key: string]: unknown }) => {
             const { downloadUrl, ...rest } = ep;
-            return rest;
+            const valid = Boolean(downloadUrl && downloadUrl.trim().length > 0);
+            return {
+              ...rest,
+              hasDownload: valid,
+              hasStream: Boolean(valid && (downloadUrl?.includes("mega.nz") || downloadUrl?.includes("drive.google.com"))),
+            };
           });
         }
         movies.push({ ...data, slug: doc.id });

@@ -317,30 +317,52 @@ export default function MovieDetailPage({ params }: PageProps) {
               {/* Quick Action Buttons */}
               <div className="pt-3 flex flex-wrap items-center gap-3">
                 {isSingleMovie ? (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      triggerDownloadFlow({
-                        slug: movie.slug,
-                        target: "movie",
-                        title: `${movie.title} (1080p Full Movie)`,
-                        size: movieDownloadSize,
-                        poster: movie.poster,
-                        quality: "1080p FHD",
-                      })
-                    }
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs active:scale-95 transition-all shadow-md cursor-pointer"
-                  >
-                    <Download className="h-4 w-4" />
-                    <span>Download Full Movie ({movieDownloadSize})</span>
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        triggerDownloadFlow({
+                          slug: movie.slug,
+                          target: "movie",
+                          title: `${movie.title} (1080p Full Movie)`,
+                          size: movieDownloadSize,
+                          poster: movie.poster,
+                          quality: "1080p FHD",
+                          initialMode: "download",
+                        })
+                      }
+                      className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs active:scale-95 transition-all shadow-md cursor-pointer"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span>Download Full Movie ({movieDownloadSize})</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        triggerDownloadFlow({
+                          slug: movie.slug,
+                          target: "movie",
+                          title: `${movie.title} (1080p Full Movie)`,
+                          size: movieDownloadSize,
+                          poster: movie.poster,
+                          quality: "1080p FHD",
+                          initialMode: "stream",
+                        })
+                      }
+                      className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl border border-emerald-300 dark:border-emerald-800/80 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 font-extrabold text-xs active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Play className="h-4 w-4 fill-emerald-600 text-emerald-600" />
+                      <span>Stream Online (1080p)</span>
+                    </button>
+                  </>
                 ) : (
                   <a
                     href="#episodes"
                     className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-[#111111] hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-black font-extrabold text-xs active:scale-95 transition-all shadow-2xs"
                   >
                     <Tv className="h-4 w-4" />
-                    <span>Download Episodes ({movieEpisodeCount})</span>
+                    <span>Download &amp; Stream Episodes ({movieEpisodeCount})</span>
                   </a>
                 )}
 
@@ -410,8 +432,8 @@ export default function MovieDetailPage({ params }: PageProps) {
                   </p>
                 </div>
 
-                {/* Primary CTA Button */}
-                <div className="shrink-0 pt-2 lg:pt-0">
+                {/* Primary CTA Buttons */}
+                <div className="shrink-0 pt-2 lg:pt-0 flex flex-wrap items-center gap-3">
                   <button
                     type="button"
                     onClick={() =>
@@ -422,12 +444,32 @@ export default function MovieDetailPage({ params }: PageProps) {
                         size: movieDownloadSize,
                         poster: movie.poster,
                         quality: "1080p FHD",
+                        initialMode: "download",
                       })
                     }
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-extrabold text-sm transition-all shadow-xl ring-4 ring-emerald-500/20 cursor-pointer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-extrabold text-sm transition-all shadow-xl ring-4 ring-emerald-500/20 cursor-pointer"
                   >
                     <Download className="h-5 w-5" />
                     <span>Download Full Movie ({movieDownloadSize})</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      triggerDownloadFlow({
+                        slug: movie.slug,
+                        target: "movie",
+                        title: `${movie.title} (1080p Full Movie)`,
+                        size: movieDownloadSize,
+                        poster: movie.poster,
+                        quality: "1080p FHD",
+                        initialMode: "stream",
+                      })
+                    }
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-[#F5F4EE] hover:bg-[#EAEAE5] dark:bg-zinc-900 dark:hover:bg-zinc-800 text-[#111111] dark:text-white font-extrabold text-sm transition-all shadow-xs cursor-pointer"
+                  >
+                    <Play className="h-4 w-4 fill-emerald-600 text-emerald-600" />
+                    <span>Stream Online (Player)</span>
                   </button>
                 </div>
               </div>
@@ -548,6 +590,11 @@ export default function MovieDetailPage({ params }: PageProps) {
               <div className="space-y-4">
                 {movie.episodes?.map((ep) => {
                   const hasThumbnail = Boolean(ep.thumbnail);
+                  const isLinkAvailable =
+                    ep.downloadUrl !== undefined
+                      ? ep.downloadUrl.trim().length > 0
+                      : Boolean(ep.hasDownload);
+
                   return (
                     <div
                       key={ep.episodeNumber}
@@ -600,24 +647,63 @@ export default function MovieDetailPage({ params }: PageProps) {
                                 </div>
 
                                 <div className="shrink-0 pt-1 sm:pt-0">
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      triggerDownloadFlow({
-                                        slug: movie.slug,
-                                        target: "episode",
-                                        episodeNumber: ep.episodeNumber,
-                                        title: `${movie.title} - Episode ${ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}: ${ep.title}`,
-                                        size: ep.size,
-                                        poster: ep.thumbnail || movie.poster,
-                                        quality: "1080p FHD",
-                                      })
-                                    }
-                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer"
-                                  >
-                                    <Download className="h-3.5 w-3.5" />
-                                    <span>Download 1080p ({ep.size})</span>
-                                  </button>
+                                  {!isLinkAvailable ? (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        showToast(
+                                          `Episode ${ep.episodeNumber} link is being updated in Firestore. Episodes 1 & 2 are ready to download & stream!`
+                                        )
+                                      }
+                                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-400 text-xs font-bold hover:bg-amber-100 dark:hover:bg-amber-950/70 transition-colors cursor-pointer"
+                                    >
+                                      <Clock className="h-3.5 w-3.5" />
+                                      <span>Link Coming Soon</span>
+                                    </button>
+                                  ) : (
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          triggerDownloadFlow({
+                                            slug: movie.slug,
+                                            target: "episode",
+                                            episodeNumber: ep.episodeNumber,
+                                            title: `${movie.title} - Episode ${ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}: ${ep.title}`,
+                                            size: ep.size,
+                                            poster: ep.thumbnail || movie.poster,
+                                            quality: "1080p FHD",
+                                            initialMode: "stream",
+                                          })
+                                        }
+                                        className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border border-emerald-300 dark:border-emerald-800/80 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold active:scale-95 transition-all cursor-pointer"
+                                        title="Stream Online in In-Browser Player"
+                                      >
+                                        <Play className="h-3.5 w-3.5 fill-emerald-600 text-emerald-600" />
+                                        <span>Stream</span>
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          triggerDownloadFlow({
+                                            slug: movie.slug,
+                                            target: "episode",
+                                            episodeNumber: ep.episodeNumber,
+                                            title: `${movie.title} - Episode ${ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}: ${ep.title}`,
+                                            size: ep.size,
+                                            poster: ep.thumbnail || movie.poster,
+                                            quality: "1080p FHD",
+                                            initialMode: "download",
+                                          })
+                                        }
+                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer"
+                                      >
+                                        <Download className="h-3.5 w-3.5" />
+                                        <span>Download 1080p ({ep.size})</span>
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
 
@@ -653,24 +739,63 @@ export default function MovieDetailPage({ params }: PageProps) {
                             </div>
 
                             <div className="flex items-center gap-2 self-end sm:self-auto">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  triggerDownloadFlow({
-                                    slug: movie.slug,
-                                    target: "episode",
-                                    episodeNumber: ep.episodeNumber,
-                                    title: `${movie.title} - Episode ${ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}: ${ep.title}`,
-                                    size: ep.size,
-                                    poster: movie.poster,
-                                    quality: "1080p FHD",
-                                  })
-                                }
-                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer"
-                              >
-                                <Download className="h-3.5 w-3.5" />
-                                <span>Download 1080p ({ep.size})</span>
-                              </button>
+                              {!isLinkAvailable ? (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    showToast(
+                                      `Episode ${ep.episodeNumber} link is being updated in Firestore. Episodes 1 & 2 are ready to download & stream!`
+                                    )
+                                  }
+                                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-400 text-xs font-bold hover:bg-amber-100 dark:hover:bg-amber-950/70 transition-colors cursor-pointer"
+                                >
+                                  <Clock className="h-3.5 w-3.5" />
+                                  <span>Link Coming Soon</span>
+                                </button>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      triggerDownloadFlow({
+                                        slug: movie.slug,
+                                        target: "episode",
+                                        episodeNumber: ep.episodeNumber,
+                                        title: `${movie.title} - Episode ${ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}: ${ep.title}`,
+                                        size: ep.size,
+                                        poster: movie.poster,
+                                        quality: "1080p FHD",
+                                        initialMode: "stream",
+                                      })
+                                    }
+                                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-emerald-300 dark:border-emerald-800/80 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold active:scale-95 transition-all cursor-pointer"
+                                    title="Stream Online in In-Browser Player"
+                                  >
+                                    <Play className="h-3.5 w-3.5 fill-emerald-600 text-emerald-600" />
+                                    <span>Stream</span>
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      triggerDownloadFlow({
+                                        slug: movie.slug,
+                                        target: "episode",
+                                        episodeNumber: ep.episodeNumber,
+                                        title: `${movie.title} - Episode ${ep.episodeNumber < 10 ? `0${ep.episodeNumber}` : ep.episodeNumber}: ${ep.title}`,
+                                        size: ep.size,
+                                        poster: movie.poster,
+                                        quality: "1080p FHD",
+                                        initialMode: "download",
+                                      })
+                                    }
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold active:scale-95 transition-all shadow-xs cursor-pointer"
+                                  >
+                                    <Download className="h-3.5 w-3.5" />
+                                    <span>Download 1080p ({ep.size})</span>
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
 
