@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { Navbar } from "@/components/navbar";
 import { Breadcrumbs } from "@/components/breadcrumbs";
@@ -433,6 +434,45 @@ export default function PdfHubPage() {
               </motion.div>
             ))}
           </div>
+        </section>
+
+        {/* ── Native Android App Callout: Smiley PDF ─────────────────── */}
+        <section className="rounded-3xl border border-amber-200/80 bg-gradient-to-r from-amber-50/70 via-white to-orange-50/50 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xs">
+          <div className="flex items-center gap-4 sm:gap-5">
+            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-white border border-amber-200/80 p-1.5 shadow-sm shrink-0 overflow-hidden">
+              <Image
+                src="/smiley-logo.png"
+                alt="Smiley PDF Logo"
+                width={80}
+                height={80}
+                className="w-full h-full object-contain rounded-xl"
+              />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
+                  Android App
+                </span>
+                <span className="text-[11px] font-semibold text-[#9E9D98]">100% Free · Zero Ads</span>
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-[#111111]">
+                Need to Read & Manage PDFs on Android?
+              </h3>
+              <p className="text-xs text-[#6E6D68] max-w-xl leading-relaxed">
+                Meet <strong>Smiley PDF</strong> — built with Flutter & PDFium. Ultra-fast hardware rendering, in-place rename, offline sandbox document storage, and zero dangerous permissions.
+              </p>
+            </div>
+          </div>
+
+          <Link
+            href="/smiley-pdf"
+            className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-zinc-950 text-xs sm:text-sm font-bold transition-all shadow-sm shrink-0"
+          >
+            <span>Get Smiley PDF</span>
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </Link>
         </section>
 
         {/* ── Architectural Benefits ──────────────────────────────────── */}

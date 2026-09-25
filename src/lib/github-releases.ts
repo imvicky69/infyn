@@ -149,3 +149,166 @@ export async function fetchLatestRelease(): Promise<InfynDlRelease> {
     return FALLBACK_RELEASE;
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Smiley PDF Releases
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface SmileyPdfRelease {
+  version: string;
+  name: string;
+  publishedAt: string;
+  formattedDate: string;
+  prerelease: boolean;
+  releaseUrl: string;
+  arm64Apk: ReleaseAsset;
+  armv7Apk: ReleaseAsset;
+  universalApk: ReleaseAsset;
+  x86_64Apk: ReleaseAsset;
+  checksums?: ReleaseAsset;
+  allAssets: ReleaseAsset[];
+}
+
+export const FALLBACK_SMILEY_PDF_RELEASE: SmileyPdfRelease = {
+  version: "v1.0.0",
+  name: "Smiley PDF v1.0.0",
+  publishedAt: "2026-09-25T12:28:29Z",
+  formattedDate: "Sep 25, 2026",
+  prerelease: false,
+  releaseUrl: "https://github.com/imvicky69/smiley-pdf/releases/tag/v1.0.0",
+  arm64Apk: {
+    name: "app-arm64-v8a-release.apk",
+    size: 27135601,
+    downloadUrl: "https://github.com/imvicky69/smiley-pdf/releases/download/v1.0.0/app-arm64-v8a-release.apk",
+    formattedSize: "25.9 MB",
+  },
+  armv7Apk: {
+    name: "app-armeabi-v7a-release.apk",
+    size: 22516839,
+    downloadUrl: "https://github.com/imvicky69/smiley-pdf/releases/download/v1.0.0/app-armeabi-v7a-release.apk",
+    formattedSize: "21.5 MB",
+  },
+  universalApk: {
+    name: "app-release.apk",
+    size: 27941737,
+    downloadUrl: "https://github.com/imvicky69/smiley-pdf/releases/download/v1.0.0/app-release.apk",
+    formattedSize: "26.6 MB",
+  },
+  x86_64Apk: {
+    name: "app-x86_64-release.apk",
+    size: 28893426,
+    downloadUrl: "https://github.com/imvicky69/smiley-pdf/releases/download/v1.0.0/app-x86_64-release.apk",
+    formattedSize: "27.6 MB",
+  },
+  checksums: {
+    name: "checksums.txt",
+    size: 969,
+    downloadUrl: "https://github.com/imvicky69/smiley-pdf/releases/download/v1.0.0/checksums.txt",
+    formattedSize: "969 B",
+  },
+  allAssets: [],
+};
+
+let smileyMemoryCache: { data: SmileyPdfRelease; timestamp: number } | null = null;
+
+export async function fetchLatestSmileyPdfRelease(): Promise<SmileyPdfRelease> {
+  if (smileyMemoryCache && Date.now() - smileyMemoryCache.timestamp < CACHE_TTL_MS) {
+    return smileyMemoryCache.data;
+  }
+
+  try {
+    const res = await fetch("https://api.github.com/repos/imvicky69/smiley-pdf/releases", {
+      headers: {
+        Accept: "application/vnd.github.v3+json",
+      },
+      cache: "no-cache",
+    });
+
+    if (!res.ok) {
+      return FALLBACK_SMILEY_PDF_RELEASE;
+    }
+
+    const releases = await res.json();
+    if (!Array.isArray(releases) || releases.length === 0) {
+      return FALLBACK_SMILEY_PDF_RELEASE;
+    }
+
+    const latest = releases[0];
+    const assets: any[] = latest.assets || [];
+
+    const findAsset = (predicate: (name: string) => boolean, fallback: ReleaseAsset): ReleaseAsset => {
+      const found = assets.find((a) => predicate(a.name?.toLowerCase() || ""));
+      if (!found) return fallback;
+      return {
+        name: found.name,
+        size: found.size,
+        downloadUrl: found.browser_download_url,
+        formattedSize: formatFileSize(found.size),
+      };
+    };
+
+    // ARM64 (Modern 64-bit phones)
+    const arm64Apk = findAsset(
+      (name) => name.includes("arm64") && name.endsWith(".apk"),
+      FALLBACK_SMILEY_PDF_RELEASE.arm64Apk
+    );
+
+    // ARMv7 / armeabi (32-bit legacy phones)
+    const armv7Apk = findAsset(
+      (name) => (name.includes("armeabi") || name.includes("armv7")) && name.endsWith(".apk"),
+      FALLBACK_SMILEY_PDF_RELEASE.armv7Apk
+    );
+
+    // Universal APK (app-release.apk or default)
+    const universalApk = findAsset(
+      (name) => (name === "app-release.apk" || (!name.includes("arm") && !name.includes("x86"))) && name.endsWith(".apk"),
+      FALLBACK_SMILEY_PDF_RELEASE.universalApk
+    );
+
+    // x86_64 APK (Chromebooks & emulators)
+    const x86_64Apk = findAsset(
+      (name) => name.includes("x86") && name.endsWith(".apk"),
+      FALLBACK_SMILEY_PDF_RELEASE.x86_64Apk
+    );
+
+    // Checksums file
+    const checksums = findAsset(
+      (name) => name.includes("checksum"),
+      FALLBACK_SMILEY_PDF_RELEASE.checksums!
+    );
+
+    const pubDate = new Date(latest.published_at || latest.created_at);
+    const formattedDate = isNaN(pubDate.getTime())
+      ? FALLBACK_SMILEY_PDF_RELEASE.formattedDate
+      : pubDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+    const allAssets: ReleaseAsset[] = assets.map((a) => ({
+      name: a.name,
+      size: a.size,
+      downloadUrl: a.browser_download_url,
+      formattedSize: formatFileSize(a.size),
+    }));
+
+    const result: SmileyPdfRelease = {
+      version: latest.tag_name || FALLBACK_SMILEY_PDF_RELEASE.version,
+      name: (latest.name || latest.tag_name || FALLBACK_SMILEY_PDF_RELEASE.name).trim(),
+      publishedAt: latest.published_at || FALLBACK_SMILEY_PDF_RELEASE.publishedAt,
+      formattedDate,
+      prerelease: Boolean(latest.prerelease),
+      releaseUrl: latest.html_url || FALLBACK_SMILEY_PDF_RELEASE.releaseUrl,
+      arm64Apk,
+      armv7Apk,
+      universalApk,
+      x86_64Apk,
+      checksums,
+      allAssets,
+    };
+
+    smileyMemoryCache = { data: result, timestamp: Date.now() };
+    return result;
+  } catch (err) {
+    console.error("Failed to fetch smiley-pdf releases:", err);
+    return FALLBACK_SMILEY_PDF_RELEASE;
+  }
+}
+

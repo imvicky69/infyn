@@ -6,6 +6,7 @@ import { Navbar } from "@/components/navbar";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import SplitText from "@/components/SplitText";
+import Image from "next/image";
 import {
   Download,
   LayoutDashboard,
@@ -24,6 +25,9 @@ import {
   FileText,
   ShieldCheck,
   ExternalLink,
+  Zap,
+  FolderLock,
+  Smile,
 } from "lucide-react";
 
 export default function AppsHubPage() {
@@ -54,10 +58,10 @@ export default function AppsHubPage() {
         </div>
 
         {/* Core Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {/* 1. Infyn DL */}
-          <div className="group flex flex-col justify-between p-6 sm:p-8 rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] hover:border-[#BEBDB9] dark:hover:border-zinc-700 transition-all shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.08)]">
-            <div className="space-y-6">
+          <div className="group flex flex-col justify-between p-6 sm:p-7 rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] hover:border-[#BEBDB9] dark:hover:border-zinc-700 transition-all shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.08)]">
+            <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <div className="h-14 w-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-center text-emerald-700 dark:text-emerald-400 shadow-2xs group-hover:scale-105 transition-transform">
                   <Download className="h-7 w-7" />
@@ -74,42 +78,42 @@ export default function AppsHubPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <h2 className="text-2xl font-extrabold text-[#111111] dark:text-white">
                   Infyn DL
                 </h2>
                 <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-                  Universal Media, Music & Playlist Downloader
+                  Universal Media & Music Downloader
                 </p>
                 <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400 leading-relaxed pt-1">
-                  Download 320kbps pristine MP3 audio, extract songs from YouTube Music, or grab entire 200+ track playlists in parallel. Zero ads, no subscriptions, offline playback.
+                  Download 320kbps pristine MP3 audio, extract songs from YouTube Music, or grab entire 200+ track playlists in parallel. Zero ads, offline playback.
                 </p>
               </div>
 
               {/* Feature Tags */}
-              <div className="grid grid-cols-2 gap-2 pt-2 text-xs font-medium text-[#6E6D68] dark:text-zinc-300">
-                <div className="flex items-center gap-2">
+              <div className="grid grid-cols-2 gap-2 pt-1 text-xs font-medium text-[#6E6D68] dark:text-zinc-300">
+                <div className="flex items-center gap-1.5">
                   <Music className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <span>320kbps MP3 Audio</span>
+                  <span className="truncate">320kbps MP3 Audio</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <span>Batch Playlist Selection</span>
+                  <span className="truncate">Batch Playlists</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <Sparkles className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <span>8 Parallel Streams</span>
+                  <span className="truncate">8 Parallel Streams</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <span>100% Ad-Free & Offline</span>
+                  <span className="truncate">100% Ad-Free</span>
                 </div>
               </div>
             </div>
 
             <div className="mt-8 pt-5 border-t border-[#F5F4EE] dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
               <span className="text-xs font-mono text-[#9E9D98]">
-                Setup Wizard · Portable ZIP · APK
+                Setup · Portable · APK
               </span>
               <Link
                 href="/dl"
@@ -121,9 +125,86 @@ export default function AppsHubPage() {
             </div>
           </div>
 
-          {/* 2. Infyn Home Tab */}
-          <div className="group flex flex-col justify-between p-6 sm:p-8 rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] hover:border-[#BEBDB9] dark:hover:border-zinc-700 transition-all shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.08)]">
-            <div className="space-y-6">
+          {/* 2. Smiley PDF */}
+          <div className="group flex flex-col justify-between p-6 sm:p-7 rounded-3xl border border-amber-200/80 dark:border-amber-900/50 bg-white dark:bg-[#141417] hover:border-amber-400 dark:hover:border-amber-500/70 transition-all shadow-[0_4px_24px_rgba(245,158,11,0.06)] hover:shadow-[0_12px_36px_rgba(245,158,11,0.12)]">
+            <div className="space-y-5">
+              <div className="flex items-center justify-between">
+                <div className="h-14 w-14 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/60 p-1 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform overflow-hidden">
+                  <Image
+                    src="/smiley-logo.png"
+                    alt="Smiley PDF Logo"
+                    width={56}
+                    height={56}
+                    className="w-full h-full object-contain rounded-xl"
+                  />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60 flex items-center gap-1">
+                    <Smartphone className="h-3 w-3" />
+                    <span>Android</span>
+                  </span>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center gap-1">
+                    <Sparkles className="h-3 w-3" />
+                    <span>100% Free</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-2xl font-extrabold text-[#111111] dark:text-white">
+                    Smiley PDF
+                  </h2>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
+                    New
+                  </span>
+                </div>
+                <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">
+                  Joyful, Fast & Ad-Free Android PDF Reader
+                </p>
+                <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400 leading-relaxed pt-1">
+                  Engineered with Flutter & native PDFium. Hardware-accelerated rendering, in-place title rename, isolated offline sandbox, and zero sensitive permissions. More tools coming!
+                </p>
+              </div>
+
+              {/* Feature Tags */}
+              <div className="grid grid-cols-2 gap-2 pt-1 text-xs font-medium text-[#6E6D68] dark:text-zinc-300">
+                <div className="flex items-center gap-1.5">
+                  <Zap className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span className="truncate">PDFium Native 60fps</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span className="truncate">Zero Intrusive Rights</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <FolderLock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span className="truncate">Offline Document Safe</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span className="truncate">OCR & Scanner Suite</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-5 border-t border-[#F5F4EE] dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <span className="text-xs font-mono text-amber-700 dark:text-amber-400">
+                Split APKs · v1.0.0
+              </span>
+              <Link
+                href="/smiley-pdf"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-zinc-950 transition-all cursor-pointer shadow-2xs"
+              >
+                <span>Get Smiley PDF</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* 3. Infyn Home Tab */}
+          <div className="group flex flex-col justify-between p-6 sm:p-7 rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] hover:border-[#BEBDB9] dark:hover:border-zinc-700 transition-all shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.08)]">
+            <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <div className="h-14 w-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-center text-indigo-700 dark:text-indigo-400 shadow-2xs group-hover:scale-105 transition-transform">
                   <LayoutDashboard className="h-7 w-7" />
@@ -131,47 +212,47 @@ export default function AppsHubPage() {
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/60 flex items-center gap-1">
                     <Globe className="h-3 w-3" />
-                    <span>Chrome · Brave · Edge · Arc</span>
+                    <span>Chrome · Brave · Arc</span>
                   </span>
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <h2 className="text-2xl font-extrabold text-[#111111] dark:text-white">
                   Infyn Home Tab
                 </h2>
                 <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-400">
-                  Clean Bookmarks, Weather & Focus Dashboard
+                  Clean Bookmarks & Focus Dashboard
                 </p>
                 <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400 leading-relaxed pt-1">
-                  Replace cluttered browser start pages with a calm, aesthetic new tab. Instant visual bookmarks, live weather & calendar, a deep focus Pomodoro timer, and daily task board.
+                  Replace cluttered browser start pages with a calm, aesthetic new tab. Instant visual bookmarks, live weather, focus Pomodoro timer, and daily task board.
                 </p>
               </div>
 
               {/* Feature Tags */}
-              <div className="grid grid-cols-2 gap-2 pt-2 text-xs font-medium text-[#6E6D68] dark:text-zinc-300">
-                <div className="flex items-center gap-2">
+              <div className="grid grid-cols-2 gap-2 pt-1 text-xs font-medium text-[#6E6D68] dark:text-zinc-300">
+                <div className="flex items-center gap-1.5">
                   <Bookmark className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-                  <span>Visual Bookmark Organizer</span>
+                  <span className="truncate">Visual Bookmarks</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <CloudSun className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-                  <span>Live Weather & Calendar</span>
+                  <span className="truncate">Live Weather</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <Timer className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-                  <span>Focus / Pomodoro Sprint</span>
+                  <span className="truncate">Pomodoro Sprint</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <CheckSquare2 className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-                  <span>Daily Productivity Board</span>
+                  <span className="truncate">Daily Task Board</span>
                 </div>
               </div>
             </div>
 
             <div className="mt-8 pt-5 border-t border-[#F5F4EE] dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
               <span className="text-xs font-mono text-[#9E9D98]">
-                Chrome Extension · Free & Open Source
+                Chrome Extension · Free
               </span>
               <Link
                 href="/home-tab"

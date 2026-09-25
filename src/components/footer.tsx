@@ -25,7 +25,9 @@ const PDF_LINKS = [
 const APPS_LINKS = [
   { href: "/apps", label: "Apps Hub", external: false },
   { href: "/dl", label: "Infyn DL (App)", external: false },
+  { href: "/smiley-pdf", label: "Smiley PDF (Android)", external: false },
   { href: "/home-tab", label: "Infyn Home Tab (Extension)", external: false },
+  { href: "https://github.com/imvicky69/smiley-pdf", label: "Smiley PDF GitHub ↗", external: true },
   { href: "https://github.com/imvicky69/infyn-dl", label: "Infyn DL GitHub ↗", external: true },
   { href: "https://github.com/imvicky69/infyn-home-tab", label: "Home Tab GitHub ↗", external: true },
 ];

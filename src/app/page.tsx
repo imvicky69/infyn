@@ -42,6 +42,7 @@ import {
   FolderOpen,
   ChevronDown,
   ChevronUp,
+  Smile,
 } from "lucide-react";
 import { Movie } from "@/types/movie";
 import { getLiveMovies } from "@/lib/movies-firestore";
@@ -198,6 +199,16 @@ const TOOLS: ToolItem[] = [
     formats: ["Android", "Windows", "MP3", "MP4"],
     icon: Download,
     keywords: ["app", "apps", "dl", "infyn dl", "downloader", "youtube", "music", "playlist", "video", "mp3", "audio", "android", "windows", "yt-dlp", "offline", "media", "desktop app", "mobile app"],
+  },
+  {
+    href: "/smiley-pdf",
+    title: "Smiley PDF",
+    category: "apps",
+    badge: "New",
+    description: "Joyful, fast & ad-free PDF reader and document manager for Android. PDFium native engine & zero permissions.",
+    formats: ["Android", "PDF", "Split APK", "ARM64"],
+    icon: Smile,
+    keywords: ["app", "apps", "pdf", "smiley pdf", "pdf reader", "android", "flutter", "pdfrx", "document manager", "viewer", "ad free", "offline pdf", "reader", "in.xweet.smileypdf"],
   },
   {
     href: "/home-tab",

@@ -30,6 +30,7 @@ import {
   Film,
   ChevronDown,
   ArrowRight,
+  Smile,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AnimatedLogo } from "@/components/animatedLogo";
@@ -188,6 +189,13 @@ const APPS_NAV: NavTool[] = [
     icon: <Download className="h-4 w-4" />,
   },
   {
+    name: "Smiley PDF",
+    href: "/smiley-pdf",
+    badge: "New",
+    desc: "Joyful, fast & ad-free PDF reader for Android",
+    icon: <Smile className="h-4 w-4" />,
+  },
+  {
     name: "Infyn Home Tab",
     href: "/home-tab",
     badge: "Extension",
@@ -252,7 +260,7 @@ const MOBILE_NAV_ITEMS: MobileNavItem[] = [
     id: "apps",
     name: "Apps & Extensions",
     href: "/apps",
-    subtitle: "Infyn DL & Home Tab",
+    subtitle: "Infyn DL, Smiley PDF & Home Tab",
     icon: <Smartphone className="h-4 w-4" />,
     iconBoxClass:
       "bg-sky-50 dark:bg-sky-950/50 border border-sky-200/70 dark:border-sky-800/50 text-sky-600 dark:text-sky-400",
@@ -1081,7 +1089,7 @@ export function Navbar() {
                 href="/apps"
                 onClick={() => setAppsDropdownOpen(false)}
                 className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all cursor-pointer tracking-[-0.01em] ${
-                  appsDropdownOpen || pathname.startsWith("/apps") || pathname.startsWith("/dl") || pathname.startsWith("/home-tab")
+                  appsDropdownOpen || pathname.startsWith("/apps") || pathname.startsWith("/dl") || pathname.startsWith("/smiley-pdf") || pathname.startsWith("/home-tab")
                     ? "bg-[#F0EFEA] text-[#111111]"
                     : "text-[#6E6D68] hover:text-[#111111] hover:bg-[#F5F4EE]"
                 }`}
