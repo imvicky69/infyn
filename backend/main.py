@@ -1,6 +1,7 @@
+import os
 import re
 import urllib.parse
-from fastapi import FastAPI, HTTPException, Query, Response
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -52,20 +53,20 @@ def extract_media(target_url: str):
         raise HTTPException(status_code=404, detail="No media found for the provided URL.")
 
     formats = info.get("formats", [])
-    
+
     # 1. Best progressive video format (contains both audio and video)
     progressive_formats = [
-        f for f in formats 
+        f for f in formats
         if f.get("vcodec") != "none" and f.get("acodec") != "none" and f.get("url")
     ]
-    
+
     best_video_url = info.get("url")
     if not best_video_url and progressive_formats:
         best_video_url = progressive_formats[-1].get("url")
-    
+
     # 2. Audio-only format
     audio_formats = [
-        f for f in formats 
+        f for f in formats
         if f.get("vcodec") == "none" and f.get("acodec") != "none" and f.get("url")
     ]
     best_audio_url = audio_formats[-1].get("url") if audio_formats else None
@@ -97,6 +98,15 @@ def extract_media(target_url: str):
     }
 
 
+@app.get("/")
+def root():
+    return {
+        "service": "Infyn Media Downloader API",
+        "status": "online",
+        "endpoints": ["/health", "/api/instagram", "/api/stream"],
+    }
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "service": "infyn-ytdlp-backend"}
@@ -118,7 +128,6 @@ def process_get(url: str = Query(..., description="Instagram URL")):
 
 @app.get("/api/stream")
 def stream_media(url: str = Query(...), filename: str = Query("reel.mp4")):
-    # Security: Validate domain
     parsed = urllib.parse.urlparse(url)
     allowed_domains = ["cdninstagram.com", "fbcdn.net", "instagram.com"]
     if not any(parsed.netloc.endswith(domain) for domain in allowed_domains):
@@ -155,4 +164,5 @@ def stream_media(url: str = Query(...), filename: str = Query("reel.mp4")):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
