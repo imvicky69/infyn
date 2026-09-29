@@ -54,9 +54,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const backendUrl = process.env.YT_DLP_BACKEND_URL;
+    const backendUrl =
+      process.env.YT_DLP_BACKEND_URL || "https://infyn-1v7p.onrender.com";
 
-    // Option A: If a dedicated yt-dlp backend server URL is configured
+    // Option A: Dedicated yt-dlp backend server URL (Render / Cloud Run / Hugging Face)
     if (backendUrl) {
       try {
         const backendRes = await fetch(`${backendUrl.replace(/\/$/, "")}/api/instagram`, {
@@ -95,7 +96,17 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(result);
       } catch (backendError: any) {
-        console.warn("External backend failed, attempting local fallback:", backendError.message);
+        console.warn("External backend failed:", backendError.message);
+        // If local CLI is not available or running in serverless cloud, return the error
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              backendError.message ||
+              "Unable to retrieve this Reel. Please verify the link is public and accessible.",
+          },
+          { status: 502 }
+        );
       }
     }
 

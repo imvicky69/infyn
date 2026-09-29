@@ -29,6 +29,8 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import SplitText from "@/components/SplitText";
 import { PrivacyBadges } from "@/components/image-tools/privacy-badges";
+import { GoogleAd, DEFAULT_ADSENSE_SLOT } from "@/components/ads/google-ad";
+import { DownloadAdModal } from "@/components/ads/download-ad-modal";
 
 function InstagramIcon({ className = "h-5 w-5" }: { className?: string }) {
   return (
@@ -101,9 +103,33 @@ export default function InstagramDownloaderPage() {
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [downloadModal, setDownloadModal] = useState<{
+    isOpen: boolean;
+    url: string | null;
+    filename: string;
+    fileType: string;
+  }>({
+    isOpen: false,
+    url: null,
+    filename: "",
+    fileType: "Reel Video (MP4)",
+  });
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleDownloadWithAd = (
+    downloadUrl: string,
+    filename: string,
+    fileType: string = "HD Video (MP4)"
+  ) => {
+    setDownloadModal({
+      isOpen: true,
+      url: downloadUrl,
+      filename,
+      fileType,
+    });
+  };
 
   const handlePasteFromClipboard = async () => {
     try {
@@ -470,9 +496,12 @@ export default function InstagramDownloaderPage() {
                 <div className="space-y-2.5 pt-2">
                   <button
                     onClick={() =>
-                      triggerDownload(reelData.download_url, reelData.filename)
+                      handleDownloadWithAd(
+                        reelData.download_url,
+                        reelData.filename,
+                        "Reel Video (HD MP4)"
+                      )
                     }
-                    disabled={isDownloading}
                     className="w-full py-3.5 px-5 rounded-2xl bg-[#111111] hover:bg-black dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-[#111111] text-sm font-extrabold flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98] cursor-pointer"
                   >
                     <Download className="h-4 w-4" />
@@ -483,9 +512,10 @@ export default function InstagramDownloaderPage() {
                     {reelData.audio_download_url ? (
                       <button
                         onClick={() =>
-                          triggerDownload(
+                          handleDownloadWithAd(
                             reelData.audio_download_url!,
-                            `${reelData.id}_audio.m4a`
+                            `${reelData.id}_audio.m4a`,
+                            "Audio Track (M4A)"
                           )
                         }
                         className="py-3 px-3.5 rounded-xl border border-[#EAEAE5] dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 bg-[#F5F4EE] dark:bg-zinc-800 text-[#111111] dark:text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
@@ -498,9 +528,10 @@ export default function InstagramDownloaderPage() {
                     {reelData.thumbnail ? (
                       <button
                         onClick={() =>
-                          triggerDownload(
+                          handleDownloadWithAd(
                             reelData.thumbnail,
-                            `${reelData.id}_cover.jpg`
+                            `${reelData.id}_cover.jpg`,
+                            "Cover Image (JPG)"
                           )
                         }
                         className="py-3 px-3.5 rounded-xl border border-[#EAEAE5] dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 bg-[#F5F4EE] dark:bg-zinc-800 text-[#111111] dark:text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
@@ -532,6 +563,20 @@ export default function InstagramDownloaderPage() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ── Sponsored Google Ad Slot when Result is Ready ── */}
+        {stage === "done" && (
+          <div
+            className="max-w-4xl mx-auto w-full"
+            style={{ animation: "fade-in-up 0.3s ease-out" }}
+          >
+            <GoogleAd
+              slot={DEFAULT_ADSENSE_SLOT}
+              minHeight={150}
+              label="Sponsored"
+            />
           </div>
         )}
 
@@ -693,6 +738,18 @@ export default function InstagramDownloaderPage() {
           />
         </div>
       </main>
+
+      {/* ── 3-4s Download Interstitial Modal with Google Ad ── */}
+      <DownloadAdModal
+        isOpen={downloadModal.isOpen}
+        onClose={() => setDownloadModal((prev) => ({ ...prev, isOpen: false }))}
+        downloadUrl={downloadModal.url}
+        filename={downloadModal.filename}
+        title={reelData?.title || "Instagram Reel"}
+        thumbnail={reelData?.thumbnail}
+        fileType={downloadModal.fileType}
+        durationSeconds={3}
+      />
 
       <Footer />
     </div>
