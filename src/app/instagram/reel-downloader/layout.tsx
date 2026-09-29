@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Free Instagram Reel Downloader — Download HD Reels in Browser (No Ads)",
+  title: "Free Instagram Reel Downloader — Download HD Reels in Browser",
   description:
     "100% Free, Ad-Free Instagram Reel Downloader. Paste any public Instagram Reel or video link to preview and download in full HD MP4 quality directly in your browser. No watermark, no signup.",
   keywords: [
@@ -11,19 +11,18 @@ export const metadata: Metadata = {
     "insta reel download online",
     "download reel hd mp4",
     "free instagram downloader",
-    "ad free instagram reel downloader",
     "instagram audio download",
     "save instagram reels",
     "instagram reel to mp4",
   ],
   alternates: {
-    canonical: "https://infyn.software/instagram-reel-downloader",
+    canonical: "https://infyn.software/instagram/reel-downloader",
   },
   openGraph: {
     title: "Free Instagram Reel Downloader — Download HD Reels in Browser",
     description:
       "Download Instagram Reels in full HD MP4 quality directly in your browser. Fast, 100% free, ad-free with zero watermarks.",
-    url: "https://infyn.software/instagram-reel-downloader",
+    url: "https://infyn.software/instagram/reel-downloader",
     siteName: "Infyn",
     type: "website",
     images: [
@@ -39,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Free Instagram Reel Downloader — Download HD Reels in Browser",
     description:
-      "Paste any reel link and download pristine 1080p/720p MP4 videos instantly inside your browser. No ads, no watermarks.",
+      "Paste any reel link and download pristine 1080p/720p MP4 videos instantly inside your browser. No watermarks.",
     images: ["/logo-clear.png"],
   },
 };
@@ -48,7 +47,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "Infyn — Instagram Reel Downloader",
-  url: "https://infyn.software/instagram-reel-downloader",
+  url: "https://infyn.software/instagram/reel-downloader",
   applicationCategory: "MultimediaApplication",
   operatingSystem: "All (Web Browser, iOS, Android, Windows, macOS, Linux)",
   offers: {
@@ -63,7 +62,7 @@ const jsonLd = {
     "Audio extraction (M4A / MP3)",
     "Built-in interactive video player preview before downloading",
     "1-Click direct browser download without cloud storage",
-    "100% Free, Ad-Free, and zero watermarks",
+    "100% Free and zero watermarks",
     "Works across iPhone, iPad, Android, Mac, and Windows browsers",
   ],
   author: {

@@ -252,7 +252,7 @@ const TOOLS: ToolItem[] = [
     keywords: ["movie", "movies", "film", "films", "cinema", "downloads", "1080p", "stream", "hindi", "episodes", "series"],
   },
   {
-    href: "/instagram-reel-downloader",
+    href: "/instagram/reel-downloader",
     title: "Instagram Reel Downloader",
     category: "utilities",
     badge: "HD MP4",
@@ -260,6 +260,16 @@ const TOOLS: ToolItem[] = [
     formats: ["MP4", "M4A", "JPG"],
     icon: Video,
     keywords: ["instagram", "reel", "downloader", "video", "audio", "insta", "reels", "mp4", "download instagram reel", "online", "yt-dlp"],
+  },
+  {
+    href: "/instagram/profile-downloader",
+    title: "Instagram Profile Downloader",
+    category: "utilities",
+    badge: "HD DP",
+    description: "View and download full-size Instagram profile pictures via simple HTML query. Zero login.",
+    formats: ["JPG", "Full HD"],
+    icon: Images,
+    keywords: ["instagram", "profile", "dp", "downloader", "avatar", "profile pic", "insta dp", "full size", "anonymous"],
   },
 ];
 

@@ -189,11 +189,18 @@ const APPS_NAV: NavTool[] = [
     icon: <Download className="h-4 w-4" />,
   },
   {
-    name: "Instagram Downloader",
-    href: "/instagram-reel-downloader",
-    badge: "New",
-    desc: "Download Reels, Videos & Audio in browser",
+    name: "Instagram Tools",
+    href: "/instagram",
+    badge: "Hub",
+    desc: "Reels & full-size profile picture downloader",
     icon: <Film className="h-4 w-4" />,
+  },
+  {
+    name: "Instagram Profile DP",
+    href: "/instagram/profile-downloader",
+    badge: "New",
+    desc: "Download full-size Instagram profile photos in HD",
+    icon: <Images className="h-4 w-4" />,
   },
   {
     name: "Smiley PDF",

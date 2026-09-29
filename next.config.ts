@@ -49,12 +49,32 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/instagram",
-        destination: "/instagram-reel-downloader",
+        source: "/instagram-reel-downloader",
+        destination: "/instagram/reel-downloader",
+      },
+      {
+        source: "/instagram-profile-downloader",
+        destination: "/instagram/profile-downloader",
       },
       {
         source: "/instagram-downloader",
-        destination: "/instagram-reel-downloader",
+        destination: "/instagram/reel-downloader",
+      },
+      {
+        source: "/instagram/reel",
+        destination: "/instagram/reel-downloader",
+      },
+      {
+        source: "/instagram/profile",
+        destination: "/instagram/profile-downloader",
+      },
+      {
+        source: "/instagram/dp",
+        destination: "/instagram/profile-downloader",
+      },
+      {
+        source: "/instagram-dp",
+        destination: "/instagram/profile-downloader",
       },
     ];
   },
