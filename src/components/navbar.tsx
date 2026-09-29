@@ -31,6 +31,7 @@ import {
   ChevronDown,
   ArrowRight,
   Smile,
+  Video,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AnimatedLogo } from "@/components/animatedLogo";
@@ -43,6 +44,24 @@ function GithubIcon({ className = "h-4 w-4" }: { className?: string }) {
         clipRule="evenodd"
         d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
       />
+    </svg>
+  );
+}
+
+function InstagramIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
     </svg>
   );
 }
@@ -180,6 +199,30 @@ const DEV_TOOLS_NAV: NavTool[] = [
   },
 ];
 
+const INSTAGRAM_NAV: NavTool[] = [
+  {
+    name: "Instagram Hub",
+    href: "/instagram",
+    badge: "Suite",
+    desc: "All Instagram tools, reels & profile DP",
+    icon: <InstagramIcon className="h-4 w-4 text-rose-600 dark:text-rose-400" />,
+  },
+  {
+    name: "Reel Downloader",
+    href: "/instagram/reel-downloader",
+    badge: "HD MP4",
+    desc: "Download Reels, Videos & Audio in browser",
+    icon: <Video className="h-4 w-4 text-rose-600 dark:text-rose-400" />,
+  },
+  {
+    name: "Profile DP Downloader",
+    href: "/instagram/profile-downloader",
+    badge: "HD DP",
+    desc: "Download full-size profile pictures via HTML query",
+    icon: <Images className="h-4 w-4 text-purple-600 dark:text-purple-400" />,
+  },
+];
+
 const APPS_NAV: NavTool[] = [
   {
     name: "Infyn DL",
@@ -191,16 +234,9 @@ const APPS_NAV: NavTool[] = [
   {
     name: "Instagram Tools",
     href: "/instagram",
-    badge: "Hub",
-    desc: "Reels & full-size profile picture downloader",
-    icon: <Film className="h-4 w-4" />,
-  },
-  {
-    name: "Instagram Profile DP",
-    href: "/instagram/profile-downloader",
     badge: "New",
-    desc: "Download full-size Instagram profile photos in HD",
-    icon: <Images className="h-4 w-4" />,
+    desc: "Reels & full-size profile picture downloader",
+    icon: <InstagramIcon className="h-4 w-4 text-rose-600 dark:text-rose-400" />,
   },
   {
     name: "Smiley PDF",
@@ -269,6 +305,19 @@ const MOBILE_NAV_ITEMS: MobileNavItem[] = [
     badgeClass:
       "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/60",
     tools: DEV_TOOLS_NAV,
+  },
+  {
+    id: "instagram",
+    name: "Instagram Tools",
+    href: "/instagram",
+    subtitle: "2 tools · Reel downloader & profile DP viewer",
+    icon: <InstagramIcon className="h-4 w-4" />,
+    iconBoxClass:
+      "bg-rose-50 dark:bg-rose-950/50 border border-rose-200/70 dark:border-rose-800/50 text-rose-600 dark:text-rose-400",
+    badge: "New",
+    badgeClass:
+      "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60",
+    tools: INSTAGRAM_NAV,
   },
   {
     id: "apps",
@@ -667,7 +716,29 @@ function ContributingNavIcon() {
   );
 }
 
+function InstagramNavIcon() {
+  return (
+    <motion.div
+      key="route-icon-instagram"
+      initial={{ scale: 0.6, opacity: 0, x: -4 }}
+      animate={{ scale: 1, opacity: 1, x: 0 }}
+      exit={{ scale: 0.6, opacity: 0, x: -4 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rose-500/10 dark:bg-rose-400/10 border border-rose-500/25 text-rose-600 dark:text-rose-400 shadow-2xs select-none"
+      title="Instagram Tools"
+    >
+      <div className="relative h-4 w-4 flex items-center justify-center shrink-0">
+        <InstagramIcon className="h-3.5 w-3.5" />
+      </div>
+      <span className="text-[10px] font-bold tracking-wider">INSTA</span>
+    </motion.div>
+  );
+}
+
 function DynamicRouteIcon({ pathname }: { pathname: string }) {
+  if (pathname.startsWith("/instagram")) {
+    return <InstagramNavIcon />;
+  }
   if (pathname.startsWith("/movies")) {
     return <MoviePopcornIcon />;
   }
@@ -702,6 +773,7 @@ export function Navbar() {
   const [imageDropdownOpen, setImageDropdownOpen] = useState(false);
   const [pdfDropdownOpen, setPdfDropdownOpen] = useState(false);
   const [devDropdownOpen, setDevDropdownOpen] = useState(false);
+  const [instagramDropdownOpen, setInstagramDropdownOpen] = useState(false);
   const [appsDropdownOpen, setAppsDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -712,6 +784,7 @@ export function Navbar() {
     setImageDropdownOpen(false);
     setPdfDropdownOpen(false);
     setDevDropdownOpen(false);
+    setInstagramDropdownOpen(false);
     setAppsDropdownOpen(false);
     setExpandedCategory(null);
   }, [pathname]);
@@ -757,6 +830,7 @@ export function Navbar() {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
     setPdfDropdownOpen(false);
     setDevDropdownOpen(false);
+    setInstagramDropdownOpen(false);
     setAppsDropdownOpen(false);
     setImageDropdownOpen(true);
   };
@@ -765,6 +839,7 @@ export function Navbar() {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
     setImageDropdownOpen(false);
     setDevDropdownOpen(false);
+    setInstagramDropdownOpen(false);
     setAppsDropdownOpen(false);
     setPdfDropdownOpen(true);
   };
@@ -773,8 +848,18 @@ export function Navbar() {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
     setImageDropdownOpen(false);
     setPdfDropdownOpen(false);
+    setInstagramDropdownOpen(false);
     setAppsDropdownOpen(false);
     setDevDropdownOpen(true);
+  };
+
+  const handleInstagramMouseEnter = () => {
+    if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
+    setImageDropdownOpen(false);
+    setPdfDropdownOpen(false);
+    setDevDropdownOpen(false);
+    setAppsDropdownOpen(false);
+    setInstagramDropdownOpen(true);
   };
 
   const handleAppsMouseEnter = () => {
@@ -782,6 +867,7 @@ export function Navbar() {
     setImageDropdownOpen(false);
     setPdfDropdownOpen(false);
     setDevDropdownOpen(false);
+    setInstagramDropdownOpen(false);
     setAppsDropdownOpen(true);
   };
 
@@ -790,6 +876,7 @@ export function Navbar() {
       setImageDropdownOpen(false);
       setPdfDropdownOpen(false);
       setDevDropdownOpen(false);
+      setInstagramDropdownOpen(false);
       setAppsDropdownOpen(false);
     }, 180);
   };
@@ -1064,6 +1151,98 @@ export function Navbar() {
                             key={tool.href}
                             href={tool.href}
                             onClick={() => setDevDropdownOpen(false)}
+                            className={`group/item flex items-center gap-3 p-2.5 rounded-xl transition-colors ${
+                              isActive ? "bg-[#F5F4EE]" : "hover:bg-[#F8F8F6]"
+                            }`}
+                          >
+                            <div className="h-8 w-8 rounded-lg bg-[#FBFBFA] border border-[#EAEAE5] flex items-center justify-center text-[#111111] shrink-0">
+                              {tool.icon}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="font-semibold text-[13px] text-[#111111] truncate tracking-[-0.01em]">
+                                  {tool.name}
+                                </span>
+                                {tool.badge && (
+                                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5F4EE] text-[#6E6D68] border border-[#EAEAE5] shrink-0">
+                                    {tool.badge}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[11px] text-[#9E9D98] truncate mt-0.5">{tool.desc}</p>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Instagram dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={handleInstagramMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Link
+                href="/instagram"
+                onClick={() => setInstagramDropdownOpen(false)}
+                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all cursor-pointer tracking-[-0.01em] ${
+                  instagramDropdownOpen || pathname.startsWith("/instagram")
+                    ? "bg-[#F0EFEA] text-[#111111]"
+                    : "text-[#6E6D68] hover:text-[#111111] hover:bg-[#F5F4EE]"
+                }`}
+              >
+                <span>Instagram</span>
+                <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60">
+                  New
+                </span>
+                <motion.svg
+                  animate={{ rotate: instagramDropdownOpen ? 180 : 0 }}
+                  transition={{ duration: 0.18, ease: "easeInOut" }}
+                  className="h-3.5 w-3.5 text-[#9E9D98]"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </motion.svg>
+              </Link>
+
+              {/* Instagram Dropdown */}
+              <AnimatePresence>
+                {instagramDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                    transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute top-full left-0 mt-2 w-[320px] rounded-2xl bg-white/98 backdrop-blur-2xl border border-[#EAEAE5] shadow-[0_8px_32px_rgba(0,0,0,0.08),0_2px_8px_rgba(0,0,0,0.04)] p-2 z-50"
+                  >
+                    <div className="px-3 py-2 flex items-center justify-between border-b border-[#F5F4EE] mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9E9D98]">
+                        Instagram Suite
+                      </span>
+                      <Link
+                        href="/instagram"
+                        onClick={() => setInstagramDropdownOpen(false)}
+                        className="text-[11px] font-bold text-[#111111] hover:underline"
+                      >
+                        View Hub →
+                      </Link>
+                    </div>
+
+                    <div className="space-y-0.5">
+                      {INSTAGRAM_NAV.map((tool) => {
+                        const isActive = pathname === tool.href;
+                        return (
+                          <Link
+                            key={tool.href}
+                            href={tool.href}
+                            onClick={() => setInstagramDropdownOpen(false)}
                             className={`group/item flex items-center gap-3 p-2.5 rounded-xl transition-colors ${
                               isActive ? "bg-[#F5F4EE]" : "hover:bg-[#F8F8F6]"
                             }`}
