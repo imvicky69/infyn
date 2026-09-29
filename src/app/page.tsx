@@ -43,6 +43,7 @@ import {
   ChevronDown,
   ChevronUp,
   Smile,
+  Video,
 } from "lucide-react";
 import { Movie } from "@/types/movie";
 import { getLiveMovies } from "@/lib/movies-firestore";
@@ -249,6 +250,16 @@ const TOOLS: ToolItem[] = [
     formats: ["1080p", "FHD", "MKV", "Hindi 5.1"],
     icon: Film,
     keywords: ["movie", "movies", "film", "films", "cinema", "downloads", "1080p", "stream", "hindi", "episodes", "series"],
+  },
+  {
+    href: "/instagram-reel-downloader",
+    title: "Instagram Reel Downloader",
+    category: "utilities",
+    badge: "HD MP4",
+    description: "Download public Instagram Reels, Videos, and Audio in full HD directly in browser.",
+    formats: ["MP4", "M4A", "JPG"],
+    icon: Video,
+    keywords: ["instagram", "reel", "downloader", "video", "audio", "insta", "reels", "mp4", "download instagram reel", "online", "yt-dlp"],
   },
 ];
 

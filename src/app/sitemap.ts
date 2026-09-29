@@ -33,6 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/dev",
     "/dev/base64",
     "/dev/svg-cleaner",
+    "/instagram-reel-downloader",
     "/contributing",
   ];
 

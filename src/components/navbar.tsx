@@ -189,6 +189,13 @@ const APPS_NAV: NavTool[] = [
     icon: <Download className="h-4 w-4" />,
   },
   {
+    name: "Instagram Downloader",
+    href: "/instagram-reel-downloader",
+    badge: "New",
+    desc: "Download Reels, Videos & Audio in browser",
+    icon: <Film className="h-4 w-4" />,
+  },
+  {
     name: "Smiley PDF",
     href: "/smiley-pdf",
     badge: "New",

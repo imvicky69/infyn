@@ -36,10 +36,27 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "storage.googleapis.com",
+        hostname: "*.cdninstagram.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.fbcdn.net",
         pathname: "/**",
       },
     ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/instagram",
+        destination: "/instagram-reel-downloader",
+      },
+      {
+        source: "/instagram-downloader",
+        destination: "/instagram-reel-downloader",
+      },
+    ];
   },
 };
 
