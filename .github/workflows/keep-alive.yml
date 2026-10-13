@@ -1,0 +1,17 @@
+name: Keep Render Backend Awake
+
+on:
+  schedule:
+    # Runs every 14 minutes (Render free tier sleeps after 15 min of zero traffic)
+    - cron: "*/14 * * * *"
+  workflow_dispatch: # Allows manual trigger from GitHub UI at any time
+
+jobs:
+  ping-render:
+    name: Ping Render yt-dlp Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Health Endpoint
+        run: |
+          echo "Pinging Render backend health endpoint..."
+          curl -s -f -m 20 "https://infyn-1v7p.onrender.com/health" || echo "Ping dispatched (backend container waking up)"

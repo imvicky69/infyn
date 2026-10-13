@@ -98,6 +98,7 @@ const FAQS = [
 export default function InstagramDownloaderPage() {
   const [url, setUrl] = useState<string>("");
   const [stage, setStage] = useState<Stage>("idle");
+  const [busyElapsed, setBusyElapsed] = useState<number>(0);
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [reelData, setReelData] = useState<ReelData | null>(null);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
@@ -118,6 +119,30 @@ export default function InstagramDownloaderPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Helper to eagerly wake up the backend if it is asleep
+  const triggerPreWarm = React.useCallback(() => {
+    fetch("/api/instagram/wake").catch(() => {});
+  }, []);
+
+  // Eagerly pre-warm backend when user visits this page
+  React.useEffect(() => {
+    triggerPreWarm();
+  }, [triggerPreWarm]);
+
+  // Elapsed time tracker for user-friendly progress updates during cold boots
+  React.useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (stage === "busy") {
+      setBusyElapsed(0);
+      timer = setInterval(() => {
+        setBusyElapsed((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setBusyElapsed(0);
+    }
+    return () => clearInterval(timer);
+  }, [stage]);
+
   const handleDownloadWithAd = (
     downloadUrl: string,
     filename: string,
@@ -132,6 +157,7 @@ export default function InstagramDownloaderPage() {
   };
 
   const handlePasteFromClipboard = async () => {
+    triggerPreWarm();
     try {
       if (navigator.clipboard && navigator.clipboard.readText) {
         const text = await navigator.clipboard.readText();
@@ -260,6 +286,8 @@ export default function InstagramDownloaderPage() {
                   ref={inputRef}
                   type="text"
                   value={url}
+                  onFocus={() => triggerPreWarm()}
+                  onPaste={() => triggerPreWarm()}
                   onChange={(e) => {
                     setUrl(e.target.value);
                     if (stage === "error") setStage("idle");
@@ -353,12 +381,27 @@ export default function InstagramDownloaderPage() {
                 <InstagramIcon className="h-8 w-8 animate-bounce" />
               </div>
             </div>
-            <div className="space-y-1">
-              <h3 className="text-base font-bold text-[#111111] dark:text-white">
-                Fetching Instagram Reel...
+            <div className="space-y-1.5">
+              <h3 className="text-base font-bold text-[#111111] dark:text-white flex items-center justify-center gap-2">
+                <span>
+                  {busyElapsed < 4
+                    ? "Fetching Instagram Reel..."
+                    : busyElapsed < 12
+                    ? "Connecting to Extraction Engine..."
+                    : "Finalizing High-Definition Stream..."}
+                </span>
+                {busyElapsed > 0 && (
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-800/60">
+                    {busyElapsed}s
+                  </span>
+                )}
               </h3>
-              <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400">
-                Extracting high-definition media stream and audio track directly...
+              <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400 max-w-md mx-auto leading-relaxed">
+                {busyElapsed < 4
+                  ? "Extracting high-definition media stream and audio track directly..."
+                  : busyElapsed < 12
+                  ? "Waking up server from idle sleep... This only takes a moment on first request."
+                  : "Server is ready! Processing video stream and metadata..."}
               </p>
             </div>
             <div className="w-48 mx-auto h-1.5 bg-[#F5F4EE] dark:bg-zinc-800 rounded-full overflow-hidden">
@@ -387,12 +430,20 @@ export default function InstagramDownloaderPage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 pt-1 pl-8">
+            <div className="flex flex-wrap items-center gap-2 pt-1 pl-8">
+              {url.trim() && (
+                <button
+                  onClick={() => handleFetchReel()}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors shadow-2xs cursor-pointer"
+                >
+                  Retry Download
+                </button>
+              )}
               <button
                 onClick={() => setStage("idle")}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-rose-100 dark:bg-rose-900/40 text-rose-800 dark:text-rose-300 hover:bg-rose-200/60 transition-colors cursor-pointer"
               >
-                Try Again
+                Clear
               </button>
               <button
                 onClick={() => {

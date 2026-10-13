@@ -4,6 +4,9 @@ import { promisify } from "util";
 
 const execFileAsync = promisify(execFile);
 
+export const dynamic = "force-dynamic";
+export const maxDuration = 60; // Allow sufficient time for Render backend cold boot
+
 interface MediaInfo {
   success: boolean;
   id: string;
@@ -20,6 +23,34 @@ interface MediaInfo {
   description?: string;
   like_count?: number;
   comment_count?: number;
+}
+
+// In-memory cache to serve identical reels instantly (15-minute TTL)
+interface CacheEntry {
+  data: MediaInfo;
+  expiresAt: number;
+}
+const mediaCache = new Map<string, CacheEntry>();
+
+function getCachedMedia(url: string): MediaInfo | null {
+  const entry = mediaCache.get(url);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    mediaCache.delete(url);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCachedMedia(url: string, data: MediaInfo) {
+  if (mediaCache.size > 200) {
+    const firstKey = mediaCache.keys().next().value;
+    if (firstKey) mediaCache.delete(firstKey);
+  }
+  mediaCache.set(url, {
+    data,
+    expiresAt: Date.now() + 15 * 60 * 1000,
+  });
 }
 
 function sanitizeFilename(name: string): string {
@@ -54,21 +85,62 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // 1. Check in-memory cache for instant 0ms response
+    const cached = getCachedMedia(url);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
+
     const backendUrl =
       process.env.YT_DLP_BACKEND_URL || "https://infyn-1v7p.onrender.com";
 
     // Option A: Dedicated yt-dlp backend server URL (Render / Cloud Run / Hugging Face)
     if (backendUrl) {
-      try {
-        const backendRes = await fetch(`${backendUrl.replace(/\/$/, "")}/api/instagram`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url }),
-        });
+      let backendRes: Response | null = null;
+      let lastErrorMessage = "";
 
-        if (!backendRes.ok) {
-          const errData = await backendRes.json().catch(() => ({}));
-          throw new Error(errData.detail || "Backend yt-dlp service returned an error.");
+      // Try up to 2 attempts with a short delay if Render is in the middle of a cold boot
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 45000);
+
+          backendRes = await fetch(`${backendUrl.replace(/\/$/, "")}/api/instagram`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url }),
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+
+          if (backendRes.ok) {
+            break;
+          }
+
+          // If Render returned 502/503 during cold container spin-up, wait 3s and retry once
+          if ((backendRes.status === 502 || backendRes.status === 503) && attempt < 2) {
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            continue;
+          }
+          break;
+        } catch (fetchErr: any) {
+          lastErrorMessage = fetchErr.message;
+          if (attempt < 2) {
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            continue;
+          }
+        }
+      }
+
+      try {
+        if (!backendRes || !backendRes.ok) {
+          const errData = backendRes ? await backendRes.json().catch(() => ({})) : {};
+          throw new Error(
+            errData.detail ||
+              lastErrorMessage ||
+              "Backend yt-dlp service returned an error. The server may still be initializing."
+          );
         }
 
         const data = await backendRes.json();
@@ -94,10 +166,12 @@ export async function POST(req: NextRequest) {
           comment_count: data.comment_count,
         };
 
+        // Cache the successful result
+        setCachedMedia(url, result);
+
         return NextResponse.json(result);
       } catch (backendError: any) {
         console.warn("External backend failed:", backendError.message);
-        // If local CLI is not available or running in serverless cloud, return the error
         return NextResponse.json(
           {
             success: false,
@@ -110,7 +184,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Option B: Direct local yt-dlp execution via Node CLI
+    // Option B: Direct local yt-dlp execution via Node CLI (if hosted on non-serverless container)
     try {
       const { stdout } = await execFileAsync("yt-dlp", [
         "--dump-json",
@@ -174,6 +248,8 @@ export async function POST(req: NextRequest) {
         like_count: data.like_count,
         comment_count: data.comment_count,
       };
+
+      setCachedMedia(url, result);
 
       return NextResponse.json(result);
     } catch (cliError: any) {

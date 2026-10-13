@@ -860,6 +860,8 @@ export function Navbar() {
     setDevDropdownOpen(false);
     setAppsDropdownOpen(false);
     setInstagramDropdownOpen(true);
+    // Eagerly pre-warm backend when user explores Instagram tools in navbar
+    fetch("/api/instagram/wake").catch(() => {});
   };
 
   const handleAppsMouseEnter = () => {

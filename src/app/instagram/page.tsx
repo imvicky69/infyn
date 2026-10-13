@@ -80,6 +80,11 @@ const INSTAGRAM_TOOLS = [
 ];
 
 export default function InstagramToolsHubPage() {
+  React.useEffect(() => {
+    // Eagerly pre-warm backend when browsing the Instagram Hub
+    fetch("/api/instagram/wake").catch(() => {});
+  }, []);
+
   return (
     <div className="min-h-screen text-[#111111] dark:text-[#EDEDEC] flex flex-col font-sans bg-[#FBFBFA] dark:bg-[#0C0C0E]">
       <Navbar />
