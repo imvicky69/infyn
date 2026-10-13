@@ -7,11 +7,12 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import requests
 import yt_dlp
+import instaloader
 
 app = FastAPI(
     title="Infyn Media Downloader API",
-    description="High-speed yt-dlp backend for Instagram Reels & Media processing.",
-    version="1.0.0",
+    description="High-speed yt-dlp & instaloader backend for Instagram Reels, Media & Profile processing.",
+    version="1.1.0",
 )
 
 # Enable CORS for frontend interaction
@@ -28,9 +29,34 @@ class MediaRequest(BaseModel):
     url: str
 
 
+class ProfileRequest(BaseModel):
+    username: str
+
+
+# Instaloader instance for public profile extraction
+loader = instaloader.Instaloader(
+    download_pictures=False,
+    download_videos=False,
+    download_video_thumbnails=False,
+    download_geotags=False,
+    download_comments=False,
+    save_metadata=False,
+    compress_json=False,
+    quiet=True,
+)
+
+
 def sanitize_filename(name: str) -> str:
     cleaned = re.sub(r'[\\/*?:"<>|]', "", name).strip()
     return cleaned[:80] if cleaned else "instagram_reel"
+
+
+def clean_username(raw: str) -> str:
+    cleaned = raw.strip()
+    cleaned = re.sub(r'^https?://(?:www\.)?instagram\.com/', '', cleaned, flags=re.IGNORECASE)
+    cleaned = cleaned.lstrip('@')
+    cleaned = cleaned.split('/')[0].split('?')[0].strip()
+    return cleaned
 
 
 def extract_media(target_url: str):
@@ -98,12 +124,84 @@ def extract_media(target_url: str):
     }
 
 
+def extract_profile_data(raw_username: str):
+    clean = clean_username(raw_username)
+    if not clean:
+        raise HTTPException(status_code=400, detail="Invalid username format.")
+
+    # Strategy 1: Instaloader
+    try:
+        profile = instaloader.Profile.from_username(loader.context, clean)
+        pfp = profile.profile_pic_url
+        if pfp:
+            safe_name = f"{clean}_profile_pic.jpg"
+            return {
+                "success": True,
+                "username": profile.username,
+                "fullName": profile.full_name or profile.username,
+                "profilePicUrl": pfp,
+                "filename": safe_name,
+                "followers": f"{profile.followers:,}",
+                "following": f"{profile.followees:,}",
+                "posts": f"{profile.mediacount:,}",
+                "bio": profile.biography or "",
+                "isPrivate": profile.is_private,
+                "isVerified": profile.is_verified,
+            }
+    except instaloader.exceptions.ProfileNotExistsException:
+        raise HTTPException(status_code=404, detail=f"User @{clean} was not found on Instagram.")
+    except Exception as e:
+        print(f"Instaloader lookup failed for @{clean}, attempting fallback: {e}")
+
+    # Strategy 2: OpenGraph crawler scraper fallback
+    try:
+        url = f"https://www.instagram.com/{clean}/"
+        headers = {
+            "User-Agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+        res = requests.get(url, headers=headers, timeout=8)
+        if res.status_code == 200:
+            html = res.text
+            og_match = re.search(r'property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
+            if not og_match:
+                og_match = re.search(r'content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']', html, re.I)
+            if og_match:
+                pfp = og_match.group(1).replace("&amp;", "&")
+                title_match = re.search(r'property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
+                raw_title = title_match.group(1) if title_match else clean
+                full_name = clean
+                name_match = re.search(r'^([^(@]+)\s*\(@', raw_title)
+                if name_match:
+                    full_name = name_match.group(1).strip()
+                return {
+                    "success": True,
+                    "username": clean,
+                    "fullName": full_name,
+                    "profilePicUrl": pfp,
+                    "filename": f"{clean}_profile_pic.jpg",
+                    "followers": "",
+                    "following": "",
+                    "posts": "",
+                    "bio": "",
+                    "isPrivate": False,
+                    "isVerified": False,
+                }
+    except Exception as err:
+        print(f"Fallback scraper error: {err}")
+
+    raise HTTPException(
+        status_code=404,
+        detail=f"Unable to retrieve profile picture for @{clean}. The account might be restricted or private."
+    )
+
+
 @app.get("/")
 def root():
     return {
         "service": "Infyn Media Downloader API",
         "status": "online",
-        "endpoints": ["/health", "/api/instagram", "/api/stream"],
+        "endpoints": ["/health", "/api/instagram", "/api/instagram/profile", "/api/stream"],
     }
 
 
@@ -124,6 +222,16 @@ def process_get(url: str = Query(..., description="Instagram URL")):
     if not url or "instagram.com" not in url:
         raise HTTPException(status_code=400, detail="Please provide a valid Instagram URL.")
     return extract_media(url)
+
+
+@app.post("/api/instagram/profile")
+def profile_post(req: ProfileRequest):
+    return extract_profile_data(req.username)
+
+
+@app.get("/api/instagram/profile")
+def profile_get(username: str = Query(..., description="Instagram username")):
+    return extract_profile_data(username)
 
 
 @app.get("/api/stream")

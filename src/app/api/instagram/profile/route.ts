@@ -1,5 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
+
+interface ProfileResult {
+  success: boolean;
+  username: string;
+  fullName: string;
+  profilePicUrl: string;
+  downloadUrl: string;
+  filename: string;
+  followers?: string;
+  following?: string;
+  posts?: string;
+  bio?: string;
+  isPrivate?: boolean;
+  isVerified?: boolean;
+}
+
+// In-memory cache for fast repeat profile lookups (15-minute TTL)
+interface CacheEntry {
+  data: ProfileResult;
+  expiresAt: number;
+}
+const profileCache = new Map<string, CacheEntry>();
+
+function getCachedProfile(username: string): ProfileResult | null {
+  const entry = profileCache.get(username.toLowerCase());
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    profileCache.delete(username.toLowerCase());
+    return null;
+  }
+  return entry.data;
+}
+
+function setCachedProfile(username: string, data: ProfileResult) {
+  if (profileCache.size > 200) {
+    const firstKey = profileCache.keys().next().value;
+    if (firstKey) profileCache.delete(firstKey);
+  }
+  profileCache.set(username.toLowerCase(), {
+    data,
+    expiresAt: Date.now() + 15 * 60 * 1000,
+  });
+}
+
 function decodeHtmlEntities(str: string): string {
   return str
     .replace(/&#064;/g, "@")
@@ -52,113 +98,157 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const profileUrl = `https://www.instagram.com/${username}/`;
+    // 1. Check in-memory cache for instant response
+    const cached = getCachedProfile(username);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
 
-    // Fetch the public profile HTML using crawler user-agent to retrieve OpenGraph metadata
-    const response = await fetch(profileUrl, {
-      headers: {
-        "User-Agent":
-          "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
-        "Accept-Language": "en-US,en;q=0.9",
-        Accept:
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-      },
-    });
+    const backendUrl =
+      process.env.YT_DLP_BACKEND_URL || "https://infyn-1v7p.onrender.com";
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return NextResponse.json(
+    // 2. Strategy A: Call dedicated Instaloader backend on Render
+    if (backendUrl) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+        const backendRes = await fetch(
+          `${backendUrl.replace(/\/$/, "")}/api/instagram/profile`,
           {
-            success: false,
-            error: `User @${username} was not found on Instagram.`,
-          },
-          { status: 404 }
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username }),
+            signal: controller.signal,
+          }
         );
+
+        clearTimeout(timeoutId);
+
+        if (backendRes.ok) {
+          const data = await backendRes.json();
+          if (data.success && data.profilePicUrl) {
+            const safeFilename = `${username}_profile_pic.jpg`;
+            const result: ProfileResult = {
+              success: true,
+              username: data.username || username,
+              fullName: data.fullName || username,
+              profilePicUrl: data.profilePicUrl,
+              downloadUrl: `/api/instagram/stream?url=${encodeURIComponent(
+                data.profilePicUrl
+              )}&filename=${encodeURIComponent(safeFilename)}`,
+              filename: safeFilename,
+              followers: data.followers,
+              following: data.following,
+              posts: data.posts,
+              bio: data.bio,
+              isPrivate: data.isPrivate,
+              isVerified: data.isVerified,
+            };
+
+            setCachedProfile(username, result);
+            return NextResponse.json(result);
+          }
+        }
+      } catch (backendErr: any) {
+        console.warn("Backend profile lookup failed, trying fallback:", backendErr.message);
       }
-      return NextResponse.json(
-        {
-          success: false,
-          error: `Instagram responded with status ${response.status}. Please try again later.`,
+    }
+
+    // 3. Strategy B: Direct OpenGraph Crawler Scraping Fallback
+    try {
+      const profileUrl = `https://www.instagram.com/${username}/`;
+
+      const response = await fetch(profileUrl, {
+        headers: {
+          "User-Agent":
+            "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+          "Accept-Language": "en-US,en;q=0.9",
+          Accept:
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         },
-        { status: 502 }
-      );
+        cache: "no-store",
+      });
+
+      if (response.ok) {
+        const html = await response.text();
+
+        // Extract og:image
+        const ogImgMatch =
+          html.match(/property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
+          html.match(/content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+
+        if (ogImgMatch && ogImgMatch[1]) {
+          const rawProfilePic = decodeHtmlEntities(ogImgMatch[1]);
+
+          // Extract og:title
+          const ogTitleMatch =
+            html.match(/property=["']og:title["'][^>]+content=["']([^"']+)["']/i) ||
+            html.match(/content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
+          const rawTitle = ogTitleMatch ? decodeHtmlEntities(ogTitleMatch[1]) : "";
+
+          // Extract og:description
+          const ogDescMatch =
+            html.match(/property=["']og:description["'][^>]+content=["']([^"']+)["']/i) ||
+            html.match(/content=["']([^"']+)["'][^>]+property=["']og:description["']/i);
+          const rawDesc = ogDescMatch ? decodeHtmlEntities(ogDescMatch[1]) : "";
+
+          let fullName = username;
+          const nameMatch = rawTitle.match(/^([^(@]+)\s*\(@/);
+          if (nameMatch && nameMatch[1]) {
+            fullName = nameMatch[1].trim();
+          }
+
+          let followers = "";
+          let following = "";
+          let posts = "";
+          let bio = "";
+
+          const statsMatch = rawDesc.match(
+            /([\d\.,\w]+)\s+Followers,\s*([\d\.,\w]+)\s+Following,\s*([\d\.,\w]+)\s+Posts(?:\s*-\s*(.*))?/i
+          );
+          if (statsMatch) {
+            followers = statsMatch[1];
+            following = statsMatch[2];
+            posts = statsMatch[3];
+            if (statsMatch[4]) {
+              bio = statsMatch[4].trim();
+            }
+          } else {
+            bio = rawDesc;
+          }
+
+          const safeFilename = `${username}_profile_pic.jpg`;
+          const result: ProfileResult = {
+            success: true,
+            username,
+            fullName,
+            profilePicUrl: rawProfilePic,
+            downloadUrl: `/api/instagram/stream?url=${encodeURIComponent(
+              rawProfilePic
+            )}&filename=${encodeURIComponent(safeFilename)}`,
+            filename: safeFilename,
+            followers,
+            following,
+            posts,
+            bio,
+          };
+
+          setCachedProfile(username, result);
+          return NextResponse.json(result);
+        }
+      }
+    } catch (scraperErr: any) {
+      console.warn("Direct scraper fallback failed:", scraperErr.message);
     }
 
-    const html = await response.text();
-
-    // Extract og:image
-    const ogImgMatch =
-      html.match(/property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
-      html.match(/content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
-
-    if (!ogImgMatch || !ogImgMatch[1]) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: `Unable to retrieve profile picture for @${username}. The account might be restricted or private.`,
-        },
-        { status: 404 }
-      );
-    }
-
-    const rawProfilePic = decodeHtmlEntities(ogImgMatch[1]);
-
-    // Extract og:title
-    const ogTitleMatch =
-      html.match(/property=["']og:title["'][^>]+content=["']([^"']+)["']/i) ||
-      html.match(/content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
-    const rawTitle = ogTitleMatch ? decodeHtmlEntities(ogTitleMatch[1]) : "";
-
-    // Extract og:description
-    const ogDescMatch =
-      html.match(/property=["']og:description["'][^>]+content=["']([^"']+)["']/i) ||
-      html.match(/content=["']([^"']+)["'][^>]+property=["']og:description["']/i);
-    const rawDesc = ogDescMatch ? decodeHtmlEntities(ogDescMatch[1]) : "";
-
-    // Parse full name from title (e.g., "Leo Messi (@leomessi) • Instagram photos and videos")
-    let fullName = username;
-    const nameMatch = rawTitle.match(/^([^(@]+)\s*\(@/);
-    if (nameMatch && nameMatch[1]) {
-      fullName = nameMatch[1].trim();
-    }
-
-    // Parse stats from description (e.g., "517M Followers, 373 Following, 1,543 Posts")
-    let followers = "";
-    let following = "";
-    let posts = "";
-    let bio = "";
-
-    const statsMatch = rawDesc.match(
-      /([\d\.,\w]+)\s+Followers,\s*([\d\.,\w]+)\s+Following,\s*([\d\.,\w]+)\s+Posts(?:\s*-\s*(.*))?/i
+    return NextResponse.json(
+      {
+        success: false,
+        error: `Unable to retrieve profile picture for @${username}. The account might be restricted, private, or temporarily protected by Instagram.`,
+      },
+      { status: 404 }
     );
-    if (statsMatch) {
-      followers = statsMatch[1];
-      following = statsMatch[2];
-      posts = statsMatch[3];
-      if (statsMatch[4]) {
-        bio = statsMatch[4].trim();
-      }
-    } else {
-      bio = rawDesc;
-    }
-
-    const safeFilename = `${username}_profile_pic.jpg`;
-    const downloadUrl = `/api/instagram/stream?url=${encodeURIComponent(
-      rawProfilePic
-    )}&filename=${encodeURIComponent(safeFilename)}`;
-
-    return NextResponse.json({
-      success: true,
-      username,
-      fullName,
-      profilePicUrl: rawProfilePic,
-      downloadUrl,
-      filename: safeFilename,
-      followers,
-      following,
-      posts,
-      bio,
-    });
   } catch (error: any) {
     console.error("Instagram profile fetch error:", error);
     return NextResponse.json(

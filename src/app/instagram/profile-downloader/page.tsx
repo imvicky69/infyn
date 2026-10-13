@@ -94,6 +94,7 @@ const FAQS = [
 export default function InstagramProfileDownloaderPage() {
   const [inputVal, setInputVal] = useState<string>("");
   const [stage, setStage] = useState<Stage>("idle");
+  const [busyElapsed, setBusyElapsed] = useState<number>(0);
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
@@ -113,7 +114,29 @@ export default function InstagramProfileDownloaderPage() {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const triggerPreWarm = React.useCallback(() => {
+    fetch("/api/instagram/wake").catch(() => {});
+  }, []);
+
+  React.useEffect(() => {
+    triggerPreWarm();
+  }, [triggerPreWarm]);
+
+  React.useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (stage === "busy") {
+      setBusyElapsed(0);
+      timer = setInterval(() => {
+        setBusyElapsed((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setBusyElapsed(0);
+    }
+    return () => clearInterval(timer);
+  }, [stage]);
+
   const handlePasteFromClipboard = async () => {
+    triggerPreWarm();
     try {
       if (navigator.clipboard && navigator.clipboard.readText) {
         const text = await navigator.clipboard.readText();
@@ -242,6 +265,8 @@ export default function InstagramProfileDownloaderPage() {
                       handleFetchProfile();
                     }
                   }}
+                  onFocus={() => triggerPreWarm()}
+                  onPaste={() => triggerPreWarm()}
                   placeholder="Enter username (e.g. leomessi) or profile URL..."
                   className="w-full bg-transparent text-sm sm:text-base text-[#111111] dark:text-white placeholder-[#9E9D98] dark:placeholder-zinc-500 outline-none"
                   disabled={stage === "busy"}
@@ -328,12 +353,27 @@ export default function InstagramProfileDownloaderPage() {
                 <InstagramIcon className="h-9 w-9 animate-bounce" />
               </div>
             </div>
-            <div className="space-y-1">
-              <h3 className="text-base font-bold text-[#111111] dark:text-white">
-                Querying Instagram Profile...
+            <div className="space-y-1.5">
+              <h3 className="text-base font-bold text-[#111111] dark:text-white flex items-center justify-center gap-2">
+                <span>
+                  {busyElapsed < 4
+                    ? "Locating Instagram Profile..."
+                    : busyElapsed < 12
+                    ? "Connecting to Extraction Engine..."
+                    : "Extracting High-Definition Avatar..."}
+                </span>
+                {busyElapsed > 0 && (
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-800/60">
+                    {busyElapsed}s
+                  </span>
+                )}
               </h3>
-              <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400">
-                Extracting high-definition avatar and profile metadata via HTML OpenGraph query...
+              <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400 max-w-md mx-auto leading-relaxed">
+                {busyElapsed < 4
+                  ? "Resolving public account metadata and full-resolution avatar..."
+                  : busyElapsed < 12
+                  ? "Waking up server from idle sleep... This only takes a moment on first request."
+                  : "Server is ready! Processing original uncompressed photo stream..."}
               </p>
             </div>
             <div className="w-48 mx-auto h-1.5 bg-[#F5F4EE] dark:bg-zinc-800 rounded-full overflow-hidden">
@@ -362,12 +402,20 @@ export default function InstagramProfileDownloaderPage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 pt-1 pl-8">
+            <div className="flex flex-wrap items-center gap-2 pt-1 pl-8">
+              {inputVal.trim() && (
+                <button
+                  onClick={() => handleFetchProfile()}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors shadow-2xs cursor-pointer"
+                >
+                  Retry Lookup
+                </button>
+              )}
               <button
                 onClick={() => setStage("idle")}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-rose-100 dark:bg-rose-900/40 text-rose-800 dark:text-rose-300 hover:bg-rose-200/60 transition-colors cursor-pointer"
               >
-                Try Another User
+                Clear
               </button>
               <button
                 onClick={() => {
