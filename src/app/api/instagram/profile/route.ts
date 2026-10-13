@@ -3,7 +3,19 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-interface ProfileResult {
+export interface InstagramPost {
+  shortcode: string;
+  mediaType: "image" | "video";
+  thumbnailUrl: string;
+  downloadUrl: string;
+  videoUrl?: string | null;
+  likes?: number;
+  comments?: number;
+  caption?: string;
+  date?: string;
+}
+
+export interface ProfileResult {
   success: boolean;
   username: string;
   fullName: string;
@@ -16,6 +28,8 @@ interface ProfileResult {
   bio?: string;
   isPrivate?: boolean;
   isVerified?: boolean;
+  userId?: string | number | null;
+  recentPosts?: InstagramPost[];
 }
 
 // In-memory cache for fast repeat profile lookups (15-minute TTL)
@@ -107,11 +121,11 @@ export async function POST(req: NextRequest) {
     const backendUrl =
       process.env.YT_DLP_BACKEND_URL || "https://infyn-1v7p.onrender.com";
 
-    // 2. Strategy A: Call dedicated Instaloader backend on Render
+    // 2. Strategy A: Call dedicated Render backend (FastAPI scraper)
     if (backendUrl) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 20000);
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
 
         const backendRes = await fetch(
           `${backendUrl.replace(/\/$/, "")}/api/instagram/profile`,
@@ -129,6 +143,25 @@ export async function POST(req: NextRequest) {
           const data = await backendRes.json();
           if (data.success && data.profilePicUrl) {
             const safeFilename = `${username}_profile_pic.jpg`;
+
+            const recentPosts: InstagramPost[] = Array.isArray(data.recentPosts)
+              ? data.recentPosts.map((p: any) => ({
+                  shortcode: p.shortcode,
+                  mediaType: (p.media_type || "image") as "image" | "video",
+                  thumbnailUrl: p.thumbnail || p.display_url,
+                  downloadUrl: `/api/instagram/stream?url=${encodeURIComponent(
+                    p.video_url || p.display_url || p.thumbnail
+                  )}&filename=${encodeURIComponent(
+                    `${username}_post_${p.shortcode}.${p.video_url ? "mp4" : "jpg"}`
+                  )}`,
+                  videoUrl: p.video_url,
+                  likes: p.likes,
+                  comments: p.comments,
+                  caption: p.caption,
+                  date: p.date,
+                }))
+              : [];
+
             const result: ProfileResult = {
               success: true,
               username: data.username || username,
@@ -144,6 +177,8 @@ export async function POST(req: NextRequest) {
               bio: data.bio,
               isPrivate: data.isPrivate,
               isVerified: data.isVerified,
+              userId: data.userId || null,
+              recentPosts,
             };
 
             setCachedProfile(username, result);
@@ -151,95 +186,115 @@ export async function POST(req: NextRequest) {
           }
         }
       } catch (backendErr: any) {
-        console.warn("Backend profile lookup failed, trying fallback:", backendErr.message);
+        console.warn("Backend profile lookup failed or timed out, trying crawler fallback:", backendErr.message);
       }
     }
 
     // 3. Strategy B: Direct OpenGraph Crawler Scraping Fallback
-    try {
-      const profileUrl = `https://www.instagram.com/${username}/`;
+    const crawlerUserAgents = [
+      "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+      "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+      "Twitterbot/1.0",
+      "WhatsApp/2.21.12.21 i",
+    ];
 
-      const response = await fetch(profileUrl, {
-        headers: {
-          "User-Agent":
-            "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
-          "Accept-Language": "en-US,en;q=0.9",
-          Accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        },
-        cache: "no-store",
-      });
+    for (const ua of crawlerUserAgents) {
+      try {
+        const profileUrl = `https://www.instagram.com/${username}/`;
 
-      if (response.ok) {
-        const html = await response.text();
+        const response = await fetch(profileUrl, {
+          headers: {
+            "User-Agent": ua,
+            "Accept-Language": "en-US,en;q=0.9",
+            Accept:
+              "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+          },
+          cache: "no-store",
+        });
 
-        // Extract og:image
-        const ogImgMatch =
-          html.match(/property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
-          html.match(/content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+        if (response.ok) {
+          const html = await response.text();
 
-        if (ogImgMatch && ogImgMatch[1]) {
-          const rawProfilePic = decodeHtmlEntities(ogImgMatch[1]);
+          // Extract og:image
+          const ogImgMatch =
+            html.match(/property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
+            html.match(/content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
 
-          // Extract og:title
-          const ogTitleMatch =
-            html.match(/property=["']og:title["'][^>]+content=["']([^"']+)["']/i) ||
-            html.match(/content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
-          const rawTitle = ogTitleMatch ? decodeHtmlEntities(ogTitleMatch[1]) : "";
+          if (ogImgMatch && ogImgMatch[1]) {
+            const rawProfilePic = decodeHtmlEntities(ogImgMatch[1]);
 
-          // Extract og:description
-          const ogDescMatch =
-            html.match(/property=["']og:description["'][^>]+content=["']([^"']+)["']/i) ||
-            html.match(/content=["']([^"']+)["'][^>]+property=["']og:description["']/i);
-          const rawDesc = ogDescMatch ? decodeHtmlEntities(ogDescMatch[1]) : "";
+            // Extract og:title
+            const ogTitleMatch =
+              html.match(/property=["']og:title["'][^>]+content=["']([^"']+)["']/i) ||
+              html.match(/content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
+            const rawTitle = ogTitleMatch ? decodeHtmlEntities(ogTitleMatch[1]) : "";
 
-          let fullName = username;
-          const nameMatch = rawTitle.match(/^([^(@]+)\s*\(@/);
-          if (nameMatch && nameMatch[1]) {
-            fullName = nameMatch[1].trim();
-          }
+            // Extract og:description
+            const ogDescMatch =
+              html.match(/property=["']og:description["'][^>]+content=["']([^"']+)["']/i) ||
+              html.match(/content=["']([^"']+)["'][^>]+property=["']og:description["']/i);
+            const rawDesc = ogDescMatch ? decodeHtmlEntities(ogDescMatch[1]) : "";
 
-          let followers = "";
-          let following = "";
-          let posts = "";
-          let bio = "";
-
-          const statsMatch = rawDesc.match(
-            /([\d\.,\w]+)\s+Followers,\s*([\d\.,\w]+)\s+Following,\s*([\d\.,\w]+)\s+Posts(?:\s*-\s*(.*))?/i
-          );
-          if (statsMatch) {
-            followers = statsMatch[1];
-            following = statsMatch[2];
-            posts = statsMatch[3];
-            if (statsMatch[4]) {
-              bio = statsMatch[4].trim();
+            let fullName = username;
+            const nameMatch = rawTitle.match(/^([^(@]+)\s*\(@/);
+            if (nameMatch && nameMatch[1]) {
+              fullName = nameMatch[1].trim();
             }
-          } else {
-            bio = rawDesc;
+
+            let followers = "";
+            let following = "";
+            let posts = "";
+            let bio = "";
+
+            const statsMatch = rawDesc.match(
+              /([\d\.,\w]+)\s+Followers,\s*([\d\.,\w]+)\s+Following,\s*([\d\.,\w]+)\s+Posts(?:\s*-\s*(.*))?/i
+            );
+            if (statsMatch) {
+              followers = statsMatch[1];
+              following = statsMatch[2];
+              posts = statsMatch[3];
+              if (statsMatch[4]) {
+                const bioSnippet = statsMatch[4].trim();
+                if (!bioSnippet.toLowerCase().includes("see instagram photos and videos from")) {
+                  bio = bioSnippet;
+                }
+              }
+            } else {
+              bio = rawDesc;
+            }
+
+            const isVerified =
+              html.includes('verified":true') ||
+              html.includes("meta_verified") ||
+              rawTitle.includes("Verified");
+
+            const safeFilename = `${username}_profile_pic.jpg`;
+            const result: ProfileResult = {
+              success: true,
+              username,
+              fullName,
+              profilePicUrl: rawProfilePic,
+              downloadUrl: `/api/instagram/stream?url=${encodeURIComponent(
+                rawProfilePic
+              )}&filename=${encodeURIComponent(safeFilename)}`,
+              filename: safeFilename,
+              followers,
+              following,
+              posts,
+              bio,
+              isPrivate: false,
+              isVerified,
+              userId: null,
+              recentPosts: [],
+            };
+
+            setCachedProfile(username, result);
+            return NextResponse.json(result);
           }
-
-          const safeFilename = `${username}_profile_pic.jpg`;
-          const result: ProfileResult = {
-            success: true,
-            username,
-            fullName,
-            profilePicUrl: rawProfilePic,
-            downloadUrl: `/api/instagram/stream?url=${encodeURIComponent(
-              rawProfilePic
-            )}&filename=${encodeURIComponent(safeFilename)}`,
-            filename: safeFilename,
-            followers,
-            following,
-            posts,
-            bio,
-          };
-
-          setCachedProfile(username, result);
-          return NextResponse.json(result);
         }
+      } catch (scraperErr: any) {
+        console.warn(`Direct scraper (${ua.slice(0, 15)}) failed:`, scraperErr.message);
       }
-    } catch (scraperErr: any) {
-      console.warn("Direct scraper fallback failed:", scraperErr.message);
     }
 
     return NextResponse.json(
@@ -259,4 +314,15 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const username = searchParams.get("username") || searchParams.get("url") || "";
+  return POST(
+    new NextRequest(req.url, {
+      method: "POST",
+      body: JSON.stringify({ username }),
+    })
+  );
 }

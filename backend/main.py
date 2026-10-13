@@ -33,7 +33,9 @@ class ProfileRequest(BaseModel):
     username: str
 
 
-# Instaloader instance for public profile extraction
+from itertools import islice
+
+# Instaloader instance for profile extraction (max_connection_attempts=1 prevents retry hangs)
 loader = instaloader.Instaloader(
     download_pictures=False,
     download_videos=False,
@@ -43,7 +45,17 @@ loader = instaloader.Instaloader(
     save_metadata=False,
     compress_json=False,
     quiet=True,
+    max_connection_attempts=1,
 )
+
+# Optional authenticated session injection if provided via environment
+insta_session = os.environ.get("INSTAGRAM_SESSION_ID")
+if insta_session:
+    try:
+        loader.context._session.cookies.set("sessionid", insta_session, domain=".instagram.com")
+        print("Instaloader initialized with custom session cookie.")
+    except Exception as e:
+        print(f"Failed to apply Instagram session: {e}")
 
 
 def sanitize_filename(name: str) -> str:
@@ -129,12 +141,124 @@ def extract_profile_data(raw_username: str):
     if not clean:
         raise HTTPException(status_code=400, detail="Invalid username format.")
 
-    # Strategy 1: Instaloader
+    # Strategy 1: Ultra-fast OpenGraph Crawler Scraper (< 1.5 seconds)
+    # Serves high-res profile picture, follower/following/post stats, full name, and bio
+    crawler_user_agents = [
+        "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        "Twitterbot/1.0",
+        "WhatsApp/2.21.12.21 i",
+    ]
+
+    for ua in crawler_user_agents:
+        try:
+            url = f"https://www.instagram.com/{clean}/"
+            headers = {
+                "User-Agent": ua,
+                "Accept-Language": "en-US,en;q=0.9",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            }
+            res = requests.get(url, headers=headers, timeout=6)
+            if res.status_code == 200:
+                html = res.text
+
+                # 1. Extract og:image
+                og_match = re.search(r'property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
+                if not og_match:
+                    og_match = re.search(r'content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']', html, re.I)
+
+                if og_match and og_match.group(1):
+                    pfp = og_match.group(1).replace("&amp;", "&")
+
+                    # 2. Extract og:title
+                    title_match = re.search(r'property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
+                    if not title_match:
+                        title_match = re.search(r'content=["\']([^"\']+)["\'][^>]+property=["\']og:title["\']', html, re.I)
+                    raw_title = title_match.group(1) if title_match else clean
+                    raw_title = raw_title.replace("&#064;", "@").replace("&#64;", "@").replace("&#x2022;", "•").replace("&amp;", "&")
+
+                    full_name = clean
+                    name_match = re.search(r'^([^(@]+)\s*\(@', raw_title)
+                    if name_match:
+                        full_name = name_match.group(1).strip()
+
+                    # 3. Extract og:description
+                    desc_match = re.search(r'property=["\']og:description["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
+                    if not desc_match:
+                        desc_match = re.search(r'content=["\']([^"\']+)["\'][^>]+property=["\']og:description["\']', html, re.I)
+                    raw_desc = desc_match.group(1) if desc_match else ""
+                    raw_desc = raw_desc.replace("&#064;", "@").replace("&#64;", "@").replace("&#x2022;", "•").replace("&amp;", "&")
+
+                    followers = ""
+                    following = ""
+                    posts_count = ""
+                    bio = ""
+
+                    stats_match = re.search(
+                        r'([\d\.,\w]+)\s+Followers,\s*([\d\.,\w]+)\s+Following,\s*([\d\.,\w]+)\s+Posts(?:\s*-\s*(.*))?',
+                        raw_desc,
+                        re.I
+                    )
+                    if stats_match:
+                        followers = stats_match.group(1)
+                        following = stats_match.group(2)
+                        posts_count = stats_match.group(3)
+                        if stats_match.group(4):
+                            bio_snippet = stats_match.group(4).strip()
+                            if not re.search(r'See Instagram photos and videos from', bio_snippet, re.I):
+                                bio = bio_snippet
+                    else:
+                        bio = raw_desc
+
+                    is_verified = bool(
+                        re.search(r'verified["\']?\s*:\s*true', html, re.I)
+                        or "meta_verified" in html
+                    )
+
+                    return {
+                        "success": True,
+                        "username": clean,
+                        "fullName": full_name,
+                        "profilePicUrl": pfp,
+                        "filename": f"{clean}_profile_pic.jpg",
+                        "followers": followers,
+                        "following": following,
+                        "posts": posts_count,
+                        "bio": bio,
+                        "isPrivate": False,
+                        "isVerified": is_verified,
+                        "userId": None,
+                        "recentPosts": [],
+                    }
+        except Exception as scrap_err:
+            print(f"Crawler attempt ({ua[:15]}) failed for @{clean}: {scrap_err}")
+            continue
+
+    # Strategy 2: Instaloader fallback (strictly 1 attempt, no exponential retry backoff)
     try:
+        loader.context.max_connection_attempts = 1
         profile = instaloader.Profile.from_username(loader.context, clean)
         pfp = profile.profile_pic_url
         if pfp:
             safe_name = f"{clean}_profile_pic.jpg"
+            recent_posts = []
+            if not profile.is_private:
+                try:
+                    for post in islice(profile.get_posts(), 6):
+                        recent_posts.append({
+                            "shortcode": post.shortcode,
+                            "media_type": "video" if post.is_video else "image",
+                            "thumbnail": post.url,
+                            "video_url": post.video_url if post.is_video else None,
+                            "display_url": post.url,
+                            "likes": post.likes,
+                            "comments": post.comments,
+                            "caption": (post.caption or "")[:120],
+                            "date": post.date_utc.strftime("%b %d, %Y") if post.date_utc else "",
+                        })
+                except Exception as p_err:
+                    print(f"Could not load recent posts for @{clean}: {p_err}")
+
             return {
                 "success": True,
                 "username": profile.username,
@@ -147,52 +271,15 @@ def extract_profile_data(raw_username: str):
                 "bio": profile.biography or "",
                 "isPrivate": profile.is_private,
                 "isVerified": profile.is_verified,
+                "userId": profile.userid,
+                "recentPosts": recent_posts,
             }
-    except instaloader.exceptions.ProfileNotExistsException:
-        raise HTTPException(status_code=404, detail=f"User @{clean} was not found on Instagram.")
-    except Exception as e:
-        print(f"Instaloader lookup failed for @{clean}, attempting fallback: {e}")
-
-    # Strategy 2: OpenGraph crawler scraper fallback
-    try:
-        url = f"https://www.instagram.com/{clean}/"
-        headers = {
-            "User-Agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
-            "Accept-Language": "en-US,en;q=0.9",
-        }
-        res = requests.get(url, headers=headers, timeout=8)
-        if res.status_code == 200:
-            html = res.text
-            og_match = re.search(r'property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
-            if not og_match:
-                og_match = re.search(r'content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']', html, re.I)
-            if og_match:
-                pfp = og_match.group(1).replace("&amp;", "&")
-                title_match = re.search(r'property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
-                raw_title = title_match.group(1) if title_match else clean
-                full_name = clean
-                name_match = re.search(r'^([^(@]+)\s*\(@', raw_title)
-                if name_match:
-                    full_name = name_match.group(1).strip()
-                return {
-                    "success": True,
-                    "username": clean,
-                    "fullName": full_name,
-                    "profilePicUrl": pfp,
-                    "filename": f"{clean}_profile_pic.jpg",
-                    "followers": "",
-                    "following": "",
-                    "posts": "",
-                    "bio": "",
-                    "isPrivate": False,
-                    "isVerified": False,
-                }
-    except Exception as err:
-        print(f"Fallback scraper error: {err}")
+    except Exception as insta_err:
+        print(f"Instaloader secondary lookup failed for @{clean}: {insta_err}")
 
     raise HTTPException(
         status_code=404,
-        detail=f"Unable to retrieve profile picture for @{clean}. The account might be restricted or private."
+        detail=f"Unable to retrieve profile picture for @{clean}. The account might be restricted, private, or temporarily protected by Instagram."
     )
 
 
