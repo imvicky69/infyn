@@ -127,9 +127,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://infyn.software",
   },
-  other: {
-    "google-adsense-account": "ca-pub-1570682624410987",
-  },
 };
 
 export default function RootLayout({
@@ -194,13 +191,6 @@ export default function RootLayout({
               }
             `,
           }}
-        />
-        {/* Google AdSense Verification & Native Tag */}
-        <meta name="google-adsense-account" content="ca-pub-1570682624410987" />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1570682624410987"
-          crossOrigin="anonymous"
         />
       </head>
       <body suppressHydrationWarning className="font-sans antialiased min-h-screen w-full max-w-full overflow-x-clip text-[#111111] dark:text-[#EDEDEC] bg-[#FBFBFA] dark:bg-[#0C0C0E] selection:bg-[#E8E6DE] dark:selection:bg-zinc-800 selection:text-black dark:selection:text-white relative">

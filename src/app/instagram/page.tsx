@@ -18,7 +18,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import SplitText from "@/components/SplitText";
 import { PrivacyBadges } from "@/components/image-tools/privacy-badges";
-import { GoogleAd, DEFAULT_ADSENSE_SLOT } from "@/components/ads/google-ad";
+import { AdsterraAd } from "@/components/ads/adsterra-ad";
 
 function InstagramIcon({ className = "h-5 w-5" }: { className?: string }) {
   return (
@@ -169,14 +169,14 @@ export default function InstagramToolsHubPage() {
           ))}
         </div>
 
-        {/* ── Sponsored Google Ad Slot (Auto-Collapses if Unfilled) ── */}
+        {/* ── Sponsored Adsterra Ad Slot ── */}
         <div className="max-w-4xl mx-auto w-full">
-          <GoogleAd
-            slot={DEFAULT_ADSENSE_SLOT}
-            minHeight={120}
-            label="Sponsored"
-            collapseWhenUnfilled={true}
-          />
+          <div className="hidden sm:block">
+            <AdsterraAd format="728x90" label="Sponsored" />
+          </div>
+          <div className="sm:hidden">
+            <AdsterraAd format="320x50" label="Sponsored" />
+          </div>
         </div>
 
         {/* ── Value Props ──────────────────────────────────── */}

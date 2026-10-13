@@ -34,7 +34,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import SplitText from "@/components/SplitText";
 import { PrivacyBadges } from "@/components/image-tools/privacy-badges";
-import { GoogleAd, DEFAULT_ADSENSE_SLOT } from "@/components/ads/google-ad";
+import { AdsterraAd } from "@/components/ads/adsterra-ad";
 import { DownloadAdModal } from "@/components/ads/download-ad-modal";
 
 function InstagramIcon({ className = "h-5 w-5" }: { className?: string }) {
@@ -515,6 +515,15 @@ export default function InstagramProfileDownloaderPage() {
                 className="h-full rounded-full animate-pulse w-3/4"
               />
             </div>
+
+            {/* Sponsored Adsterra Ad While Extracting Profile */}
+            <div className="pt-2 max-w-sm mx-auto">
+              <AdsterraAd
+                format="300x250"
+                label="Sponsored • Extracting Profile"
+                className="shadow-xs"
+              />
+            </div>
           </div>
         )}
 
@@ -890,18 +899,20 @@ export default function InstagramProfileDownloaderPage() {
           </div>
         )}
 
-        {/* ── Sponsored Google Ad Slot (Auto-Collapses if Unfilled) ── */}
+        {/* ── Sponsored Adsterra Ad Slot (Result Ready) ────── */}
         {stage === "done" && (
           <div
-            className="max-w-3xl mx-auto w-full"
+            className="max-w-4xl mx-auto w-full space-y-4"
             style={{ animation: "fade-in-up 0.3s ease-out" }}
           >
-            <GoogleAd
-              slot={DEFAULT_ADSENSE_SLOT}
-              minHeight={120}
-              label="Sponsored"
-              collapseWhenUnfilled={true}
-            />
+            {/* Desktop Leaderboard */}
+            <div className="hidden sm:block">
+              <AdsterraAd format="728x90" label="Sponsored" />
+            </div>
+            {/* Mobile Banner */}
+            <div className="sm:hidden">
+              <AdsterraAd format="320x50" label="Sponsored" />
+            </div>
           </div>
         )}
 

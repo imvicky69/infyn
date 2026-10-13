@@ -15,7 +15,7 @@ import {
   FileVideo,
   Music,
 } from "lucide-react";
-import { GoogleAd, DEFAULT_ADSENSE_SLOT } from "./google-ad";
+import { AdsterraAd } from "./adsterra-ad";
 
 interface DownloadAdModalProps {
   isOpen: boolean;
@@ -190,11 +190,10 @@ export function DownloadAdModal({
             </div>
           </div>
 
-          {/* SPONSORED GOOGLE ADSENSE UNIT */}
+          {/* SPONSORED ADSTERRA AD UNIT */}
           <div className="space-y-1">
-            <GoogleAd
-              slot={DEFAULT_ADSENSE_SLOT}
-              minHeight={160}
+            <AdsterraAd
+              format="300x250"
               label="Sponsored"
               className="shadow-xs"
             />
