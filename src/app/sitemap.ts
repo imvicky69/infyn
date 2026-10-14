@@ -39,12 +39,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/contributing",
   ];
 
-  const staticEntries: MetadataRoute.Sitemap = staticRoutes.map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: route === "" ? "daily" : route.split("/").length === 2 ? "weekly" : "monthly",
-    priority: route === "" ? 1.0 : route.split("/").length === 2 ? 0.9 : 0.8,
-  }));
+  const staticEntries: MetadataRoute.Sitemap = staticRoutes.map((route) => {
+    let changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] =
+      route === "" ? "daily" : route.split("/").length === 2 ? "weekly" : "monthly";
+    let priority = route === "" ? 1.0 : route.split("/").length === 2 ? 0.9 : 0.8;
+
+    if (route === "/instagram/reel-downloader") {
+      priority = 0.95;
+      changeFrequency = "daily";
+    } else if (route === "/instagram") {
+      priority = 0.9;
+      changeFrequency = "weekly";
+    }
+
+    return {
+      url: `${baseUrl}${route}`,
+      lastModified: new Date(),
+      changeFrequency,
+      priority,
+    };
+  });
 
   // Dynamically query all movies from Firestore for inclusion in XML sitemap
   const movieEntries: MetadataRoute.Sitemap = [];

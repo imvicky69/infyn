@@ -166,7 +166,7 @@ Verify that:
 - TypeScript passes with zero errors.
 - Next.js statically renders all routes (`○  (Static)`).
 - Mobile layout is responsive.
-
+- never open dev server to check the fixes 
 ---
 
 ## 🔒 5. Performance & Safety Checklist
@@ -177,17 +177,3 @@ Verify that:
 - [ ] **Zero Mixed Styles**: Use either `background` or `backgroundColor`, never mix them on the same dynamic element in React.
 - [ ] **No Artificial Limits**: Are batch uploads and file sizes unlimited?
 - [ ] **100% Ad-Free**: Is the interface free of tracking and banner clutter?
-
----
-
-*Keep this document updated as new tools, categories (PDF, Developer Utilities), and shared engines are added.*
-
-<!-- BEGIN:nextjs-agent-rules -->
-
-# This is NOT the Next.js you know
-
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->

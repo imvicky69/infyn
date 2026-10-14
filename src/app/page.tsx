@@ -3,12 +3,14 @@
 import * as React from "react";
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { HomeAppsShowcase } from "@/components/home-apps-showcase";
 import { HomeMoviesFeed } from "@/components/home-movies-feed";
+import { XweetWallpapersShowcase } from "@/components/home-wallpapers";
 import SplitText from "@/components/SplitText";
 import { AnimatedLogo } from "@/components/animatedLogo";
 import {
@@ -47,6 +49,24 @@ import {
 } from "lucide-react";
 import { Movie } from "@/types/movie";
 import { getLiveMovies } from "@/lib/movies-firestore";
+
+function InstagramIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+  );
+}
 
 interface ToolItem {
   href: string;
@@ -289,12 +309,12 @@ const UPCOMING = [
 ];
 
 const POPULAR_TOOLS = [
+  "/instagram/reel-downloader",
   "/image/compressor",
   "/image/bg-remover",
   "/image/qr-code",
   "/pdf/compressor",
   "/pdf/merger",
-  "/dev/svg-cleaner",
 ];
 
 
@@ -377,10 +397,21 @@ function ToolCard({ tool }: { tool: ToolItem }) {
 }
 
 export default function HomePage() {
+  const router = useRouter();
+  const [homeReelUrl, setHomeReelUrl] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [moviesList, setMoviesList] = useState<Movie[]>([]);
   const [showAllTools, setShowAllTools] = useState<boolean>(false);
+
+  const handleReelSubmit = () => {
+    const trimmed = homeReelUrl.trim();
+    if (trimmed) {
+      router.push(`/instagram/reel-downloader?url=${encodeURIComponent(trimmed)}`);
+    } else {
+      router.push("/instagram/reel-downloader");
+    }
+  };
 
   // Fetch movies for search
   useEffect(() => {
@@ -642,33 +673,146 @@ export default function HomePage() {
               </AnimatePresence>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-x-6 gap-y-3 mt-6">
-              <Link href="/image/qr-code" className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors">
-                QR Code generator
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-5 text-xs text-[#6E6D68] dark:text-zinc-400">
+              <span className="text-[#9E9D98] dark:text-zinc-500 font-medium mr-0.5">Popular:</span>
+              <Link
+                href="/image/bg-remover"
+                className="inline-flex items-center px-3 py-1 rounded-full font-medium text-[#6E6D68] dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-[#EAEAE5] dark:border-zinc-800 hover:border-[#BEBDB9] dark:hover:border-zinc-700 transition-colors shadow-2xs"
+              >
+                Background Remover
               </Link>
-              <Link href="/image/bg-remover" className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors">
-                Remove background
+              <Link
+                href="/image/compressor"
+                className="inline-flex items-center px-3 py-1 rounded-full font-medium text-[#6E6D68] dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-[#EAEAE5] dark:border-zinc-800 hover:border-[#BEBDB9] dark:hover:border-zinc-700 transition-colors shadow-2xs"
+              >
+                Image Compressor
               </Link>
-              <Link href="/image/compressor" className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors">
-                Compress image
-              </Link>
-              <Link href="/pdf/compressor" className="text-[13px] font-medium text-[#6E6D68] hover:text-[#111111] transition-colors">
+              <Link
+                href="/pdf/compressor"
+                className="inline-flex items-center px-3 py-1 rounded-full font-medium text-[#6E6D68] dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-[#EAEAE5] dark:border-zinc-800 hover:border-[#BEBDB9] dark:hover:border-zinc-700 transition-colors shadow-2xs"
+              >
                 Compress PDF
               </Link>
-              <Link href="/dl" className="text-[13px] font-medium text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 transition-colors">
-                Infyn DL (App)
-              </Link>
-              <Link href="/home-tab" className="text-[13px] font-medium text-indigo-700 dark:text-indigo-400 hover:text-indigo-800 transition-colors">
-                Home Tab (Extension)
+              <Link
+                href="/image/qr-code"
+                className="inline-flex items-center px-3 py-1 rounded-full font-medium text-[#6E6D68] dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-[#EAEAE5] dark:border-zinc-800 hover:border-[#BEBDB9] dark:hover:border-zinc-700 transition-colors shadow-2xs"
+              >
+                QR Code
               </Link>
             </div>
+          </div>
+        </section>
 
+        {/* ── Dedicated Instagram Reel Downloader Spotlight Section ── */}
+        <section className="relative overflow-hidden rounded-3xl border border-rose-200/80 dark:border-rose-900/60 bg-gradient-to-b from-rose-50/50 via-white to-white dark:from-[#191114] dark:via-[#141417] dark:to-[#141417] p-6 sm:p-10 shadow-[0_8px_32px_rgba(244,63,94,0.06)]">
+          {/* Subtle decorative glow */}
+          <div
+            style={{
+              background:
+                "radial-gradient(ellipse at top, rgba(244,63,94,0.15), transparent 70%)",
+            }}
+            className="absolute top-0 inset-x-0 h-40 pointer-events-none"
+          />
 
-            <div className="mt-14 flex flex-col items-center gap-2">
-              <a href="#tools" className="h-10 w-10 rounded-full border border-[#EAEAE5] bg-white flex items-center justify-center text-[#9E9D98] hover:border-[#111111] hover:text-[#111111] transition-colors animate-bounce shadow-sm">
-                <ArrowDown className="h-4 w-4" />
-              </a>
-              <span className="text-[11px] font-semibold text-[#9E9D98] tracking-widest uppercase mt-2">Explore all tools</span>
+          <div className="relative max-w-2xl mx-auto text-center space-y-5">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-100/80 dark:bg-rose-950/70 border border-rose-200/80 dark:border-rose-800/80 text-rose-700 dark:text-rose-300 text-xs font-bold shadow-2xs">
+              <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+              <span>Dedicated Downloader · 1080p Full HD MP4 · Zero Watermarks</span>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#111111] dark:text-white">
+                Download Instagram Reels in 1080p HD
+              </h2>
+              <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400 max-w-lg mx-auto leading-relaxed">
+                Paste any public Instagram Reel or video link below to save pristine MP4 videos and extract audio tracks directly in your browser. 100% Free & Unlimited.
+              </p>
+            </div>
+
+            {/* Direct Input Box */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleReelSubmit();
+              }}
+              className="p-2 sm:p-2.5 rounded-2xl sm:rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#18181B] shadow-[0_4px_20px_rgba(0,0,0,0.04)] focus-within:border-rose-500 dark:focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 transition-all text-left"
+            >
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                <div className="flex items-center gap-2.5 flex-1 px-3 py-2 sm:py-0">
+                  <div
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(244,63,94,0.15), rgba(168,85,247,0.15))",
+                    }}
+                    className="h-10 w-10 rounded-xl border border-rose-200/60 dark:border-rose-800/60 flex items-center justify-center text-rose-600 dark:text-rose-400 shrink-0"
+                  >
+                    <InstagramIcon className="h-5 w-5" />
+                  </div>
+                  <input
+                    type="text"
+                    value={homeReelUrl}
+                    onChange={(e) => setHomeReelUrl(e.target.value)}
+                    placeholder="Paste Instagram Reel link here..."
+                    className="w-full bg-transparent text-sm sm:text-base text-[#111111] dark:text-white placeholder-[#9E9D98] dark:placeholder-zinc-500 outline-none"
+                  />
+                  {homeReelUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setHomeReelUrl("")}
+                      className="text-xs text-[#9E9D98] hover:text-[#111111] dark:hover:text-white px-2 py-1 rounded transition-colors shrink-0 cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        if (navigator.clipboard?.readText) {
+                          const text = await navigator.clipboard.readText();
+                          if (text) setHomeReelUrl(text.trim());
+                        }
+                      } catch {}
+                    }}
+                    title="Paste from clipboard"
+                    className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-[#F5F4EE] dark:bg-zinc-800 hover:bg-[#EAEAE5] dark:hover:bg-zinc-700 text-[#6E6D68] dark:text-zinc-300 transition-colors shrink-0 cursor-pointer"
+                  >
+                    <span>Paste</span>
+                  </button>
+                </div>
+
+                <button
+                  type="submit"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #e11d48 0%, #db2777 50%, #9333ea 100%)",
+                  }}
+                  className="px-6 py-3.5 rounded-xl sm:rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-extrabold flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-[0.98] shrink-0 cursor-pointer"
+                >
+                  <Download className="h-4 w-4" />
+                  <span>Download Reel</span>
+                </button>
+              </div>
+            </form>
+
+            {/* Quick feature perks below input */}
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 pt-1 text-xs font-semibold text-[#6E6D68] dark:text-zinc-400">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+                <span>1080p Full HD MP4</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+                <span>Zero Watermarks</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+                <span>Audio Extraction (M4A)</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+                <span>100% Free & Unlimited</span>
+              </span>
             </div>
           </div>
         </section>
@@ -736,7 +880,45 @@ export default function HomePage() {
             <h3 className="text-xs font-bold tracking-widest text-[#9E9D98] dark:text-zinc-500 uppercase">
               Category Suites (Designated Folders)
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Instagram Tools Suite Folder */}
+              <Link
+                href="/instagram"
+                className="group relative flex flex-col justify-between rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] p-5 hover:border-rose-300 dark:hover:border-rose-800 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <div>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white shadow-xs">
+                      <InstagramIcon className="h-5 w-5" />
+                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/60">
+                      Trending
+                    </span>
+                  </div>
+                  <h4 className="text-[15px] font-bold text-[#111111] dark:text-white tracking-[-0.01em] group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                    Instagram Tools
+                  </h4>
+                  <p className="text-[12px] text-[#6E6D68] dark:text-zinc-400 leading-relaxed mt-1 line-clamp-2">
+                    1080p Reels video downloader, audio extraction (M4A), and full-size profile picture viewer.
+                  </p>
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    {["Reels MP4", "Audio M4A", "HD DP", "No Watermark"].map((f) => (
+                      <span
+                        key={f}
+                        className="text-[10px] font-medium px-2 py-0.5 rounded bg-rose-50/50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/40"
+                      >
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-4 pt-3 border-t border-[#F5F4EE] dark:border-zinc-800 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#111111] dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                    Open Instagram Tools
+                  </span>
+                  <ArrowRight className="h-4 w-4 text-[#111111] dark:text-white group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </Link>
               {/* Image Suite Folder */}
               <Link
                 href="/image"
@@ -958,6 +1140,9 @@ export default function HomePage() {
 
         {/* ── Native Apps & Extensions Showcase (Dedicated Apps Component) ── */}
         <HomeAppsShowcase />
+
+        {/* ── Xweet Wallpapers Showcase (Minimal 4K Wallpaper Project) ── */}
+        <XweetWallpapersShowcase />
 
         {/* ── Dynamic Movies & Series Marquee Stream (New Dynamic Component) ── */}
         <HomeMoviesFeed />

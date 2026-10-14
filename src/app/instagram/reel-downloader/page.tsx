@@ -18,7 +18,6 @@ import {
   ExternalLink,
   ShieldCheck,
   Zap,
-  HelpCircle,
   Smartphone,
   Laptop,
   Layers,
@@ -29,8 +28,6 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import SplitText from "@/components/SplitText";
 import { PrivacyBadges } from "@/components/image-tools/privacy-badges";
-import { AdsterraAd } from "@/components/ads/adsterra-ad";
-import { DownloadAdModal } from "@/components/ads/download-ad-modal";
 
 function InstagramIcon({ className = "h-5 w-5" }: { className?: string }) {
   return (
@@ -74,24 +71,28 @@ const SAMPLE_REEL_URL =
 
 const FAQS = [
   {
-    q: "How do I download an Instagram Reel on mobile or PC?",
-    a: "Open the Instagram app or website, tap the share icon on the Reel, and click 'Copy Link'. Paste the link into the box above, click 'Download Reel', and your video will be ready to save in full HD MP4.",
+    q: "How do I download Instagram Reels without a watermark?",
+    a: "Open the Instagram app, tap the Share icon on the Reel you want to save, and click 'Copy Link'. Paste the link into the Infyn Reel Downloader box and click 'Download Reel'. Your video will be extracted in original 1080p Full HD quality with zero added watermarks.",
   },
   {
-    q: "Will the downloaded Reel have watermarks?",
-    a: "No! All video downloads via Infyn are 100% free of added watermarks or logos, matching the original uploaded quality.",
+    q: "Can I download Instagram Reels in 1080p Full HD MP4?",
+    a: "Yes. Infyn extracts the direct high-definition media stream from Instagram's CDN, preserving the original resolution up to 1080p Full HD at maximum bitrate without compression.",
   },
   {
-    q: "Can I download only the audio or background music from a Reel?",
-    a: "Yes. Once the Reel is processed, an option to 'Download Audio (M4A)' is available so you can save pristine background music and audio tracks.",
+    q: "How do I save Instagram Reels on iPhone or Android gallery?",
+    a: "On iPhone (iOS Safari), paste the link, tap 'Download Reel', and choose 'Download'. Tap the Safari Downloads icon to view and save it directly to your Photos / Camera Roll. On Android (Chrome), tap 'Download Reel' and the MP4 video saves directly to your device Downloads and Gallery.",
   },
   {
-    q: "Can I download Reels from private Instagram accounts?",
-    a: "No. For privacy and security reasons, our tool only processes public Instagram Reels and posts accessible without an Instagram login.",
+    q: "Can I download only the audio or background music from an Instagram Reel?",
+    a: "Yes! Infyn features a dedicated 'Download Audio (M4A)' button that separates the audio track so you can save high-fidelity music, sounds, and voice clips without the video.",
   },
   {
-    q: "Are my downloads saved on your servers?",
-    a: "Never. Infyn adheres to a strict zero-cloud-storage philosophy. Your requested media streams directly to your browser without retention or storage on remote servers.",
+    q: "Do I need to log in to an Instagram account to download Reels?",
+    a: "No. You never need an Instagram account, password, or signup. Simply paste any public Instagram Reel link to download immediately and anonymously.",
+  },
+  {
+    q: "Are my downloads tracked or stored on your servers?",
+    a: "Never. Infyn adheres to a strict zero-cloud-storage philosophy. Media streams directly through your browser session with zero data retention or file storage on remote servers.",
   },
 ];
 
@@ -104,17 +105,6 @@ export default function InstagramDownloaderPage() {
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
-  const [downloadModal, setDownloadModal] = useState<{
-    isOpen: boolean;
-    url: string | null;
-    filename: string;
-    fileType: string;
-  }>({
-    isOpen: false,
-    url: null,
-    filename: "",
-    fileType: "Reel Video (MP4)",
-  });
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -124,9 +114,18 @@ export default function InstagramDownloaderPage() {
     fetch("/api/instagram/wake").catch(() => {});
   }, []);
 
-  // Eagerly pre-warm backend when user visits this page
+  // Eagerly pre-warm backend and automatically fetch reel if ?url= is provided in query params
   React.useEffect(() => {
     triggerPreWarm();
+
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const queryUrl = params.get("url");
+      if (queryUrl) {
+        setUrl(queryUrl);
+        handleFetchReel(queryUrl);
+      }
+    }
   }, [triggerPreWarm]);
 
   // Elapsed time tracker for user-friendly progress updates during cold boots
@@ -143,18 +142,7 @@ export default function InstagramDownloaderPage() {
     return () => clearInterval(timer);
   }, [stage]);
 
-  const handleDownloadWithAd = (
-    downloadUrl: string,
-    filename: string,
-    fileType: string = "HD Video (MP4)"
-  ) => {
-    setDownloadModal({
-      isOpen: true,
-      url: downloadUrl,
-      filename,
-      fileType,
-    });
-  };
+
 
   const handlePasteFromClipboard = async () => {
     triggerPreWarm();
@@ -255,6 +243,7 @@ export default function InstagramDownloaderPage() {
           </div>
 
           <SplitText
+            tag="h1"
             text="Instagram Reel Downloader"
             className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#111111] dark:text-white"
             delay={25}
@@ -262,9 +251,9 @@ export default function InstagramDownloaderPage() {
             splitType="words"
           />
 
-          <p className="text-sm sm:text-base text-[#6E6D68] dark:text-zinc-400 font-medium leading-relaxed">
-            Download Instagram Reels, Videos, and Audio in full HD MP4 directly in your
-            browser. No registration, no ads, and 100% free.
+          <p className="text-sm sm:text-base text-[#6E6D68] dark:text-zinc-400 font-medium leading-relaxed max-w-xl mx-auto">
+            Download Instagram Reels, Videos, and Audio in pristine 1080p Full HD MP4 directly in your
+            browser. 100% free, zero watermarks, no software required, and zero login.
           </p>
         </div>
 
@@ -412,15 +401,6 @@ export default function InstagramDownloaderPage() {
                 className="h-full rounded-full animate-pulse w-3/4"
               />
             </div>
-
-            {/* Sponsored Adsterra Ad While Extracting Reel */}
-            <div className="pt-2 max-w-sm mx-auto">
-              <AdsterraAd
-                format="300x250"
-                label="Sponsored • Extracting Media"
-                className="shadow-xs"
-              />
-            </div>
           </div>
         )}
 
@@ -556,26 +536,22 @@ export default function InstagramDownloaderPage() {
                 <div className="space-y-2.5 pt-2">
                   <button
                     onClick={() =>
-                      handleDownloadWithAd(
-                        reelData.download_url,
-                        reelData.filename,
-                        "Reel Video (HD MP4)"
-                      )
+                      triggerDownload(reelData.download_url, reelData.filename)
                     }
-                    className="w-full py-3.5 px-5 rounded-2xl bg-[#111111] hover:bg-black dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-[#111111] text-sm font-extrabold flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                    disabled={isDownloading}
+                    className="w-full py-3.5 px-5 rounded-2xl bg-[#111111] hover:bg-black dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-[#111111] text-sm font-extrabold flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50"
                   >
                     <Download className="h-4 w-4" />
-                    <span>Download Reel (HD MP4)</span>
+                    <span>{isDownloading ? "Downloading..." : "Download Reel (HD MP4)"}</span>
                   </button>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {reelData.audio_download_url ? (
                       <button
                         onClick={() =>
-                          handleDownloadWithAd(
+                          triggerDownload(
                             reelData.audio_download_url!,
-                            `${reelData.id}_audio.m4a`,
-                            "Audio Track (M4A)"
+                            `${reelData.id}_audio.m4a`
                           )
                         }
                         className="py-3 px-3.5 rounded-xl border border-[#EAEAE5] dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 bg-[#F5F4EE] dark:bg-zinc-800 text-[#111111] dark:text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
@@ -588,10 +564,9 @@ export default function InstagramDownloaderPage() {
                     {reelData.thumbnail ? (
                       <button
                         onClick={() =>
-                          handleDownloadWithAd(
+                          triggerDownload(
                             reelData.thumbnail,
-                            `${reelData.id}_cover.jpg`,
-                            "Cover Image (JPG)"
+                            `${reelData.id}_cover.jpg`
                           )
                         }
                         className="py-3 px-3.5 rounded-xl border border-[#EAEAE5] dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 bg-[#F5F4EE] dark:bg-zinc-800 text-[#111111] dark:text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
@@ -626,134 +601,276 @@ export default function InstagramDownloaderPage() {
           </div>
         )}
 
-        {/* ── Sponsored Adsterra Ad Slot when Result is Ready ── */}
-        {stage === "done" && (
-          <div
-            className="max-w-4xl mx-auto w-full space-y-4"
-            style={{ animation: "fade-in-up 0.3s ease-out" }}
-          >
-            {/* Desktop Leaderboard */}
-            <div className="hidden sm:block">
-              <AdsterraAd format="728x90" label="Sponsored" />
-            </div>
-            {/* Mobile Banner */}
-            <div className="sm:hidden">
-              <AdsterraAd format="320x50" label="Sponsored" />
-            </div>
-          </div>
-        )}
 
-        {/* ── Feature Value Props ──────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto pt-6">
-          <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-2">
-            <div className="h-10 w-10 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-800/60 flex items-center justify-center text-rose-600 dark:text-rose-400">
-              <Zap className="h-5 w-5" />
-            </div>
-            <h4 className="text-sm font-bold text-[#111111] dark:text-white">
-              Direct In-Browser
-            </h4>
-            <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
-              No software or extensions required. Plays and downloads directly inside your
-              mobile or desktop browser.
-            </p>
-          </div>
 
-          <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-2">
-            <div className="h-10 w-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-800/60 flex items-center justify-center text-purple-600 dark:text-purple-400">
-              <ShieldCheck className="h-5 w-5" />
-            </div>
-            <h4 className="text-sm font-bold text-[#111111] dark:text-white">
-              Zero Watermarks
-            </h4>
-            <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
-              Preserves the original video and audio quality exactly as uploaded, with no
-              overlays or compression artifacts.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-2">
-            <div className="h-10 w-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 flex items-center justify-center text-amber-600 dark:text-amber-400">
-              <Music className="h-5 w-5" />
-            </div>
-            <h4 className="text-sm font-bold text-[#111111] dark:text-white">
-              Audio Extraction
-            </h4>
-            <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
-              Extract background songs, sound clips, and voiceovers into separate clean audio
-              files with 1 click.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-2">
-            <div className="h-10 w-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-              <Layers className="h-5 w-5" />
-            </div>
-            <h4 className="text-sm font-bold text-[#111111] dark:text-white">
-              100% Free & Unlimited
-            </h4>
-            <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
-              No daily limits, no hidden subscription traps, and zero invasive banner
-              advertisements.
-            </p>
-          </div>
-        </div>
-
-        {/* ── How to Download Guide ─────────────────────────── */}
-        <div className="max-w-3xl mx-auto p-6 sm:p-8 rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-6">
-          <div className="space-y-1">
-            <h3 className="text-lg font-extrabold text-[#111111] dark:text-white flex items-center gap-2">
-              <span>How to Download Instagram Reels in 3 Steps</span>
-            </h3>
+        {/* ── How to Download Guide (Step-by-Step) ──────────── */}
+        <section className="max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-6">
+          <div className="space-y-1 text-center sm:text-left">
+            <h2 className="text-lg sm:text-xl font-extrabold text-[#111111] dark:text-white flex items-center gap-2 justify-center sm:justify-start">
+              <span>How to Download Instagram Reels in 3 Easy Steps</span>
+            </h2>
             <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400">
-              Compatible with all modern web browsers across iPhone, Android, Mac, and Windows.
+              Save any public Instagram Reel or video directly to your phone, tablet, or computer.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-2xl bg-[#FBFBFA] dark:bg-[#18181B] border border-[#EAEAE5] dark:border-zinc-800 space-y-2">
-              <div className="h-7 w-7 rounded-lg bg-rose-500 text-white font-bold text-xs flex items-center justify-center">
+            <div
+              id="step1"
+              className="p-5 rounded-2xl bg-[#FBFBFA] dark:bg-[#18181B] border border-[#EAEAE5] dark:border-zinc-800 space-y-2.5"
+            >
+              <div className="h-8 w-8 rounded-xl bg-rose-500 text-white font-extrabold text-sm flex items-center justify-center shadow-xs">
                 1
               </div>
-              <h5 className="text-sm font-bold text-[#111111] dark:text-white">
-                Copy Reel Link
-              </h5>
+              <h3 className="text-sm font-bold text-[#111111] dark:text-white">
+                Copy Instagram Reel Link
+              </h3>
               <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
-                Open Instagram, find the Reel you want to save, tap Share &rarr; Copy Link.
+                Open Instagram, find the Reel you want to save, tap the <strong>Share</strong> icon, and select <strong>Copy Link</strong>.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#FBFBFA] dark:bg-[#18181B] border border-[#EAEAE5] dark:border-zinc-800 space-y-2">
-              <div className="h-7 w-7 rounded-lg bg-rose-500 text-white font-bold text-xs flex items-center justify-center">
+            <div
+              id="step2"
+              className="p-5 rounded-2xl bg-[#FBFBFA] dark:bg-[#18181B] border border-[#EAEAE5] dark:border-zinc-800 space-y-2.5"
+            >
+              <div className="h-8 w-8 rounded-xl bg-rose-500 text-white font-extrabold text-sm flex items-center justify-center shadow-xs">
                 2
               </div>
-              <h5 className="text-sm font-bold text-[#111111] dark:text-white">
-                Paste on Infyn
-              </h5>
+              <h3 className="text-sm font-bold text-[#111111] dark:text-white">
+                Paste Link into Infyn
+              </h3>
               <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
-                Paste the URL into the input field above and click &ldquo;Download Reel&rdquo;.
+                Paste the copied URL into the search box above and click <strong>Download Reel</strong> to extract the HD stream.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#FBFBFA] dark:bg-[#18181B] border border-[#EAEAE5] dark:border-zinc-800 space-y-2">
-              <div className="h-7 w-7 rounded-lg bg-rose-500 text-white font-bold text-xs flex items-center justify-center">
+            <div
+              id="step3"
+              className="p-5 rounded-2xl bg-[#FBFBFA] dark:bg-[#18181B] border border-[#EAEAE5] dark:border-zinc-800 space-y-2.5"
+            >
+              <div className="h-8 w-8 rounded-xl bg-rose-500 text-white font-extrabold text-sm flex items-center justify-center shadow-xs">
                 3
               </div>
-              <h5 className="text-sm font-bold text-[#111111] dark:text-white">
-                Preview & Save
-              </h5>
+              <h3 className="text-sm font-bold text-[#111111] dark:text-white">
+                Preview & Save HD MP4
+              </h3>
               <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
-                Watch the preview inside your browser and click &ldquo;Download (HD MP4)&rdquo;.
+                Watch the live preview in your browser and click <strong>Download Reel (HD MP4)</strong> or extract audio as M4A.
               </p>
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* ── Device Specific Guides (iPhone, Android, PC) ──── */}
+        <section className="max-w-4xl mx-auto space-y-4">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#111111] dark:text-white">
+              Download Instagram Reels on Any Device
+            </h2>
+            <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400">
+              Works seamlessly across all modern browsers without installing third-party apps.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* iPhone */}
+            <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                  <Smartphone className="h-5 w-5" />
+                </div>
+                <h3 className="text-sm font-bold text-[#111111] dark:text-white">
+                  iPhone & iPad (iOS)
+                </h3>
+              </div>
+              <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
+                In the Instagram iOS app, tap Share &rarr; Copy Link. Open <strong>Safari</strong> on your iPhone, paste the URL on Infyn, and tap Download. Tap the Safari Downloads icon to view and save directly to your <strong>Photos / Camera Roll</strong>.
+              </p>
+            </div>
+
+            {/* Android */}
+            <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                  <Smartphone className="h-5 w-5" />
+                </div>
+                <h3 className="text-sm font-bold text-[#111111] dark:text-white">
+                  Android Devices
+                </h3>
+              </div>
+              <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
+                Tap Share &rarr; Copy Link in Instagram. Launch Chrome or your preferred mobile browser, paste the reel link, and tap Download. The 1080p MP4 saves instantly into your phone&apos;s <strong>Gallery</strong> and <strong>Downloads</strong> folder.
+              </p>
+            </div>
+
+            {/* PC & Mac */}
+            <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-800/60 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
+                  <Laptop className="h-5 w-5" />
+                </div>
+                <h3 className="text-sm font-bold text-[#111111] dark:text-white">
+                  PC & Mac Desktop
+                </h3>
+              </div>
+              <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
+                Open instagram.com on your desktop browser, copy the URL directly from the address bar, paste it into Infyn, and enjoy high-speed 1080p MP4 downloads without browser extensions or spam popups.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Feature Value Props ──────────────────────────── */}
+        <section className="space-y-4 max-w-5xl mx-auto">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#111111] dark:text-white">
+              Features of Infyn Instagram Reels Downloader
+            </h2>
+            <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400">
+              Engineered for speed, privacy, and maximum video fidelity.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+            <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-2">
+              <div className="h-10 w-10 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-800/60 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                <Zap className="h-5 w-5" />
+              </div>
+              <h3 className="text-sm font-bold text-[#111111] dark:text-white">
+                Direct In-Browser
+              </h3>
+              <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
+                No software, apps, or extensions required. Plays and downloads directly inside your
+                mobile or desktop browser.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-2">
+              <div className="h-10 w-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-800/60 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+              <h3 className="text-sm font-bold text-[#111111] dark:text-white">
+                Zero Watermarks
+              </h3>
+              <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
+                Preserves original 1080p video and audio quality exactly as uploaded, with no
+                injected logos or watermark overlays.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-2">
+              <div className="h-10 w-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                <Music className="h-5 w-5" />
+              </div>
+              <h3 className="text-sm font-bold text-[#111111] dark:text-white">
+                Audio Extraction (M4A)
+              </h3>
+              <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
+                Extract background songs, sound clips, and voiceovers into separate clean audio
+                files with a single click.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] space-y-2">
+              <div className="h-10 w-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <Layers className="h-5 w-5" />
+              </div>
+              <h3 className="text-sm font-bold text-[#111111] dark:text-white">
+                100% Free & Unlimited
+              </h3>
+              <p className="text-xs text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
+                No daily download limits, no hidden subscription traps, and zero invasive pop-under
+                redirects.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Audio Extractor Section ──────────────────────── */}
+        <section className="max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] flex flex-col md:flex-row items-center gap-6 shadow-xs">
+          <div className="h-14 w-14 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-800/60 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
+            <Music className="h-7 w-7" />
+          </div>
+          <div className="space-y-1.5 flex-1 text-center md:text-left">
+            <h2 className="text-lg sm:text-xl font-extrabold text-[#111111] dark:text-white">
+              Extract Audio & Background Music from Instagram Reels
+            </h2>
+            <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400 leading-relaxed">
+              Love the background music, viral audio clip, or sound effect in a Reel? Infyn automatically separates the high-bitrate audio track so you can save it as an M4A audio file with 1 click. Perfect for creators, editors, and music lovers.
+            </p>
+          </div>
+        </section>
+
+        {/* ── Comparison Table: Infyn vs Others ─────────────── */}
+        <section className="max-w-4xl mx-auto space-y-4">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#111111] dark:text-white">
+              Why Choose Infyn Reel Downloader?
+            </h2>
+            <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400">
+              Compare Infyn with standard, ad-heavy downloaders across the web.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-[#EAEAE5] dark:border-zinc-800 bg-white dark:bg-[#141417] overflow-hidden shadow-xs">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs sm:text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-[#EAEAE5] dark:border-zinc-800 bg-[#FBFBFA] dark:bg-[#18181B]">
+                    <th className="py-3.5 px-4 sm:px-6 font-bold text-[#111111] dark:text-white">Feature</th>
+                    <th className="py-3.5 px-4 sm:px-6 font-extrabold text-rose-600 dark:text-rose-400">Infyn Downloader</th>
+                    <th className="py-3.5 px-4 sm:px-6 font-semibold text-[#6E6D68] dark:text-zinc-400">Other Downloaders</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#EAEAE5] dark:divide-zinc-800">
+                  <tr>
+                    <td className="py-3 px-4 sm:px-6 font-medium text-[#111111] dark:text-white">Watermark Added</td>
+                    <td className="py-3 px-4 sm:px-6 font-bold text-emerald-600 dark:text-emerald-400">❌ Zero Watermarks</td>
+                    <td className="py-3 px-4 sm:px-6 text-[#6E6D68] dark:text-zinc-400">⚠️ Often stamps watermarks</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 sm:px-6 font-medium text-[#111111] dark:text-white">Max Resolution</td>
+                    <td className="py-3 px-4 sm:px-6 font-bold text-emerald-600 dark:text-emerald-400">🚀 Original 1080p Full HD</td>
+                    <td className="py-3 px-4 sm:px-6 text-[#6E6D68] dark:text-zinc-400">⚠️ Downscaled to 720p / 480p</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 sm:px-6 font-medium text-[#111111] dark:text-white">Audio & Sound Extraction</td>
+                    <td className="py-3 px-4 sm:px-6 font-bold text-emerald-600 dark:text-emerald-400">✅ 1-Click M4A Audio Track</td>
+                    <td className="py-3 px-4 sm:px-6 text-[#6E6D68] dark:text-zinc-400">❌ Video only or 3rd party tool</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 sm:px-6 font-medium text-[#111111] dark:text-white">In-Browser Video Preview</td>
+                    <td className="py-3 px-4 sm:px-6 font-bold text-emerald-600 dark:text-emerald-400">✅ Built-in Player</td>
+                    <td className="py-3 px-4 sm:px-6 text-[#6E6D68] dark:text-zinc-400">❌ Blind download</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 sm:px-6 font-medium text-[#111111] dark:text-white">Spammy Popups & Redirects</td>
+                    <td className="py-3 px-4 sm:px-6 font-bold text-emerald-600 dark:text-emerald-400">❌ Zero Spam Popups</td>
+                    <td className="py-3 px-4 sm:px-6 text-[#6E6D68] dark:text-zinc-400">⚠️ Annoying new tab redirects</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 sm:px-6 font-medium text-[#111111] dark:text-white">Account or Login Required</td>
+                    <td className="py-3 px-4 sm:px-6 font-bold text-emerald-600 dark:text-emerald-400">❌ No Login Needed</td>
+                    <td className="py-3 px-4 sm:px-6 text-[#6E6D68] dark:text-zinc-400">⚠️ Some require signups</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 sm:px-6 font-medium text-[#111111] dark:text-white">Download Limits</td>
+                    <td className="py-3 px-4 sm:px-6 font-bold text-emerald-600 dark:text-emerald-400">💯 100% Free & Unlimited</td>
+                    <td className="py-3 px-4 sm:px-6 text-[#6E6D68] dark:text-zinc-400">⚠️ Daily caps or paywalls</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
 
         {/* ── FAQ Section ──────────────────────────────────── */}
-        <div className="max-w-3xl mx-auto space-y-4">
+        <section className="max-w-3xl mx-auto space-y-4">
           <div className="text-center space-y-1">
-            <h3 className="text-xl font-extrabold text-[#111111] dark:text-white">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#111111] dark:text-white">
               Frequently Asked Questions
-            </h3>
+            </h2>
             <p className="text-xs sm:text-sm text-[#6E6D68] dark:text-zinc-400">
               Everything you need to know about downloading Instagram Reels.
             </p>
@@ -771,7 +888,9 @@ export default function InstagramDownloaderPage() {
                     onClick={() => setExpandedFaq(isExpanded ? null : index)}
                     className="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 font-bold text-sm text-[#111111] dark:text-white cursor-pointer"
                   >
-                    <span>{faq.q}</span>
+                    <h3 className="font-bold text-sm text-[#111111] dark:text-white text-left">
+                      {faq.q}
+                    </h3>
                     <ChevronDown
                       className={`h-4 w-4 text-[#9E9D98] transition-transform duration-200 shrink-0 ${
                         isExpanded ? "rotate-180 text-rose-600 dark:text-rose-400" : ""
@@ -787,7 +906,7 @@ export default function InstagramDownloaderPage() {
               );
             })}
           </div>
-        </div>
+        </section>
 
         {/* ── Privacy Badges ───────────────────────────────── */}
         <div className="pt-6">
@@ -801,18 +920,6 @@ export default function InstagramDownloaderPage() {
           />
         </div>
       </main>
-
-      {/* ── 3-4s Download Interstitial Modal with Google Ad ── */}
-      <DownloadAdModal
-        isOpen={downloadModal.isOpen}
-        onClose={() => setDownloadModal((prev) => ({ ...prev, isOpen: false }))}
-        downloadUrl={downloadModal.url}
-        filename={downloadModal.filename}
-        title={reelData?.title || "Instagram Reel"}
-        thumbnail={reelData?.thumbnail}
-        fileType={downloadModal.fileType}
-        durationSeconds={3}
-      />
 
       <Footer />
     </div>

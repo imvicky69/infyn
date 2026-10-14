@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import {
   Eraser,
   Minimize2,
@@ -770,6 +770,12 @@ function DynamicRouteIcon({ pathname }: { pathname: string }) {
 
 export function Navbar() {
   const pathname = usePathname();
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
   const [imageDropdownOpen, setImageDropdownOpen] = useState(false);
   const [pdfDropdownOpen, setPdfDropdownOpen] = useState(false);
   const [devDropdownOpen, setDevDropdownOpen] = useState(false);
@@ -886,7 +892,7 @@ export function Navbar() {
   return (
     <header className={`${mobileMenuOpen ? "fixed" : "sticky"} top-0 left-0 right-0 z-50 w-full`}>
       {/* Main nav bar */}
-      <div className="border-b border-[#EAEAE5]/70 dark:border-zinc-800/80 bg-[#FBFBFA]/90 dark:bg-[#0C0C0E]/90 backdrop-blur-2xl transition-colors">
+      <div className="relative border-b border-[#EAEAE5]/70 dark:border-zinc-800/80 bg-[#FBFBFA]/90 dark:bg-[#0C0C0E]/90 backdrop-blur-2xl transition-colors">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Brand */}
 
@@ -1374,9 +1380,9 @@ export function Navbar() {
             >
               <Film className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Movies</span>
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+              {/* <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
                 1080p
-              </span>
+              </span> */}
             </Link>
 
             {/* Sponsor Link */}
@@ -1440,6 +1446,14 @@ export function Navbar() {
               </motion.div>
             </button>
           </div>
+        </div>
+
+        {/* Dynamic Increasing Scroll Progress Line on Navbar Bottom */}
+        <div className="absolute -bottom-[1px] left-0 right-0 h-[2px] w-full overflow-hidden pointer-events-none z-50">
+          <motion.div
+            style={{ scaleX, transformOrigin: "0% 50%" }}
+            className="h-full w-full bg-gradient-to-r from-rose-500 via-purple-500 to-indigo-500 dark:from-rose-400 dark:via-purple-400 dark:to-indigo-400 shadow-[0_1px_6px_rgba(225,29,72,0.35)]"
+          />
         </div>
       </div>
 

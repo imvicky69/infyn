@@ -18,7 +18,6 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import SplitText from "@/components/SplitText";
 import { PrivacyBadges } from "@/components/image-tools/privacy-badges";
-import { AdsterraAd } from "@/components/ads/adsterra-ad";
 
 function InstagramIcon({ className = "h-5 w-5" }: { className?: string }) {
   return (
@@ -99,6 +98,7 @@ export default function InstagramToolsHubPage() {
           </div>
 
           <SplitText
+            tag="h1"
             text="Instagram Tools & Downloaders"
             className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#111111] dark:text-white"
             delay={25}
@@ -167,16 +167,6 @@ export default function InstagramToolsHubPage() {
               </div>
             </Link>
           ))}
-        </div>
-
-        {/* ── Sponsored Adsterra Ad Slot ── */}
-        <div className="max-w-4xl mx-auto w-full">
-          <div className="hidden sm:block">
-            <AdsterraAd format="728x90" label="Sponsored" />
-          </div>
-          <div className="sm:hidden">
-            <AdsterraAd format="320x50" label="Sponsored" />
-          </div>
         </div>
 
         {/* ── Value Props ──────────────────────────────────── */}

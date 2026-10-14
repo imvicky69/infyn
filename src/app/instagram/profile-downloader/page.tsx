@@ -34,8 +34,6 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
 import SplitText from "@/components/SplitText";
 import { PrivacyBadges } from "@/components/image-tools/privacy-badges";
-import { AdsterraAd } from "@/components/ads/adsterra-ad";
-import { DownloadAdModal } from "@/components/ads/download-ad-modal";
 
 function InstagramIcon({ className = "h-5 w-5" }: { className?: string }) {
   return (
@@ -131,18 +129,6 @@ export default function InstagramProfileDownloaderPage() {
   const [isZipping, setIsZipping] = useState<boolean>(false);
   const [zipProgress, setZipProgress] = useState<string>("");
 
-  const [downloadModal, setDownloadModal] = useState<{
-    isOpen: boolean;
-    url: string | null;
-    filename: string;
-    fileType: string;
-  }>({
-    isOpen: false,
-    url: null,
-    filename: "",
-    fileType: "Profile Picture (HD)",
-  });
-
   const inputRef = useRef<HTMLInputElement>(null);
 
   const triggerPreWarm = React.useCallback(() => {
@@ -232,14 +218,16 @@ export default function InstagramProfileDownloaderPage() {
     setTimeout(() => setCopiedBio(false), 2500);
   };
 
-  const handleDownloadWithAd = (url?: string, filename?: string, fileType?: string) => {
+  const triggerDownload = (url?: string, filename?: string) => {
     if (!profileData) return;
-    setDownloadModal({
-      isOpen: true,
-      url: url || profileData.downloadUrl,
-      filename: filename || profileData.filename,
-      fileType: fileType || "Profile Picture (HD JPG)",
-    });
+    const targetUrl = url || profileData.downloadUrl;
+    const targetFilename = filename || profileData.filename;
+    const link = document.createElement("a");
+    link.href = targetUrl;
+    link.setAttribute("download", targetFilename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleDownloadAllPostsZip = async () => {
@@ -515,15 +503,6 @@ export default function InstagramProfileDownloaderPage() {
                 className="h-full rounded-full animate-pulse w-3/4"
               />
             </div>
-
-            {/* Sponsored Adsterra Ad While Extracting Profile */}
-            <div className="pt-2 max-w-sm mx-auto">
-              <AdsterraAd
-                format="300x250"
-                label="Sponsored • Extracting Profile"
-                className="shadow-xs"
-              />
-            </div>
           </div>
         )}
 
@@ -739,7 +718,7 @@ export default function InstagramProfileDownloaderPage() {
               {/* Action Buttons */}
               <div className="space-y-2.5 pt-4 border-t border-[#EAEAE5] dark:border-zinc-800">
                 <button
-                  onClick={() => handleDownloadWithAd()}
+                  onClick={() => triggerDownload()}
                   className="w-full py-4 px-6 rounded-2xl bg-[#111111] hover:bg-black dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-[#111111] text-sm font-extrabold flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98] cursor-pointer"
                 >
                   <Download className="h-4 w-4" />
@@ -865,12 +844,11 @@ export default function InstagramProfileDownloaderPage() {
 
                         <button
                           onClick={() =>
-                            handleDownloadWithAd(
+                            triggerDownload(
                               post.downloadUrl,
                               `${profileData.username}_post_${post.shortcode}.${
                                 post.mediaType === "video" ? "mp4" : "jpg"
-                              }`,
-                              `Post ${post.shortcode} (${post.mediaType === "video" ? "MP4" : "JPG"})`
+                              }`
                             )
                           }
                           className="mt-1 px-3 py-1.5 rounded-lg bg-white hover:bg-zinc-100 text-[#111111] text-xs font-bold inline-flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
@@ -899,22 +877,7 @@ export default function InstagramProfileDownloaderPage() {
           </div>
         )}
 
-        {/* ── Sponsored Adsterra Ad Slot (Result Ready) ────── */}
-        {stage === "done" && (
-          <div
-            className="max-w-4xl mx-auto w-full space-y-4"
-            style={{ animation: "fade-in-up 0.3s ease-out" }}
-          >
-            {/* Desktop Leaderboard */}
-            <div className="hidden sm:block">
-              <AdsterraAd format="728x90" label="Sponsored" />
-            </div>
-            {/* Mobile Banner */}
-            <div className="sm:hidden">
-              <AdsterraAd format="320x50" label="Sponsored" />
-            </div>
-          </div>
-        )}
+
 
         {/* ── Feature Highlights ────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto pt-6">
@@ -1024,18 +987,6 @@ export default function InstagramProfileDownloaderPage() {
           />
         </div>
       </main>
-
-      {/* ── 3-4s Download Interstitial Modal with Google Ad ── */}
-      <DownloadAdModal
-        isOpen={downloadModal.isOpen}
-        onClose={() => setDownloadModal((prev) => ({ ...prev, isOpen: false }))}
-        downloadUrl={downloadModal.url}
-        filename={downloadModal.filename}
-        title={profileData?.fullName || "Instagram Profile Picture"}
-        thumbnail={profileData?.profilePicUrl}
-        fileType={downloadModal.fileType}
-        durationSeconds={3}
-      />
 
       <Footer />
     </div>

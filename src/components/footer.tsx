@@ -2,115 +2,86 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-const IMAGE_LINKS = [
-  { href: "/image/png-to-svg", label: "PNG to SVG Converter" },
-  { href: "/image/qr-code", label: "QR Code Generator" },
-  { href: "/image/bg-remover", label: "Background Remover" },
+const IMAGE_TOOLS = [
   { href: "/image/compressor", label: "Image Compressor" },
-  { href: "/image/resizer", label: "Image Resizer" },
+  { href: "/image/bg-remover", label: "Background Remover" },
   { href: "/image/converter", label: "Universal Converter" },
-  { href: "/image/heic-to-jpg", label: "HEIC to JPG" },
-  { href: "/image/exif-remover", label: "Metadata Remover" },
+  { href: "/image/qr-code", label: "QR Code Generator" },
+  { href: "/image/png-to-svg", label: "PNG to SVG" },
+  { href: "/image/resizer", label: "Image Resizer" },
 ];
 
-const PDF_LINKS = [
+const PDF_TOOLS = [
+  { href: "/pdf/compressor", label: "PDF Compressor" },
   { href: "/pdf/merger", label: "PDF Merger" },
   { href: "/pdf/splitter", label: "PDF Splitter" },
+  { href: "/pdf/pdf-to-image", label: "PDF to Image" },
   { href: "/pdf/protector", label: "PDF Protector" },
   { href: "/pdf/unlocker", label: "PDF Unlocker" },
-  { href: "/pdf/pdf-to-image", label: "PDF to Image" },
-  { href: "/image/img-to-pdf", label: "Image to PDF" },
 ];
 
-const APPS_LINKS = [
-  { href: "/apps", label: "Apps Hub", external: false },
-  { href: "/dl", label: "Infyn DL (App)", external: false },
-  { href: "/smiley-pdf", label: "Smiley PDF (Android)", external: false },
-  { href: "/home-tab", label: "Infyn Home Tab (Extension)", external: false },
-  { href: "https://github.com/imvicky69/smiley-pdf", label: "Smiley PDF GitHub ↗", external: true },
-  { href: "https://github.com/imvicky69/infyn-dl", label: "Infyn DL GitHub ↗", external: true },
-  { href: "https://github.com/imvicky69/infyn-home-tab", label: "Home Tab GitHub ↗", external: true },
-];
-
-const DEV_LINKS = [
-  { href: "/dev/base64", label: "Base64 & Data URI", external: false },
-  { href: "/dev/svg-cleaner", label: "SVG Cleaner & Minifier", external: false },
-  { href: "/dev", label: "Developer Tools Hub", external: false },
-  { href: "/contributing", label: "Contributing Guide", external: false },
-  { href: "/sponsor", label: "💖 Support Infyn", external: false },
-  { href: "https://github.com/imvicky69/infyn", label: "GitHub Suite ↗", external: true },
-  { href: "https://github.com/imvicky69/infyn/issues", label: "Suggest a Tool ↗", external: true },
-];
-
-const PRIVACY_BADGES = [
-  {
-    label: "Zero uploads",
-    color: "bg-emerald-50 border-emerald-200/80 text-emerald-800",
-    dot: "bg-emerald-500",
-  },
-  {
-    label: "Ad-free",
-    color: "bg-blue-50 border-blue-200/80 text-blue-800",
-    dot: "bg-blue-500",
-  },
-  {
-    label: "Free forever",
-    color: "bg-amber-50 border-amber-200/80 text-amber-800",
-    dot: "bg-amber-500",
-  },
+const SOCIAL_AND_APPS = [
+  { href: "/instagram/reel-downloader", label: "Instagram Reel Downloader" },
+  { href: "/instagram/profile-downloader", label: "Profile Picture Downloader" },
+  { href: "/dl", label: "Infyn DL (Media Downloader)" },
+  { href: "/home-tab", label: "Infyn Home Tab (Extension)" },
+  { href: "https://wallpaper.xweet.in", label: "Xweet Wallpapers ↗", external: true },
+  { href: "/movies", label: "Movies & Series (1080p)" },
 ];
 
 export function Footer() {
   return (
-    <footer className="border-t border-[#EAEAE5] dark:border-zinc-800 bg-[#FBFBFA] dark:bg-[#0C0C0E]">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-
-        <div className="py-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-12 gap-8 sm:gap-10">
-          
+    <footer className="border-t border-[#EAEAE5] dark:border-zinc-800 bg-[#FBFBFA] dark:bg-[#0C0C0E] transition-colors">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-10 sm:gap-8">
           {/* Brand column */}
-          <div className="col-span-2 sm:col-span-3 md:col-span-4 space-y-5">
+          <div className="sm:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2.5 group w-fit">
               <Image
                 src="/logo-clear.png"
                 alt="Infyn"
-                width={22}
-                height={22}
-                style={{ width: "auto", height: "22px" }}
+                width={24}
+                height={24}
+                style={{ width: "auto", height: "24px" }}
                 className="object-contain group-hover:scale-105 transition-transform"
               />
-              <span className="font-bold text-[#111111] dark:text-white text-lg tracking-tight">
+              <span className="font-extrabold text-[#111111] dark:text-white text-lg tracking-tight">
                 infyn
               </span>
             </Link>
 
-            <p className="text-[13px] text-[#6E6D68] dark:text-zinc-400 leading-[1.7] max-w-[280px] tracking-[-0.005em]">
-              Free, ad-free in-browser utilities and standalone tools that never upload your files. Built for speed and privacy.
+            <p className="text-[13px] text-[#6E6D68] dark:text-zinc-400 leading-relaxed max-w-sm tracking-[-0.005em]">
+              Fast, private in-browser utilities and standalone tools. Every file stays on your device — zero server uploads, no accounts, 100% free.
             </p>
 
-            <div className="flex flex-wrap gap-1.5">
-              {PRIVACY_BADGES.map((b) => (
-                <span
-                  key={b.label}
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-semibold ${b.color}`}
-                >
-                  <span className={`h-1.5 w-1.5 rounded-full ${b.dot}`} />
-                  {b.label}
-                </span>
-              ))}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-[11px] font-semibold">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                100% In-Browser & Private
+              </span>
+              <a
+                href="https://xweet.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#F5F4EE] dark:bg-zinc-800/80 border border-[#EAEAE5] dark:border-zinc-700 text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white text-[11px] font-semibold transition-colors"
+              >
+                <span>A Xweet Product</span>
+                <span className="text-[10px] opacity-70">↗</span>
+              </a>
             </div>
           </div>
 
-          {/* Image Tools column */}
-          <div className="col-span-1 sm:col-span-1 md:col-span-2 space-y-3.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9E9D98] dark:text-zinc-500">
-              Image
+          {/* Image Tools */}
+          <div className="space-y-3.5">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#111111] dark:text-white">
+              Image Tools
             </h3>
-            <nav className="flex flex-col gap-2">
-              {IMAGE_LINKS.map((link) => (
+            <nav className="flex flex-col space-y-2">
+              {IMAGE_TOOLS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-[13px] font-medium text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors tracking-[-0.005em] leading-snug"
+                  className="text-[13px] text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -118,17 +89,17 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* PDF Tools column */}
-          <div className="col-span-1 sm:col-span-1 md:col-span-2 space-y-3.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9E9D98] dark:text-zinc-500">
-              PDF
+          {/* PDF Tools */}
+          <div className="space-y-3.5">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#111111] dark:text-white">
+              PDF Tools
             </h3>
-            <nav className="flex flex-col gap-2">
-              {PDF_LINKS.map((link) => (
+            <nav className="flex flex-col space-y-2">
+              {PDF_TOOLS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-[13px] font-medium text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors tracking-[-0.005em] leading-snug"
+                  className="text-[13px] text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -136,20 +107,20 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* Apps & Extensions column */}
-          <div className="col-span-1 sm:col-span-1 md:col-span-2 space-y-3.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9E9D98] dark:text-zinc-500">
-              Apps
+          {/* Social & Apps */}
+          <div className="space-y-3.5">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#111111] dark:text-white">
+              Social & Apps
             </h3>
-            <nav className="flex flex-col gap-2">
-              {APPS_LINKS.map((link) =>
+            <nav className="flex flex-col space-y-2">
+              {SOCIAL_AND_APPS.map((link) =>
                 link.external ? (
                   <a
                     key={link.href}
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[13px] font-medium text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors tracking-[-0.005em] leading-snug"
+                    className="text-[13px] text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors"
                   >
                     {link.label}
                   </a>
@@ -157,37 +128,7 @@ export function Footer() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-[13px] font-medium text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors tracking-[-0.005em] leading-snug"
-                  >
-                    {link.label}
-                  </Link>
-                )
-              )}
-            </nav>
-          </div>
-
-          {/* Developer / Open Source column */}
-          <div className="col-span-1 sm:col-span-1 md:col-span-2 space-y-3.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9E9D98] dark:text-zinc-500">
-              Open Source
-            </h3>
-            <nav className="flex flex-col gap-2">
-              {DEV_LINKS.map((link) =>
-                link.external ? (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[13px] font-medium text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors tracking-[-0.005em] leading-snug"
-                  >
-                    {link.label}
-                  </a>
-                ) : (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="text-[13px] font-medium text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors tracking-[-0.005em] leading-snug"
+                    className="text-[13px] text-[#6E6D68] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -197,15 +138,29 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="border-t border-[#EAEAE5] dark:border-zinc-800 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[11px] text-[#9E9D98] dark:text-zinc-500 tracking-[-0.005em]">
-            © {new Date().getFullYear()} Infyn · All operations run locally in your browser.
-          </p>
-          <div className="flex items-center gap-1.5 text-[11px] text-[#9E9D98] dark:text-zinc-500">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Zero data collection</span>
+        {/* Bottom bar with Watermark */}
+        <div className="mt-12 pt-6 border-t border-[#EAEAE5] dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#9E9D98] dark:text-zinc-500">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-center sm:text-left">
+            <p>© {new Date().getFullYear()} Infyn · All operations run locally.</p>
+            <span className="hidden sm:inline text-[#BEBDB9] dark:text-zinc-700">·</span>
+            <a
+              href="https://xweet.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-semibold text-[#111111] dark:text-white hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+            >
+              <span>A Xweet Product</span>
+              <span className="text-[11px] text-[#9E9D98] dark:text-zinc-500 font-normal">(xweet.in)</span>
+              <span className="text-[10px]">↗</span>
+            </a>
           </div>
+          <p className="flex items-center gap-2 font-medium">
+            <span>No tracking</span>
+            <span>·</span>
+            <span>No cookies</span>
+            <span>·</span>
+            <span>Zero cloud uploads</span>
+          </p>
         </div>
       </div>
     </footer>
